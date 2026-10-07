@@ -24,17 +24,22 @@ export function buildInterior(layout) {
   const group = new THREE.Group()
   const b = new Builder()
   const P = new Placer(b, 0, 0, 0, 0)
-  // floor, ceiling, walls (inward-facing boxes), skirting and beams
-  P.box(W, 0.2, D, M(shell.floor), 0, -0.1, 0, { uv: 1.5 })
+  // floor, ceiling, walls (inward-facing boxes), skirting and beams; or the
+  // walls and floor of a pack's modular kit
+  const kit = assets.kit("interior", { style: layout.style, kind: layout.kind }, ((W * 0.37 + D * 0.11) % 1 + 1) % 1)
+  if (kit) kitShell(b, kit, layout)
+  else {
+    P.box(W, 0.2, D, M(shell.floor), 0, -0.1, 0, { uv: 1.5 })
+    for (const [x, z, w, d] of [[0, D / 2 + 0.1, W + 0.4, 0.2], [0, -D / 2 - 0.1, W + 0.4, 0.2], [W / 2 + 0.1, 0, 0.2, D], [-W / 2 - 0.1, 0, 0.2, D]]) P.box(w, H + 0.4, d, M(shell.wall), x, H / 2, z, { uv: 1.5 })
+    for (const [x, z, w, d] of [[0, D / 2 - 0.05, W, 0.1], [0, -D / 2 + 0.05, W, 0.1], [W / 2 - 0.05, 0, 0.1, D], [-W / 2 + 0.05, 0, 0.1, D]]) P.box(w, 0.25, d, M(shell.trim), x, 0.12, z)
+    // the door out
+    P.box(1.5, 2.5, 0.12, TM("planks"), 0, 1.25, -D / 2 + 0.06)
+    P.box(1.9, 0.25, 0.25, M(shell.trim), 0, 2.6, -D / 2 + 0.12)
+    for (const sx of [-1, 1]) P.box(0.22, 2.6, 0.25, M(shell.trim), sx * 0.86, 1.3, -D / 2 + 0.12)
+    P.add(new THREE.SphereGeometry(0.06, 6, 4), TM("dwemerMetal", 0x6a6a6a, { metal: true }), { pos: [0.45, 1.25, -D / 2 + 0.2] })
+  }
   P.box(W, 0.2, D, M(shell.ceil), 0, H + 0.1, 0, { uv: 1.5 })
-  for (const [x, z, w, d] of [[0, D / 2 + 0.1, W + 0.4, 0.2], [0, -D / 2 - 0.1, W + 0.4, 0.2], [W / 2 + 0.1, 0, 0.2, D], [-W / 2 - 0.1, 0, 0.2, D]]) P.box(w, H + 0.4, d, M(shell.wall), x, H / 2, z, { uv: 1.5 })
-  for (const [x, z, w, d] of [[0, D / 2 - 0.05, W, 0.1], [0, -D / 2 + 0.05, W, 0.1], [W / 2 - 0.05, 0, 0.1, D], [-W / 2 + 0.05, 0, 0.1, D]]) P.box(w, 0.25, d, M(shell.trim), x, 0.12, z)
   for (let z = -D / 2 + 1.5; z < D / 2; z += 2.5) P.box(W, 0.3, 0.3, M(shell.trim), 0, H - 0.15, z)
-  // the door out
-  P.box(1.5, 2.5, 0.12, TM("planks"), 0, 1.25, -D / 2 + 0.06)
-  P.box(1.9, 0.25, 0.25, M(shell.trim), 0, 2.6, -D / 2 + 0.12)
-  for (const sx of [-1, 1]) P.box(0.22, 2.6, 0.25, M(shell.trim), sx * 0.86, 1.3, -D / 2 + 0.12)
-  P.add(new THREE.SphereGeometry(0.06, 6, 4), TM("dwemerMetal", 0x6a6a6a, { metal: true }), { pos: [0.45, 1.25, -D / 2 + 0.2] })
 
   const extras = new THREE.Group()
   layout.furniture.forEach((f, i) => {
@@ -61,6 +66,55 @@ export function buildInterior(layout) {
   }
   group.add(b.build(), extras)
   return { group, lights }
+}
+
+// Room walls and floor from a modular kit (manifest kits.interior):
+//   floor      floor tiles, laid on a grid and stretched to fit
+//   wall       wall panels (their outer face +Z), stacked to the room height
+//   door, doorLeaf   the doorway panel in the front wall and its door
+function kitShell(b, kit, { W, D, H }) {
+  const g = kit.grid || 2
+  const h = kit.storey || 3
+  let seed = Math.round(W * 131 + D * 71) >>> 0
+  const r = () => ((seed = (Math.imul(seed ^ (seed >>> 13), 1103515245) + 12345) >>> 0) % 100000) / 100000
+  const pick = list => list[Math.floor(r() * list.length) % list.length]
+  const at = (x, y, z, yaw = 0, sx = 1, sy = 1, sz = 1) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw), new THREE.Vector3(sx, sy, sz))
+  // floor tiles
+  const nx = Math.max(1, Math.round(W / g))
+  const nz = Math.max(1, Math.round(D / g))
+  const tile = pick(kit.floor)
+  for (let i = 0; i < nx; i++)
+    for (let j = 0; j < nz; j++) assets.bakeModel(b, tile, at(-W / 2 + (W / nx) * (i + 0.5), 0, -D / 2 + (D / nz) * (j + 0.5), 0, W / nx / g, 1, D / nz / g))
+  // walls: rows of panels, set just outside the room so their inner face is its edge
+  const rows = Math.max(1, Math.round(H / h))
+  const sy = H / (rows * h)
+  const thick = kit.thickness ?? 0.31
+  const sides = [
+    { len: W, at: t => [t, -D / 2 - thick], yaw: Math.PI, front: true },
+    { len: W, at: t => [t, D / 2 + thick], yaw: 0 },
+    { len: D, at: t => [-W / 2 - thick, t], yaw: -Math.PI / 2 },
+    { len: D, at: t => [W / 2 + thick, t], yaw: Math.PI / 2 },
+  ]
+  for (const side of sides) {
+    let n = Math.max(1, Math.round(side.len / g))
+    if (side.front && n % 2 === 0) n += 1 // an odd count puts the doorway in the middle
+    const sx = side.len / (n * g)
+    const doorSlot = side.front ? Math.floor((n - 1) / 2) : -1
+    for (let row = 0; row < rows; row++)
+      for (let i = 0; i < n; i++) {
+        const t = -side.len / 2 + (side.len / n) * (i + 0.5)
+        const [x, z] = side.at(t)
+        const door = row === 0 && i === doorSlot && kit.door?.length
+        assets.bakeModel(b, door ? pick(kit.door) : pick(kit.wall), at(x, row * h * sy, z, side.yaw, sx, sy, 1))
+        if (door && kit.doorLeaf?.length) {
+          const leaf = pick(kit.doorLeaf)
+          const [ox, oy, oz] = leaf.offset || [0, 0, 0]
+          const c = Math.cos(side.yaw)
+          const s = Math.sin(side.yaw)
+          assets.bakeModel(b, leaf.model, at(x + ox * c + oz * s, oy, z - ox * s + oz * c, side.yaw))
+        }
+      }
+  }
 }
 
 const GOODS = [0x8a3020, 0x2a5a8a, 0x3a7a3a, 0xc8a040, 0x6a3a7a, 0xd0c8b0]

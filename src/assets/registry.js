@@ -40,8 +40,36 @@ function floatGeometry(src) {
 }
 
 // Pack materials are re-made as the game's own (Lambert) materials, so they
-// take the same light, fog and darkness as everything around them.
+// take the same light, fog and darkness as everything around them. Models
+// that share a texture file (kit pieces on one atlas) share one texture and
+// one material, so the pieces of a town merge into a few draw calls.
 const converted = new WeakMap()
+const sharedTextures = new Map() // texture file -> Texture
+const sharedMaterials = new Map() // material signature -> material
+function textureFile(gltf, tex) {
+  const a = tex && gltf.parser.associations.get(tex)
+  if (!a || a.textures == null) return null
+  const t = gltf.parser.json.textures?.[a.textures]
+  const img = t && (t.source ?? t.extensions?.EXT_texture_webp?.source)
+  return gltf.parser.json.images?.[img]?.uri || null
+}
+function shareMaterial(gltf, src) {
+  if (converted.has(src)) return converted.get(src)
+  const files = {}
+  for (const slot of ["map", "normalMap", "emissiveMap"]) {
+    const file = textureFile(gltf, src[slot])
+    files[slot] = file
+    if (!file) continue
+    if (sharedTextures.has(file)) src[slot] = sharedTextures.get(file)
+    else sharedTextures.set(file, src[slot])
+  }
+  const key = [src.name, files.map, files.normalMap, files.emissiveMap, src.color?.getHex(), src.emissive?.getHex(), src.vertexColors, src.transparent, src.alphaTest, src.side, src.opacity].join("|")
+  if (!files.map && !files.normalMap) return prepareMaterial(src) // nothing to share by
+  if (!sharedMaterials.has(key)) sharedMaterials.set(key, prepareMaterial(src))
+  const m = sharedMaterials.get(key)
+  converted.set(src, m)
+  return m
+}
 function prepareMaterial(src) {
   if (converted.has(src)) return converted.get(src)
   if (src.userData.packReady) return src
@@ -90,6 +118,7 @@ class AssetRegistry {
     this.index.models ||= {}
     this.index.roles ||= {}
     this.index.animations ||= {}
+    this.index.kits ||= {}
     return this
   }
 
@@ -104,6 +133,17 @@ class AssetRegistry {
     const list = this.index.roles[role]
     if (!list) return []
     return list.filter(e => this.gltf.has(e.model) && matches(e, ctx))
+  }
+
+  // A modular kit (see kit.js) whose models are loaded and that suits ctx.
+  kit(name, ctx = {}, r = Math.random()) {
+    const list = (this.index.kits[name] || []).filter(k => matches(k, ctx) && kitModels(k).every(id => this.gltf.has(id)))
+    return list.length ? list[Math.floor(r * list.length) % list.length] : null
+  }
+
+  // Merge one model, placed by its own origin, into a geometry Builder.
+  bakeModel(builder, id, matrix) {
+    this.bake(builder, { model: id, front: "-z", align: "pivot" }, "kit", {}, matrix)
   }
 
   has(role, ctx) {
@@ -130,6 +170,9 @@ class AssetRegistry {
       for (const e of list) {
         if (!test(role, e)) continue
         ids.add(e.model)
+        const lod = this.index.models[e.model]?.lod
+        if (lod) ids.add(lod)
+        for (const slot of Object.values(e.parts || {})) for (const id of slot) if (id) ids.add(id)
         const set = e.anims && this.index.animations[e.anims]
         if (set) for (const c of Object.values(set)) ids.add(c.model)
       }
@@ -163,7 +206,7 @@ class AssetRegistry {
                   if (o.isMesh) {
                     o.castShadow = true
                     o.receiveShadow = true
-                    o.material = Array.isArray(o.material) ? o.material.map(prepareMaterial) : prepareMaterial(o.material)
+                    o.material = Array.isArray(o.material) ? o.material.map(m => shareMaterial(g, m)) : shareMaterial(g, o.material)
                   }
                 })
                 g.scene.updateMatrixWorld(true)
@@ -196,8 +239,12 @@ class AssetRegistry {
     let sy = 1
     let sz = 1
     const k = entry.scale ?? 1
-    // the model's front: +Z by default (glTF); turn it to face -Z
-    const yaw = (entry.yaw ?? 0) * DEG + (entry.front === "-z" ? 0 : entry.front === "+x" ? Math.PI / 2 : entry.front === "-x" ? -Math.PI / 2 : Math.PI)
+    // the model's front: +Z by default (glTF). Placed objects face -Z (the
+    // generators' convention); characters and creatures face +Z, like the
+    // game's actors (yaw = atan2(dx, dz)).
+    const actor = r.group === "character" || r.group === "creature"
+    const turn = { "+z": Math.PI, "-z": 0, "+x": Math.PI / 2, "-x": -Math.PI / 2 }[entry.front || "+z"] + (actor ? Math.PI : 0)
+    const yaw = (entry.yaw ?? 0) * DEG + turn
     const turned = Math.abs(Math.sin(yaw)) > 0.7 // footprint axes swap
     const w0 = turned ? size[2] : size[0]
     const d0 = turned ? size[0] : size[2]
@@ -230,12 +277,18 @@ class AssetRegistry {
     return box.getSize(new THREE.Vector3())
   }
 
+  // The simplified far version of an entry's model, if the pack build made one.
+  lodParts(entry, role, dims = {}) {
+    const lod = this.index.models[entry.model]?.lod
+    return lod && this.gltf.has(lod) ? this.parts(entry, role, dims, lod) : null
+  }
+
   // Static model as merge-ready parts: [{geo, mat}] with the entry transform
   // baked in. Shared and cached; callers clone if they modify.
-  parts(entry, role, dims = {}) {
-    const key = `${entry.model}|${role}|${dims.w}|${dims.d}|${dims.h}|${JSON.stringify([entry.scale, entry.fit, entry.yaw, entry.front, entry.rotate, entry.offset, entry.align, entry.height])}`
+  parts(entry, role, dims = {}, modelId = entry.model) {
+    const key = `${modelId}|${role}|${dims.w}|${dims.d}|${dims.h}|${JSON.stringify([entry.scale, entry.fit, entry.yaw, entry.front, entry.rotate, entry.offset, entry.align, entry.height])}`
     if (this.partsCache.has(key)) return this.partsCache.get(key)
-    const g = this.gltf.get(entry.model)
+    const g = this.gltf.get(modelId)
     const base = this.entryMatrix(entry, role, dims)
     const out = []
     g.scene.traverse(o => {
@@ -346,7 +399,9 @@ class AssetRegistry {
 
   // An animated character or creature with the same interface as the game's
   // own builders: { group, anim(t, speed, attack, opts), rig: { head } }.
-  character(entry, role, dims = {}) {
+  //   ctx.seed    picks one model per entry.parts slot (hair, beard, ...)
+  //   ctx.tints   { key: colour } applied to materials named in entry.tint
+  character(entry, role, dims = {}, ctx = {}) {
     const g = this.gltf.get(entry.model)
     const holder = new THREE.Group()
     const inner = new THREE.Group()
@@ -356,10 +411,41 @@ class AssetRegistry {
     inner.matrix.copy(this.entryMatrix(entry, role, dims))
     holder.add(inner)
     holder.userData.pack = true
+
+    // extra skinned parts (hair, eyebrows, beards) bound to this skeleton
+    let s = (ctx.seed ?? Math.random() * 1e9) >>> 0
+    const rnd = () => ((s = (Math.imul(s ^ (s >>> 15), 2246822519) + 0x9e3779b9) >>> 0) % 100000) / 100000
+    if (entry.parts) {
+      const bones = {}
+      model.traverse(o => o.isBone && (bones[o.name] = o))
+      let anchor = null
+      model.traverse(o => !anchor && o.isSkinnedMesh && (anchor = o.parent))
+      anchor ||= model
+      for (const slot of Object.values(entry.parts)) {
+        const id = slot[Math.floor(rnd() * slot.length)]
+        const pg = id && this.gltf.get(id)
+        if (!pg) continue
+        const part = cloneSkinned(pg.scene)
+        const meshes = []
+        part.traverse(o => o.isSkinnedMesh && meshes.push(o))
+        for (const m of meshes) {
+          const skel = new THREE.Skeleton(m.skeleton.bones.map(b => bones[b.name] || b), m.skeleton.boneInverses)
+          anchor.add(m)
+          m.bind(skel, m.bindMatrix)
+        }
+      }
+    }
+    // per-character colours: skin by race, hair colour
+    const tints = entry.tint ? Object.entries(entry.tint) : []
     model.traverse(o => {
-      if (o.isMesh) {
-        o.castShadow = true
-        o.frustumCulled = false // skinned bounds don't follow the pose
+      if (!o.isMesh) return
+      o.castShadow = true
+      o.frustumCulled = false // skinned bounds don't follow the pose
+      for (const [glob, key] of tints) {
+        const c = ctx.tints?.[key]
+        if (c == null || !new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`, "i").test(o.material.name)) continue
+        o.material = o.material.clone()
+        o.material.color.multiply(new THREE.Color(c))
       }
     })
 
@@ -483,13 +569,26 @@ export const assets = new AssetRegistry()
 
 // ---------------------------------------------------------------- which models an area needs
 
+// every model id a kit refers to
+export function kitModels(k) {
+  const ids = []
+  for (const [key, v] of Object.entries(k)) {
+    if (key === "where" || key === "stories") continue
+    if (Array.isArray(v)) for (const x of v) ids.push(typeof x === "string" ? x : x.model)
+    else if (v && typeof v === "object") ids.push(...Object.values(v).filter(x => typeof x === "string"))
+  }
+  return ids.filter(Boolean)
+}
+
 const TOWN_PROPS = new Set(["prop.well", "prop.stall", "prop.lamppost", "prop.barrel", "prop.crate"])
 
 export function overworldModels() {
-  return assets.modelsFor(role => {
+  const ids = assets.modelsFor(role => {
     const g = ROLES[role]?.group
     return g === "flora" || g === "building" || g === "character" || g === "creature" || TOWN_PROPS.has(role)
   })
+  for (const k of assets.index.kits.building || []) ids.push(...kitModels(k))
+  return [...new Set(ids)]
 }
 
 export function dungeonModels(theme) {
@@ -497,5 +596,7 @@ export function dungeonModels(theme) {
 }
 
 export function interiorModels(style) {
-  return assets.modelsFor((role, e) => role.startsWith("prop.") && matches(e, { style }))
+  const ids = assets.modelsFor((role, e) => role.startsWith("prop.") && matches(e, { style }))
+  for (const k of assets.index.kits.interior || []) if (matches(k, { style })) ids.push(...kitModels(k))
+  return [...new Set(ids)]
 }

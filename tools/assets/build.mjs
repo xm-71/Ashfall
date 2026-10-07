@@ -13,8 +13,8 @@
 // Options: --force (reconvert everything), --pack <name> (only that pack).
 import { NodeIO, Logger } from "@gltf-transform/core"
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions"
-import { dedup, prune, weld, resample, meshopt, textureCompress, getBounds } from "@gltf-transform/functions"
-import { MeshoptEncoder, MeshoptDecoder } from "meshoptimizer"
+import { dedup, prune, weld, resample, meshopt, textureCompress, getBounds, simplify, dequantize } from "@gltf-transform/functions"
+import { MeshoptEncoder, MeshoptDecoder, MeshoptSimplifier } from "meshoptimizer"
 import { execFileSync } from "node:child_process"
 import { createHash } from "node:crypto"
 import fs from "node:fs"
@@ -80,7 +80,15 @@ function walk(dir, out = []) {
   return out
 }
 
-// "Models/SM Env Tree 01.fbx" -> "models/sm_env_tree_01"
+// "Medieval Village MegaKit[Standard]" -> "Medieval-Village-MegaKit"
+const packKey = name =>
+  name
+    .replace(/\[[^\]]*\]|\([^)]*\)/g, "")
+    .trim()
+    .replace(/[^A-Za-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "pack"
+
+// "Models/SM Env Tree 01.fbx" -> "Models/SM_Env_Tree_01"
 const modelKey = rel =>
   posix(rel)
     .replace(/\.[^.]+$/, "")
@@ -256,7 +264,56 @@ try {
 }
 
 // Step 1: any source file -> raw GLB (no changes beyond the format)
-async function toRaw(src, rawFile) {
+// A .gltf whose external files may have moved: find each buffer and image by
+// its path, else by file name anywhere in the pack. Images that can't be
+// found are dropped from their materials instead of failing the model.
+const BLANK_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+async function readGltf(src, packFiles, id) {
+  const json = JSON.parse(fs.readFileSync(src, "utf8"))
+  const dir = path.dirname(src)
+  const byName = new Map()
+  for (const f of packFiles) byName.set(path.basename(f).toLowerCase(), f)
+  const find = uri => {
+    const rel = decodeURIComponent(uri)
+    const direct = path.resolve(dir, rel)
+    if (fs.existsSync(direct)) return direct
+    const base = path.basename(rel).toLowerCase()
+    for (const name of [base, base.replace(/_(png|jpe?g|tga)\.(png|jpe?g)$/, ".$1"), base.replace(/_(png|jpe?g|tga)\.(png|jpe?g)$/, ".png")]) if (byName.has(name)) return byName.get(name)
+    return null
+  }
+  const resources = {}
+  for (const b of json.buffers || []) {
+    if (!b.uri || b.uri.startsWith("data:")) continue
+    const file = find(b.uri)
+    if (!file) throw new Error(`missing buffer ${b.uri}`)
+    resources[b.uri] = new Uint8Array(fs.readFileSync(file))
+  }
+  const missing = new Set()
+  ;(json.images || []).forEach((img, i) => {
+    if (!img.uri || img.uri.startsWith("data:")) return
+    const file = find(img.uri)
+    if (file) resources[img.uri] = new Uint8Array(fs.readFileSync(file))
+    else {
+      missing.add(i)
+      img.uri = BLANK_PNG
+    }
+  })
+  if (missing.size) {
+    const deadTex = new Set((json.textures || []).map((t, i) => (missing.has(t.source) ? i : -1)).filter(i => i >= 0))
+    const strip = o => {
+      if (!o || typeof o !== "object") return
+      for (const k of Object.keys(o)) {
+        if (o[k] && typeof o[k] === "object" && typeof o[k].index === "number" && /texture/i.test(k) && deadTex.has(o[k].index)) delete o[k]
+        else strip(o[k])
+      }
+    }
+    for (const m of json.materials || []) strip(m)
+    warn(id, `${missing.size} texture file(s) not found in the pack; left untextured`)
+  }
+  return io.readJSON({ json, resources })
+}
+
+async function toRaw(src, rawFile, packFiles = [], id = src) {
   fs.mkdirSync(path.dirname(rawFile), { recursive: true })
   const ext = path.extname(src).toLowerCase()
   if (ext === ".fbx") {
@@ -268,7 +325,7 @@ async function toRaw(src, rawFile) {
     }
     if (!fs.existsSync(rawFile)) throw new Error("FBX2glTF produced no output")
   } else {
-    const doc = await io.read(src)
+    const doc = path.extname(src).toLowerCase() === ".gltf" ? await readGltf(src, packFiles, id) : await io.read(src)
     await io.write(rawFile, doc)
   }
 }
@@ -276,7 +333,7 @@ async function toRaw(src, rawFile) {
 // Step 2: raw GLB -> game-ready GLB
 async function normalize(rawFile, outFile, { pack, packCfg, images, scale, rotate, id }) {
   const doc = await io.read(rawFile)
-  doc.setLogger(new Logger(Logger.Verbosity.WARN))
+  doc.setLogger(new Logger(Logger.Verbosity.ERROR))
   const root = doc.getRoot()
   repairTextures(doc, pack, packCfg, images, id)
   // one root node carries the unit and axis fix
@@ -354,7 +411,7 @@ async function main() {
 
   for (const pack of packs) {
     if (ONLY && pack !== ONLY) {
-      for (const id of Object.keys(catalog.models)) if (id.startsWith(`${pack}/`)) seen.add(id)
+      for (const id of Object.keys(catalog.models)) if (id.startsWith(`${packKey(pack)}/`)) seen.add(id)
       continue
     }
     if (!manifest.packs[pack]) manifest.packs[pack] = { license: "", textures: {} }
@@ -374,17 +431,17 @@ async function main() {
     // pass 1: raw conversion, so the pack's units can be judged from all models
     const raws = []
     for (const [key, src] of keys) {
-      const id = `${pack}/${key}`
+      const id = `${packKey(pack)}/${key}`
       const rawFile = path.join(RAW, `${id}.glb`)
       const st = fs.statSync(src)
       const sig = `${st.size}:${st.mtimeMs}`
       try {
         if (FORCE || !fs.existsSync(rawFile) || state.files[id]?.raw !== sig) {
-          await toRaw(src, rawFile)
-          state.files[id] = { ...(state.files[id] || {}), raw: sig }
+          await toRaw(src, rawFile, files, id)
+          state.files[id] = { raw: sig }
         }
-        const doc = await io.read(rawFile)
-        raws.push({ id, key, src, rawFile, height: stats(doc).size[1] })
+        if (state.files[id].height == null) state.files[id].height = stats(await io.read(rawFile)).size[1]
+        raws.push({ id, key, src, rawFile, height: state.files[id].height })
       } catch (e) {
         failed++
         warn(id, e.message)
@@ -436,13 +493,14 @@ async function main() {
   const used = new Set()
   const errors = []
   const index = { models: {}, roles: {}, animations: {} }
+  const clipsUsed = {} // model id -> clip names used by animation sets
   const clipRef = ref => {
     const [mid, clip] = ref.split("#")
     const m = catalog.models[mid]
     if (!m) return errors.push(`animation "${ref}": no model ${mid}`), null
     const c = clip ? m.clips.find(c2 => c2.name === clip) : m.clips[0]
     if (!c) return errors.push(`animation "${ref}": ${mid} has no clip "${clip}" (it has: ${m.clips.map(c2 => c2.name).join(", ") || "none"})`), null
-    used.add(mid)
+    ;(clipsUsed[mid] ||= new Set()).add(c.name)
     return { model: mid, clip: c.name, duration: c.duration }
   }
   for (const [setName, set] of Object.entries(manifest.animations)) {
@@ -455,6 +513,7 @@ async function main() {
     }
     if (!index.animations[setName].idle) errors.push(`animation set "${setName}" needs at least "idle"`)
   }
+  const shown = new Set()
   for (const [role, entries] of Object.entries(manifest.roles)) {
     if (role.startsWith("_")) continue
     if (!ROLES[role]) {
@@ -470,30 +529,94 @@ async function main() {
       }
       if ((ROLES[role].group === "character" || ROLES[role].group === "creature") && m.skinned && !e.anims && !m.clips.length) warn(e.model, `${role} has a rig but no animations (add "anims": "<set>")`)
       if (e.anims && !manifest.animations[e.anims]) errors.push(`${role}: unknown animation set "${e.anims}"`)
+      for (const [slot, ids] of Object.entries(e.parts || {}))
+        for (const id of ids) {
+          if (id == null) continue
+          if (!catalog.models[id]) errors.push(`${role}: part "${slot}" has no model "${id}"`)
+          else used.add(id), shown.add(id)
+        }
       used.add(e.model)
+      shown.add(e.model)
       list.push(e)
     }
     if (list.length) index.roles[role] = list
   }
+  // modular kits (whole buildings and rooms assembled from pieces)
+  index.kits = {}
+  for (const [name, kits] of Object.entries(manifest.kits || {})) {
+    if (name.startsWith("_")) continue
+    index.kits[name] = []
+    for (const k of kits) {
+      let ok = true
+      for (const [key, v] of Object.entries(k)) {
+        if (key === "where" || key === "stories" || key.startsWith("_") || typeof v !== "object") continue
+        const ids = Array.isArray(v) ? v.map(x => (typeof x === "string" ? x : x.model)) : Object.values(v)
+        for (const id of ids) {
+          if (!catalog.models[id]) {
+            errors.push(`kits.${name}.${key}: no model "${id}"`)
+            ok = false
+          } else used.add(id), shown.add(id)
+        }
+      }
+      if (ok) index.kits[name].push(k)
+    }
+  }
+  // models that only supply animation clips are published without meshes
+  const animSources = new Set(Object.keys(clipsUsed))
+  for (const id of animSources) used.add(id)
   fs.mkdirSync(PUBLIC, { recursive: true })
   const keep = new Set(["index.json"])
   let bytes = 0
+  const textureBytes = new Map() // shared texture file -> size
+  const LOD_RATIO = 0.12
+  const needsLod = new Set()
+  for (const [role, list] of Object.entries(index.roles)) if (ROLES[role]?.group === "flora") for (const e of list) needsLod.add(e.model)
+  state.published ||= {}
   for (const id of used) {
     const m = catalog.models[id]
-    const rel = `${id}.glb`
-    keep.add(rel)
-    const dst = path.join(PUBLIC, rel)
-    const src = path.join(OUT, rel)
+    const src = path.join(OUT, `${id}.glb`)
     if (!fs.existsSync(src)) {
       errors.push(`${id}: converted model missing (run npm run assets -- --force)`)
       continue
     }
-    fs.mkdirSync(path.dirname(dst), { recursive: true })
-    if (!fs.existsSync(dst) || fs.statSync(dst).size !== fs.statSync(src).size || fs.statSync(dst).mtimeMs < fs.statSync(src).mtimeMs) fs.copyFileSync(src, dst)
-    bytes += m.bytes
-    const { tris, min, max, size, skinned, clips, bytes: b } = m
-    index.models[id] = { url: `packs/${rel}`, tris, min, max, size, skinned, clips, bytes: b }
+    const animOnly = animSources.has(id) && !shown.has(id)
+    // animation libraries: one .glb with just the clips in use; everything
+    // else: .gltf + .bin with textures shared between models
+    const sig = `${fs.statSync(src).mtimeMs}:${animOnly ? [...clipsUsed[id]].sort().join("|") : "shared"}`
+    let pub = state.published[id]
+    if (!pub || pub.sig !== sig || !pub.files.every(f => fs.existsSync(path.join(PUBLIC, f)))) {
+      const files = animOnly ? await stripToClips(src, id, clipsUsed[id]) : await publishShared(src, id)
+      pub = state.published[id] = { sig, files }
+    }
+    let b = 0
+    for (const f of pub.files) {
+      keep.add(f)
+      const size = fs.statSync(path.join(PUBLIC, f)).size
+      if (f.startsWith("textures/")) textureBytes.set(f, size)
+      else b += size
+    }
+    bytes += b
+    const { tris, min, max, size, skinned } = m
+    const clips = animOnly ? m.clips.filter(c => clipsUsed[id].has(c.name)) : m.clips
+    const tex = pub.files.filter(f => f.startsWith("textures/")).reduce((s, f) => s + textureBytes.get(f), 0)
+    index.models[id] = { url: `packs/${pub.files[0]}`, tris: animOnly ? 0 : tris, min, max, size, skinned, clips, bytes: b + tex }
+    // flora seen from afar gets a simplified version
+    if (needsLod.has(id) && tris > 400) {
+      const lodId = `${id}@lod`
+      const lsig = `${sig}:lod${LOD_RATIO}`
+      let lp = state.published[lodId]
+      if (!lp || lp.sig !== lsig || !lp.files.every(f => fs.existsSync(path.join(PUBLIC, f)))) lp = state.published[lodId] = { sig: lsig, files: await publishShared(src, id, LOD_RATIO) }
+      let lb = 0
+      for (const f of lp.files) {
+        keep.add(f)
+        if (!f.startsWith("textures/")) lb += fs.statSync(path.join(PUBLIC, f)).size
+      }
+      bytes += lb
+      index.models[lodId] = { url: `packs/${lp.files[0]}`, tris: Math.round(tris * LOD_RATIO), min, max, size, skinned: false, clips: [], bytes: lb }
+      index.models[id].lod = lodId
+    }
   }
+  for (const s of textureBytes.values()) bytes += s
   // remove published files the manifest no longer uses
   for (const f of walk(PUBLIC)) {
     const rel = posix(path.relative(PUBLIC, f))
@@ -504,6 +627,7 @@ async function main() {
     if (dir !== PUBLIC && !fs.readdirSync(dir).length) fs.rmdirSync(dir)
   }
   prune(PUBLIC)
+  writeJSON(path.join(CACHE, "state.json"), state)
   index.version = hash(JSON.stringify(index))
   writeJSON(path.join(PUBLIC, "index.json"), index)
 
@@ -521,6 +645,66 @@ async function main() {
   }
   console.log(`\nDone in ${((Date.now() - t0) / 1000).toFixed(1)} s`)
   writeRolesDoc()
+}
+
+// An animation library without its mesh and with only the clips in use; the
+// skeleton's nodes stay so clips can be fitted to other rigs.
+async function stripToClips(src, id, keepClips) {
+  const rel = `${id}.glb`
+  const dst = path.join(PUBLIC, rel)
+  fs.mkdirSync(path.dirname(dst), { recursive: true })
+  const doc = await io.read(src)
+  doc.setLogger(new Logger(Logger.Verbosity.ERROR))
+  const root = doc.getRoot()
+  for (const a of root.listAnimations()) if (!keepClips.has(a.getName())) a.dispose()
+  for (const n of root.listNodes()) {
+    n.setMesh(null)
+    n.setSkin(null)
+  }
+  await doc.transform(prune({ keepLeaves: true }), resample(), meshopt({ encoder: MeshoptEncoder, level: "medium" }))
+  await io.write(dst, doc)
+  return [rel]
+}
+
+// A model as <id>.gltf + <id>.bin, its images moved to public/packs/textures/
+// under names taken from their content, so models sharing a texture atlas
+// download it once. Returns the files written (the .gltf first).
+async function publishShared(src, id, lod = 0) {
+  const doc = await io.read(src)
+  doc.setLogger(new Logger(Logger.Verbosity.ERROR))
+  if (lod) {
+    // the far version: same look, a fraction of the triangles
+    await MeshoptSimplifier.ready
+    await doc.transform(dequantize(), weld(), simplify({ simplifier: MeshoptSimplifier, ratio: lod, error: 0.02, lockBorder: false }), meshopt({ encoder: MeshoptEncoder, level: "medium" }))
+    id = `${id}@lod`
+  }
+  const dir = path.dirname(path.join(PUBLIC, id))
+  fs.mkdirSync(dir, { recursive: true })
+  const toTextures = posix(path.relative(dir, path.join(PUBLIC, "textures")))
+  const files = [`${id}.gltf`]
+  for (const t of doc.getRoot().listTextures()) {
+    const img = t.getImage()
+    if (!img) continue
+    const ext = { "image/webp": "webp", "image/png": "png", "image/jpeg": "jpg", "image/ktx2": "ktx2" }[t.getMimeType()] || "bin"
+    const name = `${createHash("sha1").update(img).digest("hex").slice(0, 16)}.${ext}`
+    const file = path.join(PUBLIC, "textures", name)
+    if (!fs.existsSync(file)) {
+      fs.mkdirSync(path.dirname(file), { recursive: true })
+      fs.writeFileSync(file, img)
+    }
+    t.setURI(`${toTextures}/${name}`)
+    files.push(`textures/${name}`)
+  }
+  const base = path.basename(id)
+  for (const b of doc.getRoot().listBuffers()) b.setURI(`${base}.bin`)
+  const { json, resources } = await io.writeJSON(doc, { format: "gltf", basename: base })
+  for (const [uri, data] of Object.entries(resources)) {
+    if (uri.startsWith(toTextures + "/")) continue // already written above
+    fs.writeFileSync(path.join(dir, uri), data)
+    files.push(posix(path.relative(PUBLIC, path.join(dir, uri))))
+  }
+  fs.writeFileSync(path.join(PUBLIC, `${id}.gltf`), JSON.stringify(json))
+  return [...new Set(files)]
 }
 
 // assets/ROLES.md: the role list, regenerated each run

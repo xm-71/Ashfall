@@ -5,9 +5,17 @@ import { npcWeapon, buildShield } from "./items.js"
 import { Q, seg } from "../core/quality.js"
 import { assets } from "../assets/registry.js"
 
+// Pack skins are painted for a fair-skinned human; other races are tinted
+// relative to that (Imperial skin = no change).
+const SKIN_REF = new THREE.Color(0xdcb08f)
+function skinTint(hex) {
+  const c = new THREE.Color(hex)
+  return new THREE.Color(Math.min(1.25, c.r / SKIN_REF.r), Math.min(1.25, c.g / SKIN_REF.g), Math.min(1.25, c.b / SKIN_REF.b)).getHex()
+}
+
 // A rigged pack model in place of the built body, with the same interface.
-function packBody(entry, role, dims, weapon) {
-  const c = assets.character(entry, role, dims)
+function packBody(entry, role, dims, weapon, ctx = {}) {
+  const c = assets.character(entry, role, dims, ctx)
   if (weapon) assets.attachToHand(c, npcWeapon(weapon.base, weapon.material, weapon.color), entry)
   return { group: c.group, anim: c.anim, head: c.rig.head, rig: c.rig }
 }
@@ -950,7 +958,7 @@ export function buildNpcMesh(npc, race, factionColor) {
     if (e) {
       const h = 1.8 * (raceKey === "altmer" ? 1.06 : raceKey === "bosmer" ? 0.92 : raceKey === "orc" || raceKey === "nord" ? 1.03 : 1)
       const weapon = npc.role === "guard" ? { base: "spear", material: "steel" } : npc.role === "smith" ? { base: "warhammer", material: "steel" } : null
-      return packBody(e, "npc", { h }, weapon)
+      return packBody(e, "npc", { h }, weapon, { seed: npc.seed, tints: { skin: skinTint(race.skin), hair: race.hair } })
     }
   }
   const styles = female ? ["long", "tail", "long", "short"] : ["short", "crest", "bald", "short", "tail"]
@@ -1026,8 +1034,12 @@ export class LodSwitch {
 
   // Returns true when the animated model is showing (so the caller animates it).
   update(distance) {
-    // pack characters stay as they are; far away they just stop animating
-    if (this.holder.userData.pack) return distance < this.dist * 2.5
+    // pack characters: animate up close, hold still further out, and stop
+    // drawing far away (they are detailed models)
+    if (this.holder.userData.pack) {
+      this.holder.visible = distance < this.dist * 4
+      return distance < this.dist * 2.5
+    }
     const far = distance > this.dist
     if (far && !this.lod) {
       this.anim(0, 0, 0) // bake a neutral pose

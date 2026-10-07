@@ -279,7 +279,7 @@ export function buildFlora(world, colliders) {
     const high = entry ? assets.parts(entry, `flora.${type}`) : BUILDERS[type](new RNG(seed))
     // the far model: same shape and seed, built with far fewer segments
     let low = null
-    if (entry) low = entry.lod === false || SMALL[type] ? null : high
+    if (entry) low = entry.lod === false || SMALL[type] ? null : assets.lodParts(entry, `flora.${type}`) || high
     else if (!SMALL[type]) {
       const saved = Q.seg
       Q.seg = Math.min(saved, 0.4)
@@ -316,7 +316,8 @@ export function buildFlora(world, colliders) {
         group.add(inst)
         return inst
       })
-    sets.push({ type, items, matrices, colors, near: makeInst(high, true), far: low ? makeInst(low, false) : [] })
+    // pack models are detailed: switch to their simplified version sooner
+    sets.push({ type, items, matrices, colors, near: makeInst(high, true), far: low ? makeInst(low, false) : [], nearDist: entry && low ? 45 : NEAR_DIST })
     const trunk = entry ? entry.collider ?? TRUNK_RADIUS[type] : TRUNK_RADIUS[type]
     if (trunk) for (const f of items) if (trunkItems.has(f)) colliders.addCircle(f.x, f.z, trunk * f.scale)
   }
@@ -343,10 +344,11 @@ export function buildFlora(world, colliders) {
     if (!force && Math.hypot(px - last.x, pz - last.z) < 12) return
     last.x = px
     last.z = pz
-    const near2 = (NEAR_DIST * Q.drawDist) ** 2
+    const nearDefault2 = (NEAR_DIST * Q.drawDist) ** 2
     const small2 = (SMALL_DIST * Q.drawDist) ** 2
     const far2 = (FAR_DIST * Q.drawDist) ** 2
     for (const set of sets) {
+      const near2 = set.nearDist === NEAR_DIST ? nearDefault2 : (set.nearDist * Q.drawDist) ** 2
       const nearIdx = []
       const farIdx = []
       const small = !!SMALL[set.type]

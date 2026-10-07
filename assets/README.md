@@ -102,6 +102,45 @@ public/packs/               the converted models the game loads (generated, comm
 - `creature.<id>`: one role per creature (`creature.guar`, `creature.cliffRacer`, ...).
   - Humanoid foes (bandits, smugglers) fall back to `npc` models with a matching `role` filter.
 
+### Characters: parts and colours
+
+A person can be built from several rigged files that share one skeleton. For example, an outfit body plus a hairstyle, eyebrows and an optional beard:
+
+```jsonc
+{ "model": "outfits/Male_Peasant", "anims": "humanoid",
+  "parts": { "hair": ["hair/Hair_Buzzed", "hair/Hair_Long"], "beard": ["hair/Hair_Beard", null], "brows": ["hair/Eyebrows"] },
+  "tint": { "MI_Regular_*": "skin", "MI_Hair*": "hair" } }
+```
+
+- **Parts:** one model per slot is chosen from each person's seed; `null` means nothing in that slot. Each part is bound to the main model's bones by name.
+- **Tints:** a material whose name matches is coloured per person. `skin` follows the race's skin colour, relative to an Imperial (so Imperials are unchanged and Dunmer turn grey-blue). `hair` takes the race's hair colour.
+
+### Kits: buildings and rooms from modular pieces
+
+Packs that come as modular kits (wall panels, roofs, doors) rather than whole buildings are listed under `kits`:
+- `kits.building` assembles every town building to fit its plot. Each house gets one or two storeys of wall panels (windows chosen at random), with the doorway in the middle of the front wall facing the plaza, plus corner posts, a roof sized to the footprint, gable ends and sometimes a chimney.
+- `kits.interior` builds room walls and floors.
+
+Each kit has a `where` filter (for example by town `style`), so different towns can use different kits.
+
+```jsonc
+"kits": {
+  "building": [{
+    "where": { "style": ["hlaalu", "imperial"] },
+    "grid": 2, "storey": 3.12,                       // panel width and height in metres
+    "wall": [...], "wallBase": [...], "window": [...], "door": [...], "corner": [...],
+    "doorLeaf": [{ "model": "...", "offset": [-0.56, 0, -0.12] }],   // the door, placed in the doorway panel
+    "roofs": { "4x4": "...", "6x8": "..." },         // roof models by footprint, width (x) by depth (z)
+    "gables": { "4": "...", "6": "..." },            // gable ends by roof width
+    "chimney": [...],
+    "stories": { "house": [1, 2], "temple": [2, 2] } // storeys per building type
+  }],
+  "interior": [{ "where": { "style": [...] }, "floor": [...], "wall": [...], "door": [...], "doorLeaf": [...] }]
+}
+```
+
+Kit pieces are placed by their own origin, as the pack's authors set it up. Wall panels stand on the plot edge with their +Z face outward, and roofs sit on top of the walls.
+
 ### Animations
 
 Clips from another file are fitted to the model that plays them:
@@ -111,6 +150,12 @@ Clips from another file are fitted to the model that plays them:
 Rigs from the same family (a Synty character pack and a Synty animation pack, or Mixamo models) share bone names, so their animations mix freely. Rigs with different bone names don't.
 
 If an attack, hit or death clip is missing, the game's own timing still applies: a character without `die` topples over.
+
+## What gets published
+
+To keep downloads small:
+- Models are published as `.gltf` + `.bin`, and their textures are stored once in `public/packs/textures/` under names taken from their content. A texture atlas shared by forty kit pieces downloads once.
+- A file used only for its animations (an animation library) is published without its mesh and with only the clips the manifest uses.
 
 ## How it loads
 

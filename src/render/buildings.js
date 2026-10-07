@@ -5,6 +5,7 @@ import { Builder, lathe, rockGeometry, taperTube } from "./geom.js"
 import { seg } from "../core/quality.js"
 import { buildVelothiTower, buildDwemerRuins } from "./landmarks.js"
 import { assets } from "../assets/registry.js"
+import { assembleBuilding } from "../assets/kit.js"
 
 // Shared glowing material for windows and lanterns; intensity follows the time of day.
 export const GLOW = new THREE.MeshLambertMaterial({ color: 0x3a2a14, emissive: 0xffb050, emissiveIntensity: 0.6 })
@@ -370,6 +371,20 @@ export function buildTown(town, colliders) {
   for (const b of town.buildings) {
     const P = new Placer(builder, b.x, town.y, b.z, b.rot)
     const big = b.type === "manor" || b.type === "hall"
+    const kit = assets.kit("building", { style: town.style, type: b.type }, (((town.id + 1) * 0.37 + b.idx * 0.61) % 1 + 1) % 1)
+    const assembled = kit && assembleBuilding(kit, { w: b.w, d: town.style === "nord" && big ? b.d * 1.5 : b.d, type: b.type, seed: town.id * 7919 + b.idx * 104729 + 1 })
+    if (assembled) {
+      // a building assembled from a modular kit, front (door) toward the plaza
+      for (const p of assembled.pieces) assets.bakeModel(builder, p.model, P.base.clone().multiply(p.matrix))
+      colliders.addBox(b.x, b.z, assembled.W + 0.3, assembled.D + 0.3, b.rot)
+      if (b.label) {
+        const sign = makeLabel(b.label, { size: 26, scale: 0.02 })
+        const off = assembled.D / 2 + 0.9
+        sign.position.set(b.x - Math.cos(b.angle) * off, town.y + 3.4, b.z - Math.sin(b.angle) * off)
+        group.add(sign)
+      }
+      continue
+    }
     const entry = pick("building", { style: town.style, type: b.type }, b.idx)
     if (entry) {
       // a pack building, sized to the plot; its front faces the plaza

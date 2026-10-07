@@ -1,6 +1,784 @@
 {
   "_readme": "Assign asset pack models to roles. See assets/README.md and assets/ROLES.md. Run `npm run assets` after editing.",
-  "packs": {},
-  "animations": {},
-  "roles": {}
+  "packs": {
+    "Medieval Village MegaKit[Standard]": {
+      "license": "Quaternius Asset License (see License_Standard.txt)",
+      "ignore": [
+        "FBX/**",
+        "OBJ/**"
+      ]
+    },
+    "Stylized Nature MegaKit[Standard]": {
+      "license": "Quaternius Asset License (see License_Standard.txt)",
+      "ignore": [
+        "FBX/**",
+        "FBX (Unity)/**",
+        "OBJ/**"
+      ]
+    },
+    "Modular Character Outfits - Fantasy[Standard]": {
+      "license": "Quaternius Asset License (see License_Standard.txt)",
+      "ignore": [
+        "Exports/FBX (Unity)/**"
+      ]
+    },
+    "Universal Base Characters[Standard]": {
+      "license": "Quaternius Asset License (see License_Standard.txt)",
+      "ignore": [
+        "**/Unity/**",
+        "**/FBX (Unity)/**",
+        "Hairstyles/Origin at 0/**"
+      ]
+    },
+    "Universal Animation Library[Standard]": {
+      "license": "Quaternius Asset License (see License.txt)",
+      "ignore": [
+        "Unity/**",
+        "**/*_RM.glb"
+      ]
+    },
+    "Universal Animation Library 2[Standard]": {
+      "license": "Quaternius Asset License (see License.txt)",
+      "ignore": [
+        "Unity/**",
+        "**/Unity/**",
+        "**/*_RM.glb"
+      ]
+    },
+    "Bestiary - Dungeon Monsters Kit[Standard]": {
+      "license": "Quaternius Asset License (see License_Standard.txt)",
+      "ignore": [
+        "Exports/FBX (Unity)/**"
+      ]
+    }
+  },
+  "animations": {
+    "humanoid": {
+      "idle": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Idle_Loop",
+      "walk": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Walk_Loop",
+      "run": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Jog_Fwd_Loop",
+      "attack": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Sword_Attack",
+      "attack2": "Universal-Animation-Library-2/Unreal-Godot/UAL2_Standard#Sword_Regular_A",
+      "attack3": "Universal-Animation-Library-2/Unreal-Godot/UAL2_Standard#Sword_Regular_B",
+      "cast": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Spell_Simple_Shoot",
+      "hit": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Hit_Chest",
+      "die": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Death01",
+      "talk": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Idle_Talking_Loop",
+      "work": "Universal-Animation-Library-2/Unreal-Godot/UAL2_Standard#TreeChopping_Loop"
+    },
+    "monster": {
+      "idle": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Idle_Loop",
+      "walk": "Universal-Animation-Library-2/Unreal-Godot/UAL2_Standard#Zombie_Walk_Fwd_Loop",
+      "run": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Sprint_Loop",
+      "attack": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Punch_Cross",
+      "attack2": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Punch_Jab",
+      "attack3": "Universal-Animation-Library-2/Unreal-Godot/UAL2_Standard#Zombie_Scratch",
+      "hit": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Hit_Chest",
+      "die": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Death01"
+    }
+  },
+  "roles": {
+    "flora.gashTree": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/CommonTree_1"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/CommonTree_2"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/CommonTree_3"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/CommonTree_4"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/CommonTree_5"
+      }
+    ],
+    "flora.swampTree": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/TwistedTree_1",
+        "scale": 0.55
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/TwistedTree_2",
+        "scale": 0.55
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/TwistedTree_3",
+        "scale": 0.55
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/TwistedTree_4",
+        "scale": 0.55
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/TwistedTree_5",
+        "scale": 0.55
+      }
+    ],
+    "flora.deadTree": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/DeadTree_1",
+        "scale": 0.8
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/DeadTree_2",
+        "scale": 0.8
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/DeadTree_3",
+        "scale": 0.8
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/DeadTree_4",
+        "scale": 0.8
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/DeadTree_5",
+        "scale": 0.8
+      }
+    ],
+    "flora.pine": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pine_1"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pine_2"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pine_3"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pine_4"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pine_5"
+      }
+    ],
+    "flora.parasol": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Mushroom_Common",
+        "fit": "height",
+        "height": 11
+      }
+    ],
+    "flora.shrub": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Bush_Common"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Bush_Common_Flowers"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Fern_1"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Plant_1"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Plant_1_Big"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Flower_3_Group"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Flower_4_Group"
+      }
+    ],
+    "flora.grass": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Grass_Common_Short"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Grass_Common_Tall"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Grass_Wispy_Short"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Grass_Wispy_Tall"
+      }
+    ],
+    "flora.rock": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_1",
+        "scale": 0.3
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_2",
+        "scale": 0.3
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_3",
+        "scale": 0.3
+      }
+    ],
+    "flora.boulder": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_1",
+        "collider": 1.5
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_2",
+        "collider": 1.5
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_3",
+        "collider": 1.5
+      }
+    ],
+    "npc": [
+      {
+        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant",
+        "anims": "humanoid",
+        "fit": "none",
+        "where": {
+          "sex": "male",
+          "role": [
+            "commoner",
+            "trader",
+            "smith",
+            "priest",
+            "pilgrim",
+            "elder",
+            "caravaner",
+            "shipmaster",
+            "guide",
+            "teacher"
+          ]
+        },
+        "parts": {
+          "hair": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted"
+          ],
+          "beard": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard",
+            null,
+            null
+          ],
+          "brows": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"
+          ]
+        },
+        "tint": {
+          "MI_Regular_*": "skin",
+          "MI_Hair*": "hair"
+        }
+      },
+      {
+        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant",
+        "anims": "humanoid",
+        "fit": "none",
+        "where": {
+          "sex": "female",
+          "role": [
+            "commoner",
+            "trader",
+            "smith",
+            "priest",
+            "pilgrim",
+            "elder",
+            "caravaner",
+            "shipmaster",
+            "guide",
+            "teacher"
+          ]
+        },
+        "parts": {
+          "hair": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale"
+          ],
+          "brows": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"
+          ]
+        },
+        "tint": {
+          "MI_Regular_*": "skin",
+          "MI_Hair*": "hair"
+        }
+      },
+      {
+        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Ranger",
+        "anims": "humanoid",
+        "fit": "none",
+        "where": {
+          "sex": "male",
+          "role": [
+            "guard",
+            "guildmaster",
+            "blade",
+            "bandit",
+            "smuggler",
+            "ashlander",
+            "hunter"
+          ]
+        },
+        "parts": {
+          "brows": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"
+          ],
+          "beard": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard",
+            null
+          ]
+        },
+        "tint": {
+          "MI_Regular_*": "skin",
+          "MI_Hair*": "hair"
+        }
+      },
+      {
+        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Ranger",
+        "anims": "humanoid",
+        "fit": "none",
+        "where": {
+          "sex": "female",
+          "role": [
+            "guard",
+            "guildmaster",
+            "blade",
+            "bandit",
+            "smuggler",
+            "ashlander",
+            "hunter"
+          ]
+        },
+        "parts": {
+          "brows": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"
+          ]
+        },
+        "tint": {
+          "MI_Regular_*": "skin",
+          "MI_Hair*": "hair"
+        }
+      },
+      {
+        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant",
+        "anims": "humanoid",
+        "fit": "none",
+        "where": {
+          "sex": "male"
+        },
+        "parts": {
+          "hair": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted"
+          ],
+          "beard": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard",
+            null,
+            null
+          ],
+          "brows": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"
+          ]
+        },
+        "tint": {
+          "MI_Regular_*": "skin",
+          "MI_Hair*": "hair"
+        },
+        "weight": 0.01
+      },
+      {
+        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant",
+        "anims": "humanoid",
+        "fit": "none",
+        "where": {
+          "sex": "female"
+        },
+        "parts": {
+          "hair": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long",
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale"
+          ],
+          "brows": [
+            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"
+          ]
+        },
+        "tint": {
+          "MI_Regular_*": "skin",
+          "MI_Hair*": "hair"
+        },
+        "weight": 0.01
+      }
+    ],
+    "creature.scamp": [
+      {
+        "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Imp",
+        "anims": "monster",
+        "fit": "height",
+        "height": 1.45
+      }
+    ],
+    "creature.riekling": [
+      {
+        "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin",
+        "anims": "monster",
+        "fit": "height",
+        "height": 1.0
+      }
+    ]
+  },
+  "kits": {
+    "building": [
+      {
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "telvanni"
+          ]
+        },
+        "wall": [
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Straight",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Straight_L",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Straight_R",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_WoodGrid"
+        ],
+        "wallBase": [
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Straight_Base"
+        ],
+        "window": [
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Round",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Thin_Round",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat2"
+        ],
+        "door": [
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Door_Round"
+        ],
+        "corner": [
+          "Medieval-Village-MegaKit/glTF/Corner_Exterior_Wood"
+        ],
+        "grid": 2,
+        "storey": 3.12,
+        "roofs": {
+          "4x4": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_4x4",
+          "4x6": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_4x6",
+          "4x8": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_4x8",
+          "6x4": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x4",
+          "6x6": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x6",
+          "6x8": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x8",
+          "6x10": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x10",
+          "6x12": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x12",
+          "6x14": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x14",
+          "8x8": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x8",
+          "8x10": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x10",
+          "8x12": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x12",
+          "8x14": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x14"
+        },
+        "gables": {
+          "4": "Medieval-Village-MegaKit/glTF/Roof_Front_Brick4",
+          "6": "Medieval-Village-MegaKit/glTF/Roof_Front_Brick6",
+          "8": "Medieval-Village-MegaKit/glTF/Roof_Front_Brick8"
+        },
+        "doorLeaf": [
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_4_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          }
+        ],
+        "chimney": [
+          "Medieval-Village-MegaKit/glTF/Prop_Chimney",
+          "Medieval-Village-MegaKit/glTF/Prop_Chimney2"
+        ],
+        "stories": {
+          "house": [
+            1,
+            2
+          ],
+          "shop": [
+            1,
+            2
+          ],
+          "smithy": [
+            1,
+            1
+          ],
+          "yurt": [
+            1,
+            1
+          ],
+          "guild": [
+            2,
+            2
+          ],
+          "manor": [
+            2,
+            2
+          ],
+          "hall": [
+            1,
+            2
+          ],
+          "temple": [
+            2,
+            2
+          ],
+          "fort": [
+            2,
+            3
+          ]
+        }
+      },
+      {
+        "where": {
+          "style": [
+            "redoran",
+            "nord",
+            "ashlander"
+          ]
+        },
+        "wall": [
+          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Straight"
+        ],
+        "window": [
+          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Wide_Round",
+          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Wide_Flat",
+          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Thin_Round"
+        ],
+        "door": [
+          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Door_Round"
+        ],
+        "corner": [
+          "Medieval-Village-MegaKit/glTF/Corner_Exterior_Brick"
+        ],
+        "grid": 2,
+        "storey": 3.12,
+        "roofs": {
+          "4x4": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_4x4",
+          "4x6": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_4x6",
+          "4x8": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_4x8",
+          "6x4": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x4",
+          "6x6": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x6",
+          "6x8": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x8",
+          "6x10": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x10",
+          "6x12": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x12",
+          "6x14": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_6x14",
+          "8x8": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x8",
+          "8x10": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x10",
+          "8x12": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x12",
+          "8x14": "Medieval-Village-MegaKit/glTF/Roof_RoundTiles_8x14"
+        },
+        "gables": {
+          "4": "Medieval-Village-MegaKit/glTF/Roof_Front_Brick4",
+          "6": "Medieval-Village-MegaKit/glTF/Roof_Front_Brick6",
+          "8": "Medieval-Village-MegaKit/glTF/Roof_Front_Brick8"
+        },
+        "doorLeaf": [
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_4_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          }
+        ],
+        "chimney": [
+          "Medieval-Village-MegaKit/glTF/Prop_Chimney",
+          "Medieval-Village-MegaKit/glTF/Prop_Chimney2"
+        ],
+        "stories": {
+          "house": [
+            1,
+            2
+          ],
+          "shop": [
+            1,
+            2
+          ],
+          "smithy": [
+            1,
+            1
+          ],
+          "yurt": [
+            1,
+            1
+          ],
+          "guild": [
+            2,
+            2
+          ],
+          "manor": [
+            2,
+            2
+          ],
+          "hall": [
+            1,
+            2
+          ],
+          "temple": [
+            2,
+            2
+          ],
+          "fort": [
+            2,
+            3
+          ]
+        }
+      }
+    ],
+    "interior": [
+      {
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "telvanni"
+          ]
+        },
+        "grid": 2,
+        "storey": 3.12,
+        "floor": [
+          "Medieval-Village-MegaKit/glTF/Floor_WoodDark",
+          "Medieval-Village-MegaKit/glTF/Floor_WoodLight"
+        ],
+        "wall": [
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Straight",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Straight_Base",
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_WoodGrid"
+        ],
+        "door": [
+          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Door_Round"
+        ],
+        "doorLeaf": [
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          }
+        ]
+      },
+      {
+        "where": {
+          "style": [
+            "redoran",
+            "nord",
+            "ashlander"
+          ]
+        },
+        "grid": 2,
+        "storey": 3.12,
+        "floor": [
+          "Medieval-Village-MegaKit/glTF/Floor_Brick",
+          "Medieval-Village-MegaKit/glTF/Floor_UnevenBrick",
+          "Medieval-Village-MegaKit/glTF/Floor_WoodDark"
+        ],
+        "wall": [
+          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Straight"
+        ],
+        "door": [
+          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Door_Round"
+        ],
+        "doorLeaf": [
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
+            "offset": [
+              -0.56,
+              0,
+              -0.12
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
