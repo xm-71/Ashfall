@@ -471,6 +471,67 @@ export class AssetRegistry {
     return out
   }
 
+  // The flat places on top of a placed model, where things can stand: its
+  // upward-facing triangles grouped by height. -> [{ y, minX, maxX, minZ,
+  // maxZ }] in placed space, lowest first, ignoring the floor and specks.
+  // A table gives its top; a bookcase each shelf board. Cached per entry.
+  surfaces(entry, role, dims = {}) {
+    this.surfaceCache ||= new Map()
+    const key = `${entry.model}|${role}|${JSON.stringify([entry.scale, entry.yaw, entry.front, entry.rotate, entry.offset, entry.height, dims.h])}`
+    if (this.surfaceCache.has(key)) return this.surfaceCache.get(key)
+    const bins = new Map()
+    const a = new THREE.Vector3()
+    const b = new THREE.Vector3()
+    const c = new THREE.Vector3()
+    const n = new THREE.Vector3()
+    let footprint = 0
+    for (const { geo } of this.parts(entry, role, dims)) {
+      geo.computeBoundingBox()
+      const bb = geo.boundingBox
+      footprint = Math.max(footprint, (bb.max.x - bb.min.x) * (bb.max.z - bb.min.z))
+      const pos = geo.attributes.position
+      const idx = geo.index ? geo.index.array : null
+      const count = idx ? idx.length : pos.count
+      for (let t = 0; t < count; t += 3) {
+        a.fromBufferAttribute(pos, idx ? idx[t] : t)
+        b.fromBufferAttribute(pos, idx ? idx[t + 1] : t + 1)
+        c.fromBufferAttribute(pos, idx ? idx[t + 2] : t + 2)
+        n.subVectors(b, a).cross(c.clone().sub(a))
+        const len = n.length()
+        if (len < 1e-8 || n.y / len < 0.92) continue
+        const y = (a.y + b.y + c.y) / 3
+        if (y < 0.2) continue
+        const k = Math.round(y / 0.03)
+        const bin = bins.get(k) || { area: 0, y: 0, minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity }
+        bin.area += len / 2
+        bin.y = Math.max(bin.y, y)
+        for (const v of [a, b, c]) {
+          bin.minX = Math.min(bin.minX, v.x)
+          bin.maxX = Math.max(bin.maxX, v.x)
+          bin.minZ = Math.min(bin.minZ, v.z)
+          bin.maxZ = Math.max(bin.maxZ, v.z)
+        }
+        bins.set(k, bin)
+      }
+    }
+    // keep levels with a real area (a board, not a moulding), merging neighbours
+    const levels = []
+    for (const k of [...bins.keys()].sort((p, q) => p - q)) {
+      const bin = bins.get(k)
+      if (bin.area < Math.max(0.03, footprint * 0.12) || bin.maxX - bin.minX < 0.15 || bin.maxZ - bin.minZ < 0.1) continue
+      const last = levels[levels.length - 1]
+      if (last && bin.y - last.y < 0.06) {
+        last.y = Math.max(last.y, bin.y)
+        last.minX = Math.min(last.minX, bin.minX)
+        last.maxX = Math.max(last.maxX, bin.maxX)
+        last.minZ = Math.min(last.minZ, bin.minZ)
+        last.maxZ = Math.max(last.maxZ, bin.maxZ)
+      } else levels.push({ y: bin.y, minX: bin.minX, maxX: bin.maxX, minZ: bin.minZ, maxZ: bin.maxZ })
+    }
+    this.surfaceCache.set(key, levels)
+    return levels
+  }
+
   // Merge a static model into a geometry Builder at `matrix` (placed space).
   bake(builder, entry, role, dims, matrix) {
     for (const part of this.parts(entry, role, dims)) builder.add(part.geo, part.mat, { matrix, uv: "keep" })
@@ -937,7 +998,7 @@ export function dungeonModels(theme) {
 }
 
 export function interiorModels(style) {
-  const ids = assets.modelsFor((role, e) => role.startsWith("prop.") && matches(e, { style }))
+  const ids = assets.modelsFor((role, e) => (role.startsWith("prop.") || role.startsWith("room.")) && matches(e, { style }))
   for (const k of assets.index.kits.interior || []) if (matches(k, { style })) ids.push(...kitModels(k))
   return [...new Set(ids)]
 }

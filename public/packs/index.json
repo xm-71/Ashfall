@@ -2536,6 +2536,1128 @@
       "clips": [],
       "bytes": 153963
     },
+    "Fantasy-Props-MegaKit/Exports/glTF/Workbench": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Workbench.gltf",
+      "tris": 1368,
+      "min": [
+        -1.01,
+        0,
+        -0.515
+      ],
+      "max": [
+        1.01,
+        0.895,
+        0.509
+      ],
+      "size": [
+        2.019,
+        0.895,
+        1.024
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 392699
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Whetstone": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Whetstone.gltf",
+      "tris": 1100,
+      "min": [
+        -0.563,
+        0.003,
+        -0.375
+      ],
+      "max": [
+        0.578,
+        1.173,
+        0.527
+      ],
+      "size": [
+        1.141,
+        1.17,
+        0.902
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 717306
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Cauldron": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Cauldron.gltf",
+      "tris": 2020,
+      "min": [
+        -0.495,
+        -0.003,
+        -0.472
+      ],
+      "max": [
+        0.495,
+        0.813,
+        0.472
+      ],
+      "size": [
+        0.989,
+        0.816,
+        0.944
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 193099
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/BookStand": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/BookStand.gltf",
+      "tris": 1526,
+      "min": [
+        -0.253,
+        -0.002,
+        -0.256
+      ],
+      "max": [
+        0.254,
+        1.444,
+        0.256
+      ],
+      "size": [
+        0.507,
+        1.447,
+        0.511
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 223929
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Stand": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Stand.gltf",
+      "tris": 5738,
+      "min": [
+        -0.367,
+        -0.008,
+        -0.366
+      ],
+      "max": [
+        0.366,
+        1.305,
+        0.366
+      ],
+      "size": [
+        0.732,
+        1.313,
+        0.731
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 573206
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Nightstand_Shelf": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Nightstand_Shelf.gltf",
+      "tris": 262,
+      "min": [
+        -0.347,
+        -0.006,
+        -0.193
+      ],
+      "max": [
+        0.347,
+        1.209,
+        0.2
+      ],
+      "size": [
+        0.693,
+        1.216,
+        0.393
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 210854
+    },
+    "Medieval-Village-MegaKit/glTF/Stair_Interior_Solid": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Stair_Interior_Solid.gltf",
+      "tris": 306,
+      "min": [
+        -0.884,
+        -0.018,
+        -4.352
+      ],
+      "max": [
+        0.884,
+        3.028,
+        0.358
+      ],
+      "size": [
+        1.769,
+        3.046,
+        4.71
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 243829
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Chandelier": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Chandelier.gltf",
+      "tris": 5680,
+      "min": [
+        -0.651,
+        -1.422,
+        -0.651
+      ],
+      "max": [
+        0.651,
+        0.036,
+        0.651
+      ],
+      "size": [
+        1.303,
+        1.458,
+        1.303
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 781741
+    },
+    "Medieval-Village-MegaKit/glTF/Corner_Interior_Big": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Corner_Interior_Big.gltf",
+      "tris": 24,
+      "min": [
+        -0.009,
+        0,
+        -0.324
+      ],
+      "max": [
+        0.324,
+        3,
+        0.044
+      ],
+      "size": [
+        0.333,
+        3,
+        0.368
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 236957
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Table_Plate": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Table_Plate.gltf",
+      "tris": 172,
+      "min": [
+        -0.167,
+        -0.001,
+        -0.168
+      ],
+      "max": [
+        0.167,
+        0.019,
+        0.168
+      ],
+      "size": [
+        0.333,
+        0.02,
+        0.337
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 169806
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Mug": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Mug.gltf",
+      "tris": 268,
+      "min": [
+        -0.07,
+        -0.005,
+        -0.075
+      ],
+      "max": [
+        0.122,
+        0.179,
+        0.072
+      ],
+      "size": [
+        0.192,
+        0.184,
+        0.147
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 374674
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Table_Fork": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Table_Fork.gltf",
+      "tris": 108,
+      "min": [
+        -0.026,
+        -0.003,
+        -0.18
+      ],
+      "max": [
+        0.025,
+        0.003,
+        0.082
+      ],
+      "size": [
+        0.05,
+        0.006,
+        0.263
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 168883
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Table_Knife": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Table_Knife.gltf",
+      "tris": 54,
+      "min": [
+        -0.028,
+        -0.003,
+        -0.204
+      ],
+      "max": [
+        0.013,
+        0.003,
+        0.082
+      ],
+      "size": [
+        0.042,
+        0.006,
+        0.287
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 168055
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Table_Spoon": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Table_Spoon.gltf",
+      "tris": 164,
+      "min": [
+        -0.023,
+        -0.015,
+        -0.189
+      ],
+      "max": [
+        0.023,
+        0.003,
+        0.082
+      ],
+      "size": [
+        0.046,
+        0.018,
+        0.272
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 168938
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/CandleStick": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/CandleStick.gltf",
+      "tris": 730,
+      "min": [
+        -0.176,
+        0.001,
+        -0.09
+      ],
+      "max": [
+        0.085,
+        0.157,
+        0.09
+      ],
+      "size": [
+        0.261,
+        0.155,
+        0.179
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 175670
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Bottle_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bottle_1.gltf",
+      "tris": 312,
+      "min": [
+        -0.056,
+        0.002,
+        -0.056
+      ],
+      "max": [
+        0.057,
+        0.366,
+        0.056
+      ],
+      "size": [
+        0.113,
+        0.365,
+        0.113
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 334120
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Carrot": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Carrot.gltf",
+      "tris": 634,
+      "min": [
+        -0.114,
+        -0.238,
+        -0.107
+      ],
+      "max": [
+        0.065,
+        0.328,
+        0.115
+      ],
+      "size": [
+        0.18,
+        0.566,
+        0.222
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 338389
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/SmallBottle": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/SmallBottle.gltf",
+      "tris": 130,
+      "min": [
+        -0.03,
+        0,
+        -0.025
+      ],
+      "max": [
+        0.03,
+        0.119,
+        0.025
+      ],
+      "size": [
+        0.06,
+        0.119,
+        0.049
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 331709
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Coin": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Coin.gltf",
+      "tris": 304,
+      "min": [
+        -0.034,
+        -0.034,
+        -0.007
+      ],
+      "max": [
+        0.034,
+        0.034,
+        0.007
+      ],
+      "size": [
+        0.068,
+        0.068,
+        0.015
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 171492
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Chalice": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Chalice.gltf",
+      "tris": 458,
+      "min": [
+        -0.059,
+        -0.001,
+        -0.062
+      ],
+      "max": [
+        0.059,
+        0.256,
+        0.062
+      ],
+      "size": [
+        0.118,
+        0.257,
+        0.125
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 172770
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Triple": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Triple.gltf",
+      "tris": 2528,
+      "min": [
+        -0.218,
+        -0.001,
+        -0.066
+      ],
+      "max": [
+        0.224,
+        0.462,
+        0.07
+      ],
+      "size": [
+        0.442,
+        0.463,
+        0.136
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 523491
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Book_5": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Book_5.gltf",
+      "tris": 96,
+      "min": [
+        -0.121,
+        -0.032,
+        -0.144
+      ],
+      "max": [
+        0.092,
+        0.032,
+        0.144
+      ],
+      "size": [
+        0.213,
+        0.064,
+        0.287
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 331728
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Book_7": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Book_7.gltf",
+      "tris": 724,
+      "min": [
+        -0.131,
+        -0.034,
+        -0.167
+      ],
+      "max": [
+        0.116,
+        0.034,
+        0.167
+      ],
+      "size": [
+        0.247,
+        0.068,
+        0.333
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 506053
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_1.gltf",
+      "tris": 208,
+      "min": [
+        -0.146,
+        0.001,
+        -0.107
+      ],
+      "max": [
+        0.139,
+        0.215,
+        0.119
+      ],
+      "size": [
+        0.285,
+        0.214,
+        0.226
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 334366
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_2.gltf",
+      "tris": 446,
+      "min": [
+        -0.14,
+        -0.001,
+        -0.101
+      ],
+      "max": [
+        0.134,
+        0.197,
+        0.126
+      ],
+      "size": [
+        0.274,
+        0.198,
+        0.227
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 504713
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Scroll_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Scroll_1.gltf",
+      "tris": 512,
+      "min": [
+        -0.121,
+        0.001,
+        -0.025
+      ],
+      "max": [
+        0.123,
+        0.06,
+        0.038
+      ],
+      "size": [
+        0.244,
+        0.059,
+        0.063
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 379664
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Scroll_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Scroll_2.gltf",
+      "tris": 672,
+      "min": [
+        -0.113,
+        0,
+        -0.025
+      ],
+      "max": [
+        0.12,
+        0.059,
+        0.038
+      ],
+      "size": [
+        0.233,
+        0.059,
+        0.064
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 381923
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Potion_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Potion_1.gltf",
+      "tris": 440,
+      "min": [
+        -0.057,
+        0,
+        -0.057
+      ],
+      "max": [
+        0.057,
+        0.14,
+        0.057
+      ],
+      "size": [
+        0.114,
+        0.14,
+        0.114
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 336448
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Potion_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Potion_2.gltf",
+      "tris": 472,
+      "min": [
+        -0.064,
+        0,
+        -0.064
+      ],
+      "max": [
+        0.064,
+        0.261,
+        0.064
+      ],
+      "size": [
+        0.127,
+        0.262,
+        0.127
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 335962
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Potion_4": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Potion_4.gltf",
+      "tris": 536,
+      "min": [
+        -0.074,
+        0,
+        -0.074
+      ],
+      "max": [
+        0.074,
+        0.2,
+        0.074
+      ],
+      "size": [
+        0.148,
+        0.201,
+        0.148
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 336986
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/SmallBottles_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/SmallBottles_1.gltf",
+      "tris": 486,
+      "min": [
+        -0.113,
+        0.001,
+        -0.028
+      ],
+      "max": [
+        0.102,
+        0.147,
+        0.028
+      ],
+      "size": [
+        0.215,
+        0.145,
+        0.056
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 336563
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Coin_Pile": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Coin_Pile.gltf",
+      "tris": 960,
+      "min": [
+        -0.098,
+        -0.003,
+        -0.076
+      ],
+      "max": [
+        0.099,
+        0.07,
+        0.078
+      ],
+      "size": [
+        0.197,
+        0.073,
+        0.154
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 184297
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Coin_Pile_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Coin_Pile_2.gltf",
+      "tris": 1062,
+      "min": [
+        -0.17,
+        0,
+        -0.097
+      ],
+      "max": [
+        0.109,
+        0.059,
+        0.103
+      ],
+      "size": [
+        0.279,
+        0.058,
+        0.2
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 186229
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Pouch_Large": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Pouch_Large.gltf",
+      "tris": 730,
+      "min": [
+        -0.114,
+        0.001,
+        -0.048
+      ],
+      "max": [
+        0.112,
+        0.16,
+        0.072
+      ],
+      "size": [
+        0.225,
+        0.159,
+        0.12
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 508082
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Key_Gold": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Key_Gold.gltf",
+      "tris": 1366,
+      "min": [
+        -0.029,
+        -0.006,
+        -0.051
+      ],
+      "max": [
+        0.029,
+        0.006,
+        0.071
+      ],
+      "size": [
+        0.058,
+        0.012,
+        0.122
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 184418
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Key_Metal": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Key_Metal.gltf",
+      "tris": 546,
+      "min": [
+        -0.025,
+        -0.006,
+        -0.053
+      ],
+      "max": [
+        0.023,
+        0.006,
+        0.059
+      ],
+      "size": [
+        0.048,
+        0.012,
+        0.111
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 173935
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_1.gltf",
+      "tris": 104,
+      "min": [
+        -0.173,
+        -0.005,
+        -0.121
+      ],
+      "max": [
+        0.116,
+        0.294,
+        0.105
+      ],
+      "size": [
+        0.289,
+        0.298,
+        0.226
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 332027
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_2.gltf",
+      "tris": 104,
+      "min": [
+        -0.104,
+        -0.001,
+        -0.133
+      ],
+      "max": [
+        0.124,
+        0.282,
+        0.105
+      ],
+      "size": [
+        0.228,
+        0.283,
+        0.237
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 332009
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_3": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_3.gltf",
+      "tris": 130,
+      "min": [
+        -0.104,
+        -0.001,
+        -0.133
+      ],
+      "max": [
+        0.141,
+        0.276,
+        0.105
+      ],
+      "size": [
+        0.245,
+        0.277,
+        0.237
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 332672
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Candle_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Candle_1.gltf",
+      "tris": 212,
+      "min": [
+        -0.047,
+        0.001,
+        -0.057
+      ],
+      "max": [
+        0.047,
+        0.133,
+        0.051
+      ],
+      "size": [
+        0.094,
+        0.132,
+        0.108
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 331981
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_1.gltf",
+      "tris": 416,
+      "min": [
+        -0.543,
+        -0.004,
+        -0.158
+      ],
+      "max": [
+        0.52,
+        0.294,
+        0.09
+      ],
+      "size": [
+        1.063,
+        0.298,
+        0.247
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 338809
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_2.gltf",
+      "tris": 468,
+      "min": [
+        -0.552,
+        0,
+        -0.158
+      ],
+      "max": [
+        0.552,
+        0.295,
+        0.089
+      ],
+      "size": [
+        1.105,
+        0.295,
+        0.247
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 339792
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_3": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_3.gltf",
+      "tris": 468,
+      "min": [
+        -0.528,
+        0,
+        -0.159
+      ],
+      "max": [
+        0.514,
+        0.294,
+        0.089
+      ],
+      "size": [
+        1.042,
+        0.295,
+        0.247
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 339975
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden.gltf",
+      "tris": 1404,
+      "min": [
+        -0.307,
+        -0.31,
+        -0.001
+      ],
+      "max": [
+        0.307,
+        0.31,
+        0.178
+      ],
+      "size": [
+        0.615,
+        0.621,
+        0.179
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 720881
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Peg_Rack": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Peg_Rack.gltf",
+      "tris": 712,
+      "min": [
+        -0.592,
+        -0.174,
+        0
+      ],
+      "max": [
+        0.592,
+        0.174,
+        0.096
+      ],
+      "size": [
+        1.184,
+        0.348,
+        0.096
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 378815
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Lantern_Wall": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Lantern_Wall.gltf",
+      "tris": 2822,
+      "min": [
+        -0.179,
+        0.082,
+        -0.051
+      ],
+      "max": [
+        0.179,
+        1.419,
+        1.251
+      ],
+      "size": [
+        0.357,
+        1.337,
+        1.302
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 220229
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Torch_Metal": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Torch_Metal.gltf",
+      "tris": 970,
+      "min": [
+        -0.112,
+        -0.278,
+        0
+      ],
+      "max": [
+        0.112,
+        0.371,
+        0.388
+      ],
+      "size": [
+        0.223,
+        0.648,
+        0.388
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 184488
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Rope_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Rope_1.gltf",
+      "tris": 1748,
+      "min": [
+        -0.286,
+        -0.027,
+        -0.332
+      ],
+      "max": [
+        0.272,
+        0.071,
+        0.275
+      ],
+      "size": [
+        0.557,
+        0.098,
+        0.606
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 219357
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Rope_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Rope_2.gltf",
+      "tris": 1460,
+      "min": [
+        -0.383,
+        -0.003,
+        -0.446
+      ],
+      "max": [
+        0.424,
+        0.12,
+        0.399
+      ],
+      "size": [
+        0.808,
+        0.124,
+        0.845
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 217623
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Empty": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Empty.gltf",
+      "tris": 1928,
+      "min": [
+        -0.357,
+        -0.016,
+        -0.207
+      ],
+      "max": [
+        0.357,
+        0.228,
+        0.207
+      ],
+      "size": [
+        0.714,
+        0.244,
+        0.414
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 390633
+    },
+    "Medieval-Village-MegaKit/glTF/Balcony_Simple_Straight": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Balcony_Simple_Straight.gltf",
+      "tris": 1120,
+      "min": [
+        -1,
+        -0.105,
+        0.898
+      ],
+      "max": [
+        1,
+        1.125,
+        1.104
+      ],
+      "size": [
+        2,
+        1.23,
+        0.206
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 256146
+    },
     "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular": {
       "url": "packs/Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular.gltf",
       "tris": 984,
@@ -2689,28 +3811,6 @@
       "skinned": false,
       "clips": [],
       "bytes": 340022
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden.gltf",
-      "tris": 1404,
-      "min": [
-        -0.307,
-        -0.31,
-        -0.001
-      ],
-      "max": [
-        0.307,
-        0.31,
-        0.178
-      ],
-      "size": [
-        0.615,
-        0.621,
-        0.179
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 720881
     },
     "Swordtember2022-GLB/15-Paranormal": {
       "url": "packs/Swordtember2022-GLB/15-Paranormal.gltf",
@@ -3365,50 +4465,6 @@
       "clips": [],
       "bytes": 398760
     },
-    "Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Triple": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Triple.gltf",
-      "tris": 2528,
-      "min": [
-        -0.218,
-        -0.001,
-        -0.066
-      ],
-      "max": [
-        0.224,
-        0.462,
-        0.07
-      ],
-      "size": [
-        0.442,
-        0.463,
-        0.136
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 523491
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/CandleStick": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/CandleStick.gltf",
-      "tris": 730,
-      "min": [
-        -0.176,
-        0.001,
-        -0.09
-      ],
-      "max": [
-        0.085,
-        0.157,
-        0.09
-      ],
-      "size": [
-        0.261,
-        0.155,
-        0.179
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 175670
-    },
     "Fantasy-Props-MegaKit/Exports/glTF/Chair_1": {
       "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Chair_1.gltf",
       "tris": 496,
@@ -3623,28 +4679,6 @@
       "skinned": false,
       "clips": [],
       "bytes": 771026
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Nightstand_Shelf": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Nightstand_Shelf.gltf",
-      "tris": 262,
-      "min": [
-        -0.347,
-        -0.006,
-        -0.193
-      ],
-      "max": [
-        0.347,
-        1.209,
-        0.2
-      ],
-      "size": [
-        0.693,
-        1.216,
-        0.393
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 210854
     },
     "Fantasy-Props-MegaKit/Exports/glTF/Stall_Empty": {
       "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Stall_Empty.gltf",
@@ -5703,6 +6737,374 @@
         }
       }
     ],
+    "prop.workbench": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Workbench"
+      }
+    ],
+    "prop.whetstone": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Whetstone"
+      }
+    ],
+    "prop.cauldron": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Cauldron"
+      }
+    ],
+    "prop.bookstand": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookStand"
+      }
+    ],
+    "prop.candlestand": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Stand"
+      }
+    ],
+    "prop.kegs": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Holder"
+      }
+    ],
+    "prop.nightstand": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Nightstand_Shelf"
+      }
+    ],
+    "prop.stairs": [
+      {
+        "model": "Medieval-Village-MegaKit/glTF/Stair_Interior_Solid"
+      }
+    ],
+    "prop.chandelier": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Chandelier",
+        "where": {
+          "style": [
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi"
+          ]
+        }
+      }
+    ],
+    "prop.pilaster": [
+      {
+        "model": "Medieval-Village-MegaKit/glTF/Corner_Interior_Big",
+        "fit": "height"
+      }
+    ],
+    "room.dining": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Plate",
+        "weight": 3
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Mug",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Fork"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Knife"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Spoon"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bottle_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Carrot",
+        "weight": 0.5
+      }
+    ],
+    "room.tavern": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Mug",
+        "weight": 4
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bottle_1",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/SmallBottle"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Plate"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Coin",
+        "weight": 0.5
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick"
+      }
+    ],
+    "room.feast": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Plate",
+        "weight": 3
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Chalice",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Triple"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Mug"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bottle_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Fork"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Knife"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Carrot",
+        "weight": 0.5
+      }
+    ],
+    "room.study": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_5",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_7",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Scroll_1",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Scroll_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Potion_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Potion_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Potion_4"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/SmallBottles_1"
+      }
+    ],
+    "room.goods": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Coin_Pile",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Coin_Pile_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Pouch_Large",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Potion_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Potion_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bottle_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Scroll_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Key_Gold",
+        "weight": 0.5
+      }
+    ],
+    "room.tools": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Metal"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Key_Metal"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Pouch_Large"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Mug"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Coin"
+      }
+    ],
+    "room.shelf": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_3"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bottle_1",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/SmallBottles_1",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Potion_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Potion_4"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Candle_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Mug"
+      }
+    ],
+    "room.books": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Medium_3"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_1",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_2",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/BookGroup_Small_3",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_Stack_2"
+      }
+    ],
+    "room.altar": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Chalice",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Triple",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Book_7"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Scroll_1"
+      }
+    ],
+    "room.wall": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden",
+        "where": {
+          "style": [
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Peg_Rack",
+        "weight": 2
+      }
+    ],
+    "room.light": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Lantern_Wall",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Torch_Metal"
+      }
+    ],
+    "room.floor": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Wooden_1",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bag",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Rope_1"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Rope_2"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Empty"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid"
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2"
+      }
+    ],
+    "room.railing": [
+      {
+        "model": "Medieval-Village-MegaKit/glTF/Balcony_Simple_Straight"
+      }
+    ],
     "player": [
       {
         "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody",
@@ -6728,5 +8130,5 @@
     ]
   },
   "lowTextures": true,
-  "version": "e0b5a38155d7"
+  "version": "58483dee0db2"
 }

@@ -1,6 +1,7 @@
 import * as THREE from "three"
 import { Builder, lathe } from "./geom.js"
-import { seg } from "../core/quality.js"
+import { seg, Q } from "../core/quality.js"
+import { PACK_ONLY } from "../logic/interiors.js"
 import { GLOW, GLOW_COOL } from "./buildings.js"
 import { Placer, TM } from "./landmarks.js"
 import { buildWeapon } from "./items.js"
@@ -42,23 +43,36 @@ export function buildInterior(layout) {
   for (let z = -D / 2 + 1.5; z < D / 2; z += 2.5) P.box(W, 0.3, 0.3, M(shell.trim), 0, H - 0.15, z)
 
   const extras = new THREE.Group()
+  const ctx = { style: layout.style }
+  const hosts = [] // per furniture index: { entry, role, m } for what stands on it
+  const chandeliers = []
+  const wallLights = []
+  const dress = { b, P, layout, ctx, hosts, chandeliers, wallLights, lite: Q.packTex === "low" }
   layout.furniture.forEach((f, i) => {
+    if (DRESSING[f.type]) return DRESSING[f.type](f, i, dress)
     // a pack model for this piece, if one fits the building's style
     const role = `prop.${f.type}`
-    const e = assets.pick(role, { style: layout.style }, (((i + 1) * 0.6180339 + f.x * 0.13 + f.z * 0.07) % 1 + 1) % 1)
-    if (!e) return furniture(P, f, extras, layout)
+    const e = assets.pick(role, ctx, (((i + 1) * 0.6180339 + f.x * 0.13 + f.z * 0.07) % 1 + 1) % 1)
+    if (!e) {
+      hosts[i] = { entry: null, f }
+      return PACK_ONLY.has(f.type) ? null : furniture(P, f, extras, layout)
+    }
     const y = f.type === "banner" ? layout.H - 3.1 : 0
-    // furniture rot 0 faces +z; pack models face -z
+    // f.rot is the way the piece faces (0 = +z); placed pack models face -z
     const m = new THREE.Matrix4().compose(new THREE.Vector3(f.x, y, f.z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), f.rot + Math.PI), new THREE.Vector3(1, 1, 1))
-    assets.bake(b, e, role, {}, m)
+    const dims = f.type === "pilaster" ? { h: layout.H } : {}
+    assets.bake(b, e, role, dims, m)
+    hosts[i] = { entry: e, role, m, f }
   })
-  // lamps under each light
+  // lamps under each light (a chandelier, where one hangs, instead of the lamp)
   const lights = []
-  for (const [x, y, z, color] of layout.lights.slice(0, 3)) {
-    const light = new THREE.PointLight(color ?? 0xffc080, 26, 16, 1.4)
+  const allLights = [...layout.lights.slice(0, 3).map(([x, y, z, color]) => [x, y, z, color, false]), ...wallLights.slice(0, 2).map(([x, y, z]) => [x, y, z, 0xffb060, true])]
+  for (const [x, y, z, color, onWall] of allLights) {
+    const light = new THREE.PointLight(color ?? 0xffc080, onWall ? 12 : 26, onWall ? 9 : 16, 1.4)
     light.position.set(x, y, z)
     group.add(light)
     lights.push(light)
+    if (onWall || chandeliers.some(c => Math.hypot(c[0] - x, c[1] - z) < 0.2)) continue
     if (y > 2) {
       P.cyl(0.02, 0.02, H - y - 0.3, TM("kaldurMetal", 0x4a4a4a), x, (H + y) / 2 + 0.15, z, { segs: 4 })
       P.add(lathe([[0.01, -0.22], [0.18, -0.16], [0.22, 0], [0.18, 0.16], [0.01, 0.22]], seg(8)), GLOW, { pos: [x, y, z] })
@@ -66,6 +80,92 @@ export function buildInterior(layout) {
   }
   group.add(b.build(), extras)
   return { group, lights }
+}
+
+// ---------------------------------------------------------------- dressing
+// The finishing touches from logic/interiors.js dressRoom, from pack models
+// only (rooms without the packs simply go without).
+
+const UP = new THREE.Vector3(0, 1, 0)
+const rot = (x, y, z, yaw) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(1, 1, 1))
+// a steady 0..1 number per piece and salt
+const r01 = (f, i, salt) => ((Math.sin((f.x * 12.9898 + f.z * 78.233 + i * 37.719 + salt * 3.17)) * 43758.5453) % 1 + 1) % 1
+
+const DRESSING = {
+  // things set out on a table, counter, shelf or altar, filling each flat
+  // surface of the piece along its length
+  clutter(f, i, { b, hosts, ctx, lite }) {
+    const host = hosts[f.on]
+    if (!host?.entry || !assets.has(`room.${f.set}`, ctx)) return
+    const role = `room.${f.set}`
+    const stack = f.set === "books" || f.set === "shelf"
+    let levels = assets.surfaces(host.entry, host.role)
+    // tables and counters: just the top; shelves: every board up to head height
+    levels = stack ? levels.filter(l => l.y < 2.1) : levels.slice(-1).filter(l => l.y < 1.4)
+    let k = 0
+    levels.forEach((lv, li) => {
+      const headroom = (levels[li + 1]?.y ?? lv.y + 0.6) - lv.y - 0.03
+      const depth = lv.maxZ - lv.minZ
+      let x = lv.minX + 0.04
+      while (x < lv.maxX - 0.08) {
+        const u = r01(f, i, k++)
+        // gaps: shelves packed, tables sparse; phones get fewer things
+        const gap = stack ? (u < 0.25 ? 0.25 : 0.02) : 0.18 + u * 0.4
+        const e = assets.pick(role, ctx, r01(f, i, k++))
+        const size = assets.placedSize(e, role)
+        if (size.y > headroom || size.z > depth + 0.05) {
+          x += 0.12
+          continue
+        }
+        if (x + size.x > lv.maxX - 0.02) break
+        if (!(lite && u > 0.55)) {
+          const cz = (lv.minZ + lv.maxZ) / 2 + (stack ? 0 : (r01(f, i, k++) - 0.5) * Math.max(0, depth - size.z) * 0.8)
+          const yaw = stack ? (u < 0.1 ? Math.PI : 0) : r01(f, i, k++) * Math.PI * 2
+          assets.bake(b, e, role, {}, host.m.clone().multiply(rot(x + size.x / 2, lv.y, cz, yaw)))
+        }
+        x += size.x + gap
+      }
+    })
+  },
+  // on a wall, back flat against it, facing into the room
+  wall(f, i, { b, ctx, wallLights }) {
+    const role = `room.${f.set}`
+    const e = assets.pick(role, ctx, r01(f, i, 1))
+    if (!e) return
+    const size = assets.placedSize(e, role)
+    const ix = Math.sin(f.rot) // into the room
+    const iz = Math.cos(f.rot)
+    const out = size.z / 2 + 0.03
+    assets.bake(b, e, role, {}, rot(f.x + ix * out, f.y, f.z + iz * out, f.rot + Math.PI))
+    if (f.set === "light") wallLights.push([f.x + ix * (out + 0.35), f.y + size.y * 0.6, f.z + iz * (out + 0.35)])
+  },
+  // hangs from the ceiling; the room's light stays where it was
+  chandelier(f, i, { b, ctx, chandeliers }) {
+    const e = assets.pick("prop.chandelier", ctx, r01(f, i, 2))
+    if (!e) return
+    const size = assets.placedSize(e, "prop.chandelier")
+    assets.bake(b, e, "prop.chandelier", {}, rot(f.x, f.ceiling - size.y, f.z, 0))
+    chandeliers.push([f.x, f.z])
+  },
+  // a raised walkway across the back of a big hall, on posts, with a railing
+  gallery(f, i, { b, P, ctx, layout }) {
+    const front = f.z - f.depth / 2
+    P.box(f.width, 0.25, f.depth, TM("planks", 0xa88868), 0, f.y - 0.125, f.z, { uv: 1.5 })
+    P.box(f.width, 0.3, 0.25, TM("wood", 0x7a5a3a), 0, f.y - 0.3, front + 0.12)
+    for (const x of [-f.width / 4, f.width / 4]) P.box(0.3, f.y - 0.3, 0.3, TM("wood", 0x7a5a3a), x, (f.y - 0.3) / 2, front + 0.15)
+    const e = assets.pick("room.railing", ctx, r01(f, i, 3))
+    if (!e) return
+    const w = assets.placedSize(e, "room.railing").x
+    // leave the stairhead (right end) open
+    for (let x = -f.width / 2 + w / 2; x + w / 2 <= f.width / 2 - 1.9; x += w) assets.bake(b, e, "room.railing", {}, rot(x, f.y, front + 0.05, Math.PI))
+  },
+  gpost() {}, // drawn by gallery
+  // odds and ends on the floor by a wall
+  floorclutter(f, i, { b, ctx, lite }) {
+    if (lite && r01(f, i, 4) < 0.5) return
+    const e = assets.pick("room.floor", ctx, r01(f, i, 5))
+    if (e) assets.bake(b, e, "room.floor", {}, rot(f.x, 0, f.z, f.rot))
+  },
 }
 
 // Room walls and floor from a modular kit (manifest kits.interior):
@@ -120,7 +220,9 @@ export function kitShell(b, kit, { W, D, H }) {
 const GOODS = [0x8a3020, 0x2a5a8a, 0x3a7a3a, 0xc8a040, 0x6a3a7a, 0xd0c8b0]
 
 function furniture(P, f, extras, layout) {
-  const { x, z, rot } = f
+  const { x, z } = f
+  // the generated pieces are modelled facing -z, so turn them to face f.rot
+  const rot = f.rot + Math.PI
   const wood = TM("planks", 0xa88868)
   const dark = TM("wood", 0x7a5a3a)
   const r = [0, rot, 0]

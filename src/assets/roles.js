@@ -34,6 +34,7 @@ const PROPS = {
   firepit: 0.6, fleshpillar: 6, forge: 1.6, gear: 2, hearth: 1.6, lamp: 0.6, longtable: 0.85, loom: 1.8, pew: 1,
   pipe: 1, rack: 1.8, rug: 0.05, sack: 0.7, shelf: 2, stalagmite: 2, statue: 2.6, stool: 0.5, table: 0.85, throne: 2.2,
   totem: 2.5, urn: 1.1, well: 3, stall: 2.6, lamppost: 3.2,
+  workbench: 1, whetstone: 1.1, cauldron: 0.9, bookstand: 1.4, candlestand: 1.3, kegs: 1.3, nightstand: 1.2, stairs: 3, chandelier: 1.4, pilaster: 3,
 }
 const PROP_WORDS = {
   bookshelf: ["bookshelf", "bookcase"], candles: ["candle"], chest: ["chest"], chestOpen: ["chest_open", "chestopen"],
@@ -84,6 +85,24 @@ const DECOR = {
   wild: { where: ["region"], about: "Small ground cover scattered through the wilds: pebbles, flowers, clover, mushrooms. Filter with region" },
 }
 for (const [k, d] of Object.entries(DECOR)) ROLES[`decor.${k}`] = { group: "decor", fit: "none", height: 1, where: d.where, words: [], about: d.about }
+
+// Interior dressing (loaded with each building's interior):
+const ROOM = {
+  dining: "Tableware on a home's table: plates, mugs, cutlery, a candle",
+  tavern: "On den and barracks tables and bars: mugs, bottles, coins",
+  feast: "On a hall's long table: plates, chalices, candles, food",
+  study: "On a mage's table: books, scrolls, potions, a candle",
+  goods: "On a shop counter: coin piles, pouches, potions, books",
+  tools: "On a smith's counter or workbench: buckets, pots, keys, pouches",
+  shelf: "On shelves: book groups, bottles, potions, pots",
+  books: "On bookcases: book groups and stacks",
+  altar: "On an altar: chalice, candles, a book",
+  wall: "Hung on walls: shields, peg racks (their back against the wall, front +Z)",
+  light: "Lights hung on walls: lanterns, torches. They light the room",
+  floor: "Odds and ends by the walls: buckets, sacks, rope, crates",
+  railing: "Railing along the front of a hall's gallery, about 2 m wide",
+}
+for (const [k, about] of Object.entries(ROOM)) ROLES[`room.${k}`] = { group: "room", fit: "none", height: 0.3, where: ["style"], words: [], about }
 
 ROLES.player = {
   group: "character",

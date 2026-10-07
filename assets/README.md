@@ -106,6 +106,12 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 - `weapon.<base>` (`weapon.longsword`, `weapon.war axe`, ...), filtered by `material`, and `shield`. Held items keep the file's orientation: the origin is where the hand grips, with the blade pointing up (+Y). They keep their shiny (PBR) materials.
 - `artifact.<id>`: the look of one legendary artifact or rare unique sword (ids in `src/data/artifacts.js`).
 - `decor.town`, `decor.entrance` and `decor.wild`: dressing so the world isn't bare. Town clutter goes beside each building's front wall and around the plaza (filter by `style`), entrance props around dungeon doors (by `theme`), and ground cover among the plants (by `region`). Props wider than half a metre are solid.
+- `room.*`: interior dressing, loaded with each building's interior.
+  - **On surfaces:** `room.dining`, `tavern`, `feast`, `study`, `goods`, `tools`, `shelf`, `books` and `altar` go on tables, counters, shelves and altars. They are set on the furniture model's actual flat surfaces (its top and every shelf board, found from the geometry) and fill each surface along its length.
+  - **On walls:** `room.wall` (shields, racks) and `room.light` (lanterns and torches, which light the room).
+  - **Elsewhere:** `room.floor` (odds and ends by the walls) and `room.railing` (the gallery railing in big halls).
+  - **Interior furniture:** `prop.chandelier`, `prop.pilaster` (posts under the ceiling beams), `prop.stairs`, `prop.workbench`, `prop.whetstone`, `prop.cauldron`, `prop.bookstand`, `prop.candlestand`, `prop.kegs` and `prop.nightstand`.
+  - Phones and Low quality get about half the small items.
 - `creature.<id>`: one role per creature (`creature.loper`, `creature.skyscreamer`, ...). A creature's `tint` colour (in `src/data/creatures.js`) colours materials mapped to `"body"`, e.g. `"tint": { "MI_Imp": "body" }`.
   - Humanoid foes (bandits, smugglers) fall back to `npc` models with a matching `role` filter.
 
