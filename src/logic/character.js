@@ -1,7 +1,7 @@
 import { ATTRIBUTES, SKILLS, SKILL_IDS, RACES, CLASSES, BIRTHSIGNS } from "../data/stats.js"
 import { makeItemFromSpec, armorConditionMult, isBroken } from "./items.js"
 
-// Morrowind-style: skills rise by use, every 10 major/minor skill increases
+// Cindermere-style: skills rise by use, every 10 major/minor skill increases
 // earns a level, and attribute multipliers depend on which skills you trained.
 export const SKILL_GAIN_RATE = 1.6
 

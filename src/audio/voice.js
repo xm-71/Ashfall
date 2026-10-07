@@ -1,16 +1,16 @@
 // Optional spoken greetings through the browser's built-in speech synthesis.
 // Off by default (Settings → Audio); pitch and pace vary by race.
 const RACE_VOICE = {
-  dunmer: { pitch: 0.75, rate: 0.92 },
-  altmer: { pitch: 1.05, rate: 0.88 },
-  bosmer: { pitch: 1.2, rate: 1.08 },
-  breton: { pitch: 1.05, rate: 1 },
-  imperial: { pitch: 0.95, rate: 0.95 },
-  nord: { pitch: 0.7, rate: 0.9 },
-  orc: { pitch: 0.55, rate: 0.85 },
-  redguard: { pitch: 0.85, rate: 0.98 },
-  khajiit: { pitch: 1.1, rate: 0.85 },
-  argonian: { pitch: 0.8, rate: 0.82 },
+  cindari: { pitch: 0.75, rate: 0.92 },
+  aurelin: { pitch: 1.05, rate: 0.88 },
+  wyldren: { pitch: 1.2, rate: 1.08 },
+  caldrin: { pitch: 1.05, rate: 1 },
+  vessari: { pitch: 0.95, rate: 0.95 },
+  hrothi: { pitch: 0.7, rate: 0.9 },
+  tuskar: { pitch: 0.55, rate: 0.85 },
+  qasiri: { pitch: 0.85, rate: 0.98 },
+  rakhai: { pitch: 1.1, rate: 0.85 },
+  saurek: { pitch: 0.8, rate: 0.82 },
 }
 
 let lastSpoken = 0

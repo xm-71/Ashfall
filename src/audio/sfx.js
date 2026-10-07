@@ -6,7 +6,7 @@ export function bodyMaterial(def) {
   if (def.body === "ghost") return "ghost"
   if (def.body === "skeleton") return "bone"
   if (def.body === "crab" || def.body === "spider" || def.body === "worm") return "chitin"
-  if (def.body === "ash" || def.body === "sleeper" || def.body === "dagoth") return "ash"
+  if (def.body === "ash" || def.body === "sleeper" || def.body === "emberlord") return "ash"
   if (def.humanoid && def.ar >= 20) return "metal"
   return "flesh"
 }
@@ -26,24 +26,24 @@ const VOICES = {
   flier: { kind: "screech", f: 1500 },
   quad: { kind: "squeak", f: 1800 },
   hound: { kind: "growl", f: 160 },
-  alit: { kind: "growl", f: 120 },
-  kagouti: { kind: "snort", f: 110 },
-  guar: { kind: "snort", f: 150 },
+  snapjaw: { kind: "growl", f: 120 },
+  tuskback: { kind: "snort", f: 110 },
+  loper: { kind: "snort", f: 150 },
   crab: { kind: "click", f: 900 },
   spider: { kind: "click", f: 1400 },
   worm: { kind: "click", f: 700 },
-  netch: { kind: "whale", f: 90 },
+  drifter: { kind: "whale", f: 90 },
   humanoid: { kind: "grunt", f: 130 },
   skeleton: { kind: "rattle", f: 600 },
   ghost: { kind: "moan", f: 220 },
-  scamp: { kind: "cackle", f: 380 },
-  riekling: { kind: "grunt", f: 280 },
-  clannfear: { kind: "roar", f: 140 },
+  cinderling: { kind: "cackle", f: 380 },
+  frostling: { kind: "grunt", f: 280 },
+  gnashclaw: { kind: "roar", f: 140 },
   sphere: { kind: "clank", f: 260 },
-  centurion: { kind: "clank", f: 160 },
+  colossus: { kind: "clank", f: 160 },
   ash: { kind: "whisper", f: 200 },
   sleeper: { kind: "whisper", f: 150 },
-  dagoth: { kind: "roar", f: 80 },
+  emberlord: { kind: "roar", f: 80 },
 }
 
 export function voiceFor(def) {

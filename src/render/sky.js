@@ -2,7 +2,7 @@ import * as THREE from "three"
 import { cardTexture } from "./texgen.js"
 import { Q } from "../core/quality.js"
 
-// Day/night sky colour, sun, the moons Masser and Secunda, stars, and weather particles.
+// Day/night sky colour, sun, the moons Ilu and Veyra, stars, and weather particles.
 export class Sky {
   constructor(scene) {
     this.scene = scene
@@ -55,10 +55,10 @@ export class Sky {
     this.clouds.frustumCulled = false
     this.dome.add(this.clouds)
     const moonMat = (color, op = 1) => new THREE.MeshBasicMaterial({ color, map: cardTexture("moon"), fog: false, transparent: op < 1, opacity: op })
-    this.masser = new THREE.Mesh(new THREE.SphereGeometry(28, 16, 12), moonMat(0xd8806a))
-    this.secunda = new THREE.Mesh(new THREE.SphereGeometry(12, 12, 10), moonMat(0xe0e0e8))
+    this.ilu = new THREE.Mesh(new THREE.SphereGeometry(28, 16, 12), moonMat(0xd8806a))
+    this.veyra = new THREE.Mesh(new THREE.SphereGeometry(12, 12, 10), moonMat(0xe0e0e8))
     this.sunDisc = new THREE.Mesh(new THREE.SphereGeometry(16, 16, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff8e0).multiplyScalar(6), fog: false }))
-    this.dome.add(this.masser, this.secunda, this.sunDisc)
+    this.dome.add(this.ilu, this.veyra, this.sunDisc)
 
     const starGeo = new THREE.BufferGeometry()
     const pts = []
@@ -118,7 +118,7 @@ export class Sky {
   }
 
   // hour: 0..24, regionFog: hex of the current region's daytime haze
-  // redness: 0..1, how close you are to Red Mountain (the sky bleeds red)
+  // redness: 0..1, how close you are to the Hearthpeak (the sky bleeds red)
   update(dt, hour, camera, regionFog, fog, redness = 0) {
     const t = ((hour - 6) / 24) * Math.PI * 2 // sunrise at 6
     const sunH = Math.sin(t)
@@ -183,8 +183,8 @@ export class Sky {
     this.skyUniforms.sunDir.value.copy(sunDir)
     this.skyUniforms.sunAmt.value = Math.max(0, Math.min(1, sunH * 4 + 0.3)) * visibility
     const mt = t + Math.PI * 0.9
-    this.masser.position.set(Math.cos(mt) * 500, Math.sin(mt) * 500 + 80, -300)
-    this.secunda.position.set(Math.cos(mt + 0.5) * 520, Math.sin(mt + 0.5) * 520 + 60, -200)
+    this.ilu.position.set(Math.cos(mt) * 500, Math.sin(mt) * 500 + 80, -300)
+    this.veyra.position.set(Math.cos(mt + 0.5) * 520, Math.sin(mt + 0.5) * 520 + 60, -200)
     this.stars.material.opacity = (1 - day) * (visibility > 0.5 ? 0.9 : 0.2)
 
     const sunI = Math.max(0, sunH)

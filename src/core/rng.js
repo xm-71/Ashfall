@@ -66,7 +66,7 @@ export class RNG {
 }
 
 export function randomSeed() {
-  const words = ["ash", "silt", "kwama", "netch", "guar", "scrib", "nix", "alit", "ebony", "glass", "corprus", "muck", "trama", "saltrice", "bonemold", "chitin"]
+  const words = ["ash", "silt", "burrowgrub", "drifter", "loper", "mite", "hound", "snapjaw", "obsidian", "crystal", "cinderrot", "muck", "thornroot", "ashgrain", "bonecast", "chitin"]
   const w = words[Math.floor(Math.random() * words.length)]
   return `${w}-${Math.floor(Math.random() * 90000 + 10000)}`
 }

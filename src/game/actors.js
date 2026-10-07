@@ -423,7 +423,7 @@ export class Npc {
     this.mesh.position.copy(this.pos)
     area.scene.add(this.mesh)
     if (spec.role !== "commoner" && spec.role !== "guard") {
-      const label = makeLabel(spec.role === "blade" ? "Blades Contact" : spec.title || roleTitle(spec.role), { size: 22, scale: 0.0034, color: "#d8c890" })
+      const label = makeLabel(spec.role === "lantern" ? "Lanterns Contact" : spec.title || roleTitle(spec.role), { size: 22, scale: 0.0034, color: "#d8c890" })
       label.position.set(0, 2.1, 0)
       this.mesh.add(label)
     }
@@ -506,7 +506,7 @@ export class Npc {
 }
 
 export function roleTitle(role) {
-  return { trader: "Trader", smith: "Smith", priest: "Healer", caravaner: "Caravaner", guard: "Guard", commoner: "Commoner", blade: "Blades Contact", guildmaster: "Guild", shipmaster: "Shipmaster", guide: "Guild Guide", elder: "Elder", pilgrim: "Pilgrim" }[role] || role
+  return { trader: "Trader", smith: "Smith", priest: "Healer", caravaner: "Caravaner", guard: "Guard", commoner: "Commoner", lantern: "Lanterns Contact", guildmaster: "Guild", shipmaster: "Shipmaster", guide: "Guild Guide", elder: "Elder", pilgrim: "Pilgrim" }[role] || role
 }
 
 export class Projectile {

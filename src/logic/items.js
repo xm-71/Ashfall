@@ -27,7 +27,7 @@ export function makeWeapon(material, base, enchant = null, qty = 1) {
     reach: b.reach,
     twoHanded: !!b.twoHanded,
     ranged: !!b.ranged,
-    silver: !!m.silver || material === "daedric" || material === "ebony" || material === "glass",
+    silver: !!m.silver || material === "abyssal" || material === "obsidian" || material === "crystal",
     weight: Math.round(b.weight * (m.weightMult || 1) * 10) / 10,
     value: Math.round(b.value * m.value),
     color: m.color,
@@ -107,7 +107,7 @@ export function makeMisc(name, qty = 1) {
   }
 }
 
-const AMMO_MATERIAL_MULT = { iron: 1, chitin: 1, steel: 1.3, silver: 1.5, orcish: 1.7, dwemer: 1.8, adamantium: 1.9, glass: 2, ebony: 2.5, daedric: 3 }
+const AMMO_MATERIAL_MULT = { iron: 1, chitin: 1, steel: 1.3, silver: 1.5, tuskar: 1.7, kaldur: 1.8, starmetal: 1.9, crystal: 2, obsidian: 2.5, abyssal: 3 }
 
 // Arrows or bolts; an enchant key ("fire", "frost", ...) makes them magical.
 export function makeAmmo(type, qty, material = "iron", enchantKey = null) {
@@ -307,7 +307,7 @@ export function makeJewelry(rng, tier) {
     slot,
     armorClass: null,
     ar: 0,
-    name: `${rng.pick(["Silver", "Gold", "Ebony", "Glass", "Bone", "Dwemer"])} ${rng.pick(j.names)}`,
+    name: `${rng.pick(["Silver", "Gold", "Obsidian", "Crystal", "Bone", "Kaldur"])} ${rng.pick(j.names)}`,
     weight: 0.2,
     value: j.value * tier,
     color: 0xd8b040,
@@ -383,7 +383,7 @@ export function randomWeapon(rng, tier, enchantChance = 0) {
 
 // Arrows or bolts, sometimes enchanted at higher tiers.
 export function randomAmmo(rng, tier) {
-  const material = rng.pick(["iron", "steel", "silver", "orcish", "dwemer", "glass", "ebony", "daedric"].filter((m, i) => i <= tier + 1))
+  const material = rng.pick(["iron", "steel", "silver", "tuskar", "kaldur", "crystal", "obsidian", "abyssal"].filter((m, i) => i <= tier + 1))
   const ench = tier >= 2 && rng.chance(0.15 + tier * 0.05) ? rng.pick(Object.keys(AMMO_ENCHANTS)) : null
   const n = ench ? rng.int(4, 12) : rng.int(8, 25)
   return rng.chance(0.6) ? makeArrows(n, material, ench) : makeBolts(n, material, ench)

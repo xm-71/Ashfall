@@ -108,12 +108,12 @@ All of these licenses allow shipping the assets inside a game build but not as l
 2. **Clean-up.** I convert to glTF where needed and fix scale and orientation (Synty FBX often arrives at ×100 scale or Z-up). Store-specific shaders get replaced with plain materials. Synty packs mostly share one colour-atlas texture per pack, which makes this easy.
 3. **Tagging.** A manifest (`assets/manifest.json`) maps models to the roles the generator asks for. For example:
    ```json
-   { "role": "building.hlaalu.house", "model": "packs/fantasy-town/SM_Bld_House_02.glb",
-     "footprint": [8, 6], "door": [0, 0, 3.1], "styles": ["hlaalu", "imperial"] }
+   { "role": "building.merovan.house", "model": "packs/fantasy-town/SM_Bld_House_02.glb",
+     "footprint": [8, 6], "door": [0, 0, 3.1], "styles": ["merovan", "vessari"] }
    ```
    Roles include:
    - `tree.parasol`, `rock.large`, `prop.barrel`, `wall.dungeon.straight`
-   - `creature.guar`, `npc.body.male`, `weapon.longsword.steel`
+   - `creature.loper`, `npc.body.male`, `weapon.longsword.steel`
 
    I propose the tags from the thumbnails, and you can correct any that are wrong.
 4. **Generation.** The generator keeps deciding *what* goes *where*: town layouts, roads, dungeon grids, flora density per region. When it needs something it asks the manifest for a model with that role, chosen by the seeded RNG. Any role without a pack model falls back to today's procedural mesh, so packs can be added one at a time.
@@ -121,14 +121,14 @@ All of these licenses allow shipping the assets inside a game build but not as l
 
 ### Packs to look for
 
-The game's look is Morrowind: mushroom trees, ash wastes, chitin and Dwemer brass. Few packs match it directly, so expect to mix them:
+The game's look is Cindermere: mushroom trees, ash wastes, chitin and Kaldur brass. Few packs match it directly, so expect to mix them:
 
 | Need | Where to look |
 | --- | --- |
 | Towns, interiors, props | Synty "Fantasy Kingdom" / "Fantasy Village" style packs, or Kenney's fantasy kits (CC0) |
 | Dungeons | Synty dungeon packs, Kenney's modular dungeon kits |
 | Nature | Synty nature packs. The giant mushrooms (emperor parasols) will probably stay procedural or need a dedicated fungus pack. |
-| Characters and creatures | Synty modular fantasy characters, which share one rig and so share animations. Creatures such as guar, cliff racers and kagouti will likely stay procedural unless a monster pack fits. |
+| Characters and creatures | Synty modular fantasy characters, which share one rig and so share animations. Creatures such as loper, skyscreamers and tuskback will likely stay procedural unless a monster pack fits. |
 | Animations | Synty animation packs, or Mixamo-style humanoid sets retargeted in Godot |
 
 Low-poly packs mix well with each other. Mixing them with photo-scanned assets usually looks wrong.

@@ -59,10 +59,10 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
   "roles": {
     "flora.parasol": [{ "model": "fantasy-town/Models/SM_Env_Mushroom_Large_01", "scale": 1.2 }],
     "flora.gashTree": [
-      { "model": "nature/Models/Tree_01", "where": { "region": ["westGash", "ascadian"] } },
+      { "model": "nature/Models/Tree_01", "where": { "region": ["westRift", "verdant"] } },
       { "model": "nature/Models/Tree_02", "weight": 2 }
     ],
-    "building": [{ "model": "fantasy-town/Models/SM_Bld_House_01", "where": { "style": ["hlaalu", "imperial"], "type": ["house", "shop"] } }],
+    "building": [{ "model": "fantasy-town/Models/SM_Bld_House_01", "where": { "style": ["merovan", "vessari"], "type": ["house", "shop"] } }],
     "npc": [{ "model": "fantasy-chars/Models/SK_Chr_Farmer_Male_01", "anims": "humanoid", "where": { "sex": "male", "role": ["commoner", "trader"] } }]
   }
 }
@@ -94,7 +94,7 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 
 `assets/ROLES.md` lists every role with its typical size and filters. In short:
 
-- `flora.*`: parasol, gashTree, pine, swampTree, deadTree, shrub, grass, trama, rock, boulder.
+- `flora.*`: parasol, gashTree, pine, swampTree, deadTree, shrub, grass, thornroot, rock, boulder.
 - `building`: sized to the plot, with the front toward the plaza. The game places the door at the front centre.
 - `prop.*`:
   - furniture and clutter for interiors, dungeons and town plazas;
@@ -106,7 +106,7 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 - `weapon.<base>` (`weapon.longsword`, `weapon.war axe`, ...), filtered by `material`, and `shield`. Held items keep the file's orientation: the origin is where the hand grips, with the blade pointing up (+Y). They keep their shiny (PBR) materials.
 - `artifact.<id>`: the look of one legendary artifact or rare unique sword (ids in `src/data/artifacts.js`).
 - `decor.town`, `decor.entrance` and `decor.wild`: dressing so the world isn't bare. Town clutter goes beside each building's front wall and around the plaza (filter by `style`), entrance props around dungeon doors (by `theme`), and ground cover among the plants (by `region`). Props wider than half a metre are solid.
-- `creature.<id>`: one role per creature (`creature.guar`, `creature.cliffRacer`, ...). A creature's `tint` colour (in `src/data/creatures.js`) colours materials mapped to `"body"`, e.g. `"tint": { "MI_Imp": "body" }`.
+- `creature.<id>`: one role per creature (`creature.loper`, `creature.skyscreamer`, ...). A creature's `tint` colour (in `src/data/creatures.js`) colours materials mapped to `"body"`, e.g. `"tint": { "MI_Imp": "body" }`.
   - Humanoid foes (bandits, smugglers) fall back to `npc` models with a matching `role` filter.
 
 ### Characters: parts and colours
@@ -120,7 +120,7 @@ A person can be built from several rigged files that share one skeleton. For exa
 ```
 
 - **Parts:** one model per slot is chosen from each person's seed; `null` means nothing in that slot. Each part is bound to the main model's bones by name.
-- **Tints:** a material whose name matches is coloured per person. `skin` follows the race's skin colour, relative to an Imperial (so Imperials are unchanged and Dunmer turn grey-blue). `hair` takes the race's hair colour.
+- **Tints:** a material whose name matches is coloured per person. `skin` follows the race's skin colour, relative to a Vessari (so Vessari are unchanged and Cindari turn grey-blue). `hair` takes the race's hair colour.
 
 ### Kits: buildings and rooms from modular pieces
 
@@ -133,7 +133,7 @@ Each kit has a `where` filter (for example by town `style`), so different towns 
 ```jsonc
 "kits": {
   "building": [{
-    "where": { "style": ["hlaalu", "imperial"] },
+    "where": { "style": ["merovan", "vessari"] },
     "grid": 2, "storey": 3.12,                       // panel width and height in metres
     "wall": [...], "wallBase": [...], "window": [...], "door": [...], "corner": [...],
     "doorLeaf": [{ "model": "...", "offset": [-0.56, 0, -0.12] }],   // the door, placed in the doorway panel

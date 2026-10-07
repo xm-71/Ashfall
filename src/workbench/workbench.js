@@ -21,7 +21,7 @@ let manifest = { packs: {}, animations: {}, roles: {}, kits: {} }
 let tab = "roles"
 let sel = null // { kind: "role"|"kit"|"model", role?, index?, kitName?, id? }
 let dirty = false
-const view = { race: "imperial", sex: "male", seed: 1, anim: "idle", plotW: 7, plotD: 6, type: "house", kitSeed: 1, room: [10, 9, 4] }
+const view = { race: "vessari", sex: "male", seed: 1, anim: "idle", plotW: 7, plotD: 6, type: "house", kitSeed: 1, room: [10, 9, 4] }
 
 function setDirty(d = true) {
   dirty = d
@@ -195,7 +195,7 @@ async function previewRole(role, index) {
   const actor = r.group === "character" || r.group === "creature"
   arrow.setDirection(new THREE.Vector3(0, 0, actor ? 1 : -1))
   if (actor) {
-    const race = RACES[view.race] || RACES.imperial
+    const race = RACES[view.race] || RACES.vessari
     const c = assets.character(entry, role, { h: 1.8 }, { seed: view.seed, tints: { skin: skinTint(race.skin), hair: race.hair } })
     stage.add(c.group)
     live = { anim: c.anim, t: 0 }

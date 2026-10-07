@@ -47,7 +47,7 @@ function M(key) {
     case "fern": m = sway(new THREE.MeshLambertMaterial({ map: cardTexture("fern"), alphaTest: 0.45, side: THREE.DoubleSide }), 0.05); break
     case "grass": m = sway(new THREE.MeshLambertMaterial({ map: cardTexture("grass"), alphaTest: 0.4, side: THREE.DoubleSide }), 0.09); break
     case "snowneedles": m = sway(new THREE.MeshLambertMaterial({ map: cardTexture("needles"), alphaTest: 0.45, side: THREE.DoubleSide, color: 0xc8d8d0 }), 0.008); break
-    case "trama": m = new THREE.MeshLambertMaterial({ map: t("bark").map, color: 0x7a3a34 }); break
+    case "thornroot": m = new THREE.MeshLambertMaterial({ map: t("bark").map, color: 0x7a3a34 }); break
   }
   mats[key] = m
   return m
@@ -204,14 +204,14 @@ function grassTuft() {
   return [{ geo: merge(starCards(1.1, 0.55, 3)), mat: M("grass") }]
 }
 
-function trama(rng) {
+function thornroot(rng) {
   const parts = []
   for (let i = 0; i < 7; i++) {
     const a = rng.range(0, Math.PI * 2)
     const r = rng.range(0.4, 1.1)
     parts.push(taperTube([V3(0, 0, 0), V3(Math.cos(a) * r * 0.4, rng.range(0.6, 1.2), Math.sin(a) * r * 0.4), V3(Math.cos(a) * r, rng.range(1.2, 2), Math.sin(a) * r)], 0.07, 0.01, 4, 5))
   }
-  return [{ geo: merge(parts), mat: M("trama") }]
+  return [{ geo: merge(parts), mat: M("thornroot") }]
 }
 
 function rock(rng, big) {
@@ -221,7 +221,7 @@ function rock(rng, big) {
   return [{ geo: worldUV(normalize(g), big ? 3 : 1.5), mat: M("rock"), tint: true }]
 }
 
-const BUILDERS = { parasol, gashTree, pine, swampTree, deadTree, shrub, grass: grassTuft, trama, rock: r => rock(r, false), boulder: r => rock(r, true) }
+const BUILDERS = { parasol, gashTree, pine, swampTree, deadTree, shrub, grass: grassTuft, thornroot, rock: r => rock(r, false), boulder: r => rock(r, true) }
 const TINTED = { leaves: true, needles: true, fern: true, grass: true, rock: true }
 const TRUNK_RADIUS = { parasol: 0.7, gashTree: 0.4, pine: 0.4, swampTree: 0.55, deadTree: 0.4, boulder: 2.3 }
 const VARIANTS = 3
@@ -241,7 +241,7 @@ export function buildFlora(world, colliders) {
       const y = world.heightAt(x, z)
       if (y < 0.8) continue
       const region = world.regionAt(x, z)
-      const type = region === "ashlands" || region === "molagAmur" || region === "redMountain" ? "rock" : rng.pick(["shrub", "grass", "rock"])
+      const type = region === "ashlands" || region === "cinderfall" || region === "hearthpeak" ? "rock" : rng.pick(["shrub", "grass", "rock"])
       extra.push({ type, x, z, y, scale: rng.range(0.6, 1.1), rot: rng.range(0, 6.28) })
     }
     list = list.concat(extra)
@@ -407,12 +407,12 @@ export function buildFlora(world, colliders) {
 const NEAR_DIST = 80
 const SMALL_DIST = 60
 const FAR_DIST = 520
-const SMALL = { shrub: true, grass: true, trama: true, wild: true }
+const SMALL = { shrub: true, grass: true, thornroot: true, wild: true }
 
 // ---------------------------------------------------------------------------
 // Dense grass carpet that follows the player (render-only).
 // ---------------------------------------------------------------------------
-const GRASS_REGIONS = { ascadian: 1, grazelands: 1.3, westGash: 0.6, bitterCoast: 0.7, azurasCoast: 0.35 }
+const GRASS_REGIONS = { verdant: 1, mosslands: 1.3, westRift: 0.6, brineCoast: 0.7, vesperCoast: 0.35 }
 
 export class GrassField {
   constructor(world, towns) {
@@ -472,8 +472,8 @@ export class GrassField {
         m.compose(p, q, s)
         this.mesh.setMatrixAt(n, m)
         const reg = w.regionAt(x, z)
-        if (reg === "grazelands") col.setRGB(1.25, 1.1, 0.6)
-        else if (reg === "bitterCoast") col.setRGB(0.8, 0.9, 0.75)
+        if (reg === "mosslands") col.setRGB(1.25, 1.1, 0.6)
+        else if (reg === "brineCoast") col.setRGB(0.8, 0.9, 0.75)
         else col.setRGB(0.95 + r3 * 0.2, 1, 0.9)
         this.mesh.setColorAt(n, col)
         n++

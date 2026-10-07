@@ -3,7 +3,7 @@ import { makeLabel, } from "./textures.js"
 import { texturedMaterial } from "./texgen.js"
 import { Builder, lathe, rockGeometry, taperTube } from "./geom.js"
 import { seg } from "../core/quality.js"
-import { buildVelothiTower, buildDwemerRuins } from "./landmarks.js"
+import { buildAncientTower, buildKaldurRuins } from "./landmarks.js"
 import { assets } from "../assets/registry.js"
 import { assembleBuilding } from "../assets/kit.js"
 
@@ -26,14 +26,14 @@ const MAT = {
   stalk: () => TM("mushroomStalk", 0xffffff),
   hide: () => TM("hide", 0xffffff),
   cobble: () => TM("cobble", 0xffffff),
-  dwemer: () => TM("dwemerMetal", 0xffffff, { metal: true }),
-  daedric: () => TM("daedricStone", 0xffffff),
+  kaldur: () => TM("kaldurMetal", 0xffffff, { metal: true }),
+  abyssal: () => TM("abyssalStone", 0xffffff),
   rock: () => TM("rock", 0xffffff),
   tomb: () => TM("tombBrick", 0xffffff),
   cloth: () => TM("fabricTrim", 0xa83a2a, { side: THREE.DoubleSide }),
   clothTan: () => TM("fabricTrim", 0xc8b890, { side: THREE.DoubleSide }),
   flesh: () => TM("flesh", 0xffffff),
-  iron: () => TM("dwemerMetal", 0x6a6a6a, { metal: true }),
+  iron: () => TM("kaldurMetal", 0x6a6a6a, { metal: true }),
 }
 
 const V3 = (x, y, z) => new THREE.Vector3(x, y, z)
@@ -103,7 +103,7 @@ function barrel(P, x, z, s = 1) {
 
 // ---------------- styles ----------------
 
-function hlaaluHouse(P, b) {
+function merovanHouse(P, b) {
   const { w, d } = b
   const wallH = b.type === "manor" ? 7 : 4.6
   P.box(w + 0.5, 1, d + 0.5, MAT.stone(), 0, 0, 0)
@@ -141,7 +141,7 @@ function hlaaluHouse(P, b) {
   barrel(P, w / 2 + 0.6, -d * 0.2, 0.9)
 }
 
-function redoranHouse(P, b) {
+function durathHouse(P, b) {
   const { w, d } = b
   const big = b.type === "manor"
   const H = big ? 8 : 5.6
@@ -185,7 +185,7 @@ function redoranHouse(P, b) {
   lantern(P, 1.7, 2.6, -d / 2 - 2.2)
 }
 
-function telvanniHouse(P, b) {
+function sorvennHouse(P, b) {
   const { w } = b
   const tall = b.type === "manor" || b.type === "temple"
   const stalkH = tall ? 17 : 4.5
@@ -220,9 +220,9 @@ function telvanniHouse(P, b) {
   P.add(new THREE.TorusGeometry(0.95, 0.14, 5, seg(14)), MAT.stalk(), { pos: [0, 1.2, -r * 1.05], scale: [1, 1.4, 1] })
 }
 
-function imperialHouse(P, b) {
+function vessariHouse(P, b) {
   const { w, d } = b
-  if (b.type === "fort") return imperialFort(P, b)
+  if (b.type === "fort") return vessariFort(P, b)
   const wallH = 4.4
   P.box(w + 0.4, 1, d + 0.4, MAT.darkStone(), 0, 0, 0)
   P.box(w, wallH, d, MAT.stone(), 0, wallH / 2 + 0.3, 0)
@@ -246,7 +246,7 @@ function imperialHouse(P, b) {
   barrel(P, -w / 2 - 0.6, -d * 0.25, 0.9)
 }
 
-function imperialFort(P, b) {
+function vessariFort(P, b) {
   const { w, d, h } = b
   P.box(w, h, d, MAT.stone(), 0, h / 2 - 0.3, 0)
   // crenellations
@@ -275,7 +275,7 @@ function imperialFort(P, b) {
   P.add(new THREE.PlaneGeometry(2, 1.2), MAT.cloth(), { pos: [1, h + 4.2, 0], uv: "keep" })
 }
 
-function ashlanderYurt(P, b) {
+function ashwalkerYurt(P, b) {
   const r = b.w / 2
   P.add(lathe([[r, 0], [r * 1.02, 1.3], [r * 0.85, 2.4], [r * 0.45, 3.3], [0.3, 3.7]], seg(16)), MAT.hide(), { uv: 2.5 })
   // poles through the smoke hole
@@ -292,15 +292,15 @@ function ashlanderYurt(P, b) {
 
 function temple(P, b, style) {
   const { w, d } = b
-  const stone = style === "imperial" ? MAT.stone() : MAT.sandstone()
+  const stone = style === "vessari" ? MAT.stone() : MAT.sandstone()
   const baseH = b.h * 0.6
   P.box(w + 1, 1, d + 1, stone, 0, 0, 0)
   P.box(w, baseH, d, stone, 0, baseH / 2 + 0.3, 0)
   P.box(w + 0.5, 0.5, d + 0.5, stone, 0, baseH + 0.5, 0)
-  // bulbous Tribunal dome on a drum
+  // bulbous Triune dome on a drum
   P.cyl(w * 0.34, w * 0.36, 1.4, stone, 0, baseH + 1.3, 0, { segs: seg(20) })
-  P.add(lathe([[w * 0.36, 0], [w * 0.4, w * 0.18], [w * 0.3, w * 0.36], [w * 0.1, w * 0.48], [0.05, w * 0.55]], seg(22)), TM("dwemerMetal", 0xd0b070, { metal: true }), { pos: [0, baseH + 2, 0] })
-  P.add(new THREE.ConeGeometry(0.35, 3, seg(8)), TM("dwemerMetal", 0xe0c070, { metal: true }), { pos: [0, baseH + 2 + w * 0.55 + 1.4, 0] })
+  P.add(lathe([[w * 0.36, 0], [w * 0.4, w * 0.18], [w * 0.3, w * 0.36], [w * 0.1, w * 0.48], [0.05, w * 0.55]], seg(22)), TM("kaldurMetal", 0xd0b070, { metal: true }), { pos: [0, baseH + 2, 0] })
+  P.add(new THREE.ConeGeometry(0.35, 3, seg(8)), TM("kaldurMetal", 0xe0c070, { metal: true }), { pos: [0, baseH + 2 + w * 0.55 + 1.4, 0] })
   // corner turrets
   for (const sx of [-1, 1])
     for (const sz of [-1, 1]) {
@@ -315,7 +315,7 @@ function temple(P, b, style) {
   for (const sx of [-1, 1]) windowFrame(P, sx * w * 0.32, baseH * 0.6, -d / 2, Math.PI, 0.6, 1.8, stone)
 }
 
-// Nord longhouse: log walls on a stone footing, a steep snow-laden roof with
+// Hrothi longhouse: log walls on a stone footing, a steep snow-laden roof with
 // crossed gable beams, and a smoke hole.
 function nordHouse(P, b) {
   const { w, d } = b
@@ -354,7 +354,7 @@ function nordHouse(P, b) {
   if (big) for (const sx of [-1, 1]) P.add(taperTube([V3(sx * 0.1, 0, 0), V3(sx * 0.5, 0.4, 0), V3(sx * 0.7, 0.9, 0.1)], 0.05, 0.015, 4, 5), TM("bone", 0xe8e0c8), { pos: [0, 3.2, -L / 2 - 0.2] })
 }
 
-const STYLE_FN = { hlaalu: hlaaluHouse, redoran: redoranHouse, telvanni: telvanniHouse, imperial: imperialHouse, ashlander: ashlanderYurt, nord: nordHouse }
+const STYLE_FN = { merovan: merovanHouse, durath: durathHouse, sorvenn: sorvennHouse, vessari: vessariHouse, ashwalker: ashwalkerYurt, hrothi: nordHouse }
 
 // ---------------- towns ----------------
 
@@ -367,14 +367,14 @@ export function buildTown(town, colliders) {
   // cobbled plaza that follows the flattened ground
   const plaza = new THREE.CircleGeometry(plazaR, seg(32))
   plaza.rotateX(-Math.PI / 2)
-  builder.add(plaza, town.style === "ashlander" ? TM("dirt", 0xffffff) : town.style === "nord" ? TM("road", 0xffffff) : MAT.cobble(), { pos: [town.x, town.y + 0.05, town.z], uv: 3 })
+  builder.add(plaza, town.style === "ashwalker" ? TM("dirt", 0xffffff) : town.style === "hrothi" ? TM("road", 0xffffff) : MAT.cobble(), { pos: [town.x, town.y + 0.05, town.z], uv: 3 })
 
   const pick = (role, ctx, salt) => assets.pick(role, ctx, (((town.id + 1) * 0.6180339 + salt * 0.7548776) % 1 + 1) % 1)
   for (const b of town.buildings) {
     const P = new Placer(builder, b.x, town.y, b.z, b.rot)
     const big = b.type === "manor" || b.type === "hall"
     const kit = assets.kit("building", { style: town.style, type: b.type }, (((town.id + 1) * 0.37 + b.idx * 0.61) % 1 + 1) % 1)
-    const assembled = kit && assembleBuilding(kit, { w: b.w, d: town.style === "nord" && big ? b.d * 1.5 : b.d, type: b.type, seed: town.id * 7919 + b.idx * 104729 + 1 })
+    const assembled = kit && assembleBuilding(kit, { w: b.w, d: town.style === "hrothi" && big ? b.d * 1.5 : b.d, type: b.type, seed: town.id * 7919 + b.idx * 104729 + 1 })
     if (assembled) {
       // a building assembled from a modular kit, front (door) toward the plaza
       for (const p of assembled.pieces) assets.bakeModel(builder, p.model, P.base.clone().multiply(p.matrix))
@@ -393,7 +393,7 @@ export function buildTown(town, colliders) {
     const entry = pick("building", { style: town.style, type: b.type }, b.idx)
     if (entry) {
       // a pack building, sized to the plot; its front faces the plaza
-      const dims = { w: b.w, d: town.style === "nord" && big ? b.d * 1.5 : b.d }
+      const dims = { w: b.w, d: town.style === "hrothi" && big ? b.d * 1.5 : b.d }
       assets.bake(builder, entry, "building", dims, P.base)
       const size = assets.placedSize(entry, "building", dims)
       colliders.addBox(b.x, b.z, size.x * 0.96, size.z * 0.96, b.rot)
@@ -405,20 +405,20 @@ export function buildTown(town, colliders) {
       }
       continue
     }
-    if (b.type === "temple" && town.style !== "telvanni" && town.style !== "ashlander") temple(P, b, town.style)
-    else if (b.type === "fort") imperialFort(P, b)
-    else (STYLE_FN[town.style] || hlaaluHouse)(P, b)
+    if (b.type === "temple" && town.style !== "sorvenn" && town.style !== "ashwalker") temple(P, b, town.style)
+    else if (b.type === "fort") vessariFort(P, b)
+    else (STYLE_FN[town.style] || merovanHouse)(P, b)
 
     if (b.label) {
       const sign = makeLabel(b.label, { size: 26, scale: 0.02 })
-      const off = b.d / 2 + (town.style === "redoran" ? 2.6 : 1)
-      sign.position.set(b.x - Math.cos(b.angle) * off, town.y + (town.style === "telvanni" ? 4.2 : 4.1), b.z - Math.sin(b.angle) * off)
+      const off = b.d / 2 + (town.style === "durath" ? 2.6 : 1)
+      sign.position.set(b.x - Math.cos(b.angle) * off, town.y + (town.style === "sorvenn" ? 4.2 : 4.1), b.z - Math.sin(b.angle) * off)
       group.add(sign)
     }
-    if (town.style === "ashlander" || (town.style === "telvanni" && b.type !== "manor" && b.type !== "temple")) colliders.addCircle(b.x, b.z, town.style === "telvanni" ? b.w * 0.36 : b.w / 2 + 0.2)
-    else if (town.style === "redoran") colliders.addBox(b.x, b.z, b.w + 1, b.d + 1, b.rot)
-    else if (town.style === "telvanni") colliders.addCircle(b.x, b.z, b.w * 0.4)
-    else if (town.style === "nord") colliders.addBox(b.x, b.z, b.w + 0.6, (b.type === "manor" || b.type === "hall" ? b.d * 1.5 : b.d) + 0.6, b.rot)
+    if (town.style === "ashwalker" || (town.style === "sorvenn" && b.type !== "manor" && b.type !== "temple")) colliders.addCircle(b.x, b.z, town.style === "sorvenn" ? b.w * 0.36 : b.w / 2 + 0.2)
+    else if (town.style === "durath") colliders.addBox(b.x, b.z, b.w + 1, b.d + 1, b.rot)
+    else if (town.style === "sorvenn") colliders.addCircle(b.x, b.z, b.w * 0.4)
+    else if (town.style === "hrothi") colliders.addBox(b.x, b.z, b.w + 0.6, (b.type === "manor" || b.type === "hall" ? b.d * 1.5 : b.d) + 0.6, b.rot)
     else colliders.addBox(b.x, b.z, b.w + 0.2, b.d + 0.2, b.rot)
   }
 
@@ -466,7 +466,7 @@ export function buildTown(town, colliders) {
     })
     dress(builder, P, 0, "decor.town", { style: town.style }, spots, colliders, null, town.id * 17 + 5)
   }
-  const camp = town.style === "ashlander" || town.style === "nord"
+  const camp = town.style === "ashwalker" || town.style === "hrothi"
   if (well) {
     /* the pack's well (or fire pit) */
   } else if (camp) {
@@ -509,8 +509,8 @@ export function buildTown(town, colliders) {
   group.add(name)
 
   let strider = null
-  if (town.style !== "nord") {
-    strider = buildSiltStrider()
+  if (town.style !== "hrothi") {
+    strider = buildLongstrider()
     strider.position.set(town.port.x, town.y, town.port.z)
     strider.rotation.y = -town.port.angle
     group.add(strider)
@@ -523,9 +523,9 @@ export function buildTown(town, colliders) {
   return { group, light, glows: [], strider }
 }
 
-// ---------------- silt strider ----------------
+// ---------------- longstrider ----------------
 
-export function buildSiltStrider() {
+export function buildLongstrider() {
   const g = new THREE.Group()
   const body = new THREE.Group()
   const bb = new Builder()
@@ -612,7 +612,7 @@ export function buildEntrance(d, colliders, heightAt = null) {
     P.box(2.8, 0.18, 0.18, MAT.timber(), 0, 2.6, -1)
     lantern(P, 1.5, 2.2, -1.2)
   } else if (d.tower) {
-    buildVelothiTower(P)
+    buildAncientTower(P)
   } else if (d.type === "tomb") {
     // a burial mound the tomb door is set into
     P.add(rockGeometry(d.seed % 97, 2, 4, 0.2), TM("grass", 0xa0a080), { pos: [0, -1.4, 4.3], scale: [1.5, 1.0, 1.3], uv: 3 })
@@ -639,33 +639,33 @@ export function buildEntrance(d, colliders, heightAt = null) {
       const a = (i / 6) * Math.PI * 2 + 0.3
       P.box(0.6, 2.4 + (i % 3) * 0.5, 0.4, MAT.darkStone(), Math.cos(a) * 6.5, 1, Math.sin(a) * 6.5 + 2, { rot: [0, a, (i % 2 ? 1 : -1) * 0.06] })
     }
-  } else if (d.type === "dwemer") {
-    P.add(lathe([[3.6, 0], [3.4, 1.6], [2.4, 3.2], [0.6, 3.9], [0.01, 4]], seg(20)), MAT.dwemer(), { pos: [0, 0, 1.5], uv: 2 })
-    P.box(3.6, 4, 1.6, MAT.dwemer(), 0, 2, -1.4)
-    P.box(4.2, 0.6, 2, MAT.dwemer(), 0, 4.2, -1.4)
-    P.box(2, 2.9, 0.2, TM("dwemerFloor", 0x8a6a3a, { metal: true }), 0, 1.5, -2.25)
+  } else if (d.type === "kaldur") {
+    P.add(lathe([[3.6, 0], [3.4, 1.6], [2.4, 3.2], [0.6, 3.9], [0.01, 4]], seg(20)), MAT.kaldur(), { pos: [0, 0, 1.5], uv: 2 })
+    P.box(3.6, 4, 1.6, MAT.kaldur(), 0, 2, -1.4)
+    P.box(4.2, 0.6, 2, MAT.kaldur(), 0, 4.2, -1.4)
+    P.box(2, 2.9, 0.2, TM("kaldurFloor", 0x8a6a3a, { metal: true }), 0, 1.5, -2.25)
     for (const sx of [-1, 1]) {
-      P.cyl(0.32, 0.32, 7, MAT.dwemer(), sx * 2.4, 3.5, 0.5, { segs: seg(10) })
-      P.cyl(0.5, 0.4, 0.5, MAT.dwemer(), sx * 2.4, 7, 0.5, { segs: seg(10) })
-      P.add(new THREE.TorusGeometry(0.4, 0.08, 5, seg(12)), MAT.dwemer(), { pos: [sx * 2.4, 5, 0.5], rot: [Math.PI / 2, 0, 0] })
+      P.cyl(0.32, 0.32, 7, MAT.kaldur(), sx * 2.4, 3.5, 0.5, { segs: seg(10) })
+      P.cyl(0.5, 0.4, 0.5, MAT.kaldur(), sx * 2.4, 7, 0.5, { segs: seg(10) })
+      P.add(new THREE.TorusGeometry(0.4, 0.08, 5, seg(12)), MAT.kaldur(), { pos: [sx * 2.4, 5, 0.5], rot: [Math.PI / 2, 0, 0] })
     }
-    P.add(new THREE.TorusGeometry(1.1, 0.25, 6, 12), MAT.dwemer(), { pos: [0, 3.2, -2.3] })
+    P.add(new THREE.TorusGeometry(1.1, 0.25, 6, 12), MAT.kaldur(), { pos: [0, 3.2, -2.3] })
     lantern(P, 1.6, 3, -2.4)
-    for (const [x, z, r] of buildDwemerRuins(P, d.seed)) colliders.addCircle(d.x + x * Math.cos(rot) + z * Math.sin(rot), d.z - x * Math.sin(rot) + z * Math.cos(rot), r)
+    for (const [x, z, r] of buildKaldurRuins(P, d.seed)) colliders.addCircle(d.x + x * Math.cos(rot) + z * Math.sin(rot), d.z - x * Math.sin(rot) + z * Math.cos(rot), r)
   } else {
     const big = d.type === "citadel" ? 1.8 : 1
-    const stone = d.type === "citadel" ? MAT.flesh() : MAT.daedric()
+    const stone = d.type === "citadel" ? MAT.flesh() : MAT.abyssal()
     for (const sx of [-1, 1]) {
-      P.box(1.4 * big, 9 * big, 1.4 * big, MAT.daedric(), sx * 2.8 * big, 3 * big, 0) // runs 1.5 m into the ground
-      P.add(new THREE.ConeGeometry(0.9 * big, 2.6 * big, 4), MAT.daedric(), { pos: [sx * 2.8 * big, 8.6 * big, 0] })
-      for (let k = 0; k < 3; k++) P.add(new THREE.ConeGeometry(0.2 * big, 1.2 * big, 4), MAT.daedric(), { pos: [sx * (2.8 + 0.8) * big, (2 + k * 2) * big, 0], rot: [0, 0, -sx * 1.2] })
+      P.box(1.4 * big, 9 * big, 1.4 * big, MAT.abyssal(), sx * 2.8 * big, 3 * big, 0) // runs 1.5 m into the ground
+      P.add(new THREE.ConeGeometry(0.9 * big, 2.6 * big, 4), MAT.abyssal(), { pos: [sx * 2.8 * big, 8.6 * big, 0] })
+      for (let k = 0; k < 3; k++) P.add(new THREE.ConeGeometry(0.2 * big, 1.2 * big, 4), MAT.abyssal(), { pos: [sx * (2.8 + 0.8) * big, (2 + k * 2) * big, 0], rot: [0, 0, -sx * 1.2] })
     }
     P.box(7.2 * big, 1.2 * big, 1.6 * big, stone, 0, 7.4 * big, 0)
-    P.add(lathe([[1.4 * big, 0], [1 * big, 1 * big], [0.1, 1.8 * big]], 4), MAT.daedric(), { pos: [0, 8 * big, 0] })
+    P.add(lathe([[1.4 * big, 0], [1 * big, 1 * big], [0.1, 1.8 * big]], 4), MAT.abyssal(), { pos: [0, 8 * big, 0] })
     // a stepped dais up to the portal: each step deep in the ground, the
     // lowest and widest outermost
-    for (let i = 0; i < 4; i++) P.box(4.4 * big + i * 0.6, 1.2, 1.2 + i * 0.9, MAT.daedric(), 0, -0.6 + (3 - i) * 0.16, -0.9 - i * 0.45)
-    P.box(1.8, 1, 1, MAT.daedric(), 3.5 * big + 2, 0.2, -2, { rot: [0.2, 0.5, 0.15] }) // fallen block, half buried
+    for (let i = 0; i < 4; i++) P.box(4.4 * big + i * 0.6, 1.2, 1.2 + i * 0.9, MAT.abyssal(), 0, -0.6 + (3 - i) * 0.16, -0.9 - i * 0.45)
+    P.box(1.8, 1, 1, MAT.abyssal(), 3.5 * big + 2, 0.2, -2, { rot: [0.2, 0.5, 0.15] }) // fallen block, half buried
     const portal = new THREE.Mesh(new THREE.PlaneGeometry(4.2 * big, 6.8 * big + 0.6), new THREE.MeshBasicMaterial({ color: d.type === "citadel" ? 0x8a1a08 : 0x1a0808, side: THREE.DoubleSide }))
     portal.position.set(0, 3.4 * big + 0.2, -0.1)
     const holder = new THREE.Group()

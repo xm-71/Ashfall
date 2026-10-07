@@ -37,9 +37,9 @@ export function questTargets(game) {
   }
   const main = game.main?.stage ?? 0
   if (main === 0) {
-    const blade = world.startTown.npcs.find(n => n.role === "blade")
+    const blade = world.startTown.npcs.find(n => n.role === "lantern")
     const p = blade && npcPos(blade.id)
-    if (p) out.push({ ...p, label: "Blades contact", kind: "main" })
+    if (p) out.push({ ...p, label: "Lanterns contact", kind: "main" })
   } else if (main === 1) {
     const held = game.relicsHeld()
     for (const r of world.mainQuest.relics) {

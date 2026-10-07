@@ -82,10 +82,10 @@ export class ViewModel {
     const matOf = item => {
       if (!item) return null
       const m = item.material
-      if (m === "netch leather" || m === "chitin") return { tex: m === "chitin" ? "chitinShell" : "hide", color: 0xffffff }
-      if (m === "bonemold" || m === "indoril") return { tex: "bonemold", color: item.color }
-      if (m === "glass") return { tex: "plate", color: 0x7fe0a0, metal: true }
-      if (m === "dwemer") return { tex: "dwemerMetal", color: 0xffffff, metal: true }
+      if (m === "drifter leather" || m === "chitin") return { tex: m === "chitin" ? "chitinShell" : "hide", color: 0xffffff }
+      if (m === "bonecast" || m === "warden") return { tex: "bonecast", color: item.color }
+      if (m === "crystal") return { tex: "plate", color: 0x7fe0a0, metal: true }
+      if (m === "kaldur") return { tex: "kaldurMetal", color: 0xffffff, metal: true }
       return { tex: "plate", color: item.color ?? 0x8a8a8a, metal: true }
     }
     const sleeve = matOf(cuirass)

@@ -10,11 +10,11 @@ function metalMat(material, color) {
   if (cache.has(key)) return cache.get(key)
   const t = texture("plate")
   const opts = { color, map: t.map, normalMap: t.normalMap, metalness: 0.8, roughness: 0.35, side: THREE.DoubleSide }
-  if (material === "glass") Object.assign(opts, { metalness: 0.1, roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x2a8a50, emissiveIntensity: 0.9 })
-  if (material === "ebony") Object.assign(opts, { metalness: 0.5, roughness: 0.2 })
-  if (material === "daedric") Object.assign(opts, { emissive: 0x9a1010, emissiveIntensity: 1.3, roughness: 0.5 })
-  if (material === "chitin" || material === "bonemold" || material === "netch leather") Object.assign(opts, { metalness: 0.05, roughness: 0.6 })
-  if (material === "dwemer") Object.assign(opts, { map: texture("dwemerMetal").map, normalMap: texture("dwemerMetal").normalMap, color: 0xffffff })
+  if (material === "crystal") Object.assign(opts, { metalness: 0.1, roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x2a8a50, emissiveIntensity: 0.9 })
+  if (material === "obsidian") Object.assign(opts, { metalness: 0.5, roughness: 0.2 })
+  if (material === "abyssal") Object.assign(opts, { emissive: 0x9a1010, emissiveIntensity: 1.3, roughness: 0.5 })
+  if (material === "chitin" || material === "bonecast" || material === "drifter leather") Object.assign(opts, { metalness: 0.05, roughness: 0.6 })
+  if (material === "kaldur") Object.assign(opts, { map: texture("kaldurMetal").map, normalMap: texture("kaldurMetal").normalMap, color: 0xffffff })
   const m = new THREE.MeshStandardMaterial(opts)
   cache.set(key, m)
   return m
@@ -117,7 +117,7 @@ export function buildWeapon(item) {
   const material = item.material || "iron"
   const color = item.color ?? 0x9a9a9a
   const metal = metalMat(material, color)
-  const accent = material === "daedric" ? metalMat("daedric", 0x2a0a0a) : material === "ebony" ? goldMat() : metalMat("iron", 0x6a5a40)
+  const accent = material === "abyssal" ? metalMat("abyssal", 0x2a0a0a) : material === "obsidian" ? goldMat() : metalMat("iron", 0x6a5a40)
   const blades = { dagger: [0.34, 0.05, "leaf"], tanto: [0.4, 0.045, "tanto"], wakizashi: [0.55, 0.04, "katana"], shortsword: [0.58, 0.055, "straight"], longsword: [0.86, 0.055, "straight"], broadsword: [0.8, 0.075, "straight"], saber: [0.8, 0.045, "katana"], scimitar: [0.72, 0.05, "scimitar"], katana: [0.85, 0.04, "katana"], "dai-katana": [1.12, 0.045, "katana"], claymore: [1.2, 0.085, "straight"] }
   const curved = base === "katana" || base === "wakizashi" || base === "dai-katana"
   if (blades[base]) {
@@ -126,7 +126,7 @@ export function buildWeapon(item) {
     // fuller groove hint
     if (kind === "straight" && len > 0.5) g.add(mesh(new THREE.BoxGeometry(width * 0.18, len * 0.6, 0.016), metalMat("iron", 0x444444), 0, 0.1 + len * 0.35, 0))
     const guardW = curved ? 0.07 : width * 3.2
-    if (material === "daedric") {
+    if (material === "abyssal") {
       const gs = new THREE.Shape()
       gs.moveTo(-guardW, 0.03)
       gs.lineTo(-guardW * 0.3, -0.01)
@@ -229,7 +229,7 @@ export function buildWeapon(item) {
     str.name = "string"
     g.add(str)
     g.add(mesh(new THREE.BoxGeometry(0.02, 0.05, 0.02), metal, 0, 0.0, -0.045))
-    if (material === "dwemer") for (const y of [0.05, 0.22]) g.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.02, seg(10)), metal, 0.04, y, 0, 0, 0, Math.PI / 2))
+    if (material === "kaldur") for (const y of [0.05, 0.22]) g.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.02, seg(10)), metal, 0.04, y, 0, 0, 0, Math.PI / 2))
     return g
   }
   if (base === "club" || base === "mace" || base === "warhammer") {
@@ -294,7 +294,7 @@ export function buildShield(item) {
   const g = new THREE.Group()
   const m = item.material || "iron"
   const mat = metalMat(m, item.color ?? 0x888888)
-  const heavy = ["steel", "dwemer", "ebony", "daedric"].includes(m)
+  const heavy = ["steel", "kaldur", "obsidian", "abyssal"].includes(m)
   if (heavy) {
     const s = new THREE.Shape()
     s.moveTo(-0.25, 0.3)

@@ -334,10 +334,10 @@
           "role": [
             "guard",
             "guildmaster",
-            "blade",
+            "lantern",
             "bandit",
             "smuggler",
-            "ashlander",
+            "ashwalker",
             "hunter"
           ]
         },
@@ -370,10 +370,10 @@
           "role": [
             "guard",
             "guildmaster",
-            "blade",
+            "lantern",
             "bandit",
             "smuggler",
-            "ashlander",
+            "ashwalker",
             "hunter"
           ]
         },
@@ -458,11 +458,11 @@
         }
       }
     ],
-    "decor.town": [{"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel", "weight": 3, "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples", "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden", "weight": 2, "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_Crate", "weight": 2, "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bag", "weight": 2}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Apple", "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Carrot", "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Wooden_1", "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bench", "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Holder", "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_WoodenFence_Single", "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_Wagon", "weight": 0.6, "where": {"style": ["hlaalu", "imperial", "redoran", "nord", "telvanni"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1", "where": {"style": "ashlander"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2", "weight": 2, "where": {"style": "ashlander"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4", "where": {"style": "ashlander"}}],
-    "decor.entrance": [{"model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_1", "scale": 0.6, "weight": 2}, {"model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_2", "scale": 0.6, "weight": 2}, {"model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_3", "scale": 0.6, "weight": 2}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden", "where": {"theme": "cave"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel", "where": {"theme": "cave"}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_Crate", "where": {"theme": "cave"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bag", "where": {"theme": "cave"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2", "where": {"theme": ["tomb", "daedric"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4", "where": {"theme": "tomb"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_Rubble_Medium", "weight": 2, "where": {"theme": ["tomb", "barrow", "daedric"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid", "where": {"theme": "tomb"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Cage_Small", "where": {"theme": "daedric"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Chain_Coil", "where": {"theme": ["daedric", "dwemer"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal", "where": {"theme": "dwemer"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Metal", "where": {"theme": "dwemer"}}],
-    "decor.wild": [{"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_1", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_2", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_3", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_4", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_5", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_1"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_2"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_3"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_4"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_5"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_6"}, {"model": "Stylized-Nature-MegaKit/glTF/Clover_1", "weight": 2, "where": {"region": ["westGash", "bitterCoast", "ascadian", "grazelands", "azurasCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Clover_2", "weight": 2, "where": {"region": ["westGash", "bitterCoast", "ascadian", "grazelands", "azurasCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Flower_3_Single", "where": {"region": ["westGash", "bitterCoast", "ascadian", "grazelands", "azurasCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Flower_4_Single", "where": {"region": ["westGash", "bitterCoast", "ascadian", "grazelands", "azurasCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Plant_7", "weight": 2, "where": {"region": ["westGash", "bitterCoast", "ascadian", "grazelands", "azurasCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Plant_7_Big", "where": {"region": ["westGash", "bitterCoast", "ascadian", "grazelands", "azurasCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Mushroom_Laetiporus", "weight": 2, "where": {"region": ["bitterCoast", "ascadian", "westGash"]}}],
+    "decor.town": [{"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel", "weight": 3, "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples", "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden", "weight": 2, "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_Crate", "weight": 2, "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bag", "weight": 2}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Apple", "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Carrot", "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Wooden_1", "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bench", "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Holder", "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_WoodenFence_Single", "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_Wagon", "weight": 0.6, "where": {"style": ["merovan", "vessari", "durath", "hrothi", "sorvenn"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1", "where": {"style": "ashwalker"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2", "weight": 2, "where": {"style": "ashwalker"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4", "where": {"style": "ashwalker"}}],
+    "decor.entrance": [{"model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_1", "scale": 0.6, "weight": 2}, {"model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_2", "scale": 0.6, "weight": 2}, {"model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_3", "scale": 0.6, "weight": 2}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden", "where": {"theme": "cave"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel", "where": {"theme": "cave"}}, {"model": "Medieval-Village-MegaKit/glTF/Prop_Crate", "where": {"theme": "cave"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bag", "where": {"theme": "cave"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2", "where": {"theme": ["tomb", "abyssal"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4", "where": {"theme": "tomb"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_Rubble_Medium", "weight": 2, "where": {"theme": ["tomb", "barrow", "abyssal"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid", "where": {"theme": "tomb"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Cage_Small", "where": {"theme": "abyssal"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Chain_Coil", "where": {"theme": ["abyssal", "kaldur"]}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal", "where": {"theme": "kaldur"}}, {"model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Metal", "where": {"theme": "kaldur"}}],
+    "decor.wild": [{"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_1", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_2", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_3", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_4", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_5", "weight": 1}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_1"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_2"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_3"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_4"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_5"}, {"model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_6"}, {"model": "Stylized-Nature-MegaKit/glTF/Clover_1", "weight": 2, "where": {"region": ["westRift", "brineCoast", "verdant", "mosslands", "vesperCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Clover_2", "weight": 2, "where": {"region": ["westRift", "brineCoast", "verdant", "mosslands", "vesperCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Flower_3_Single", "where": {"region": ["westRift", "brineCoast", "verdant", "mosslands", "vesperCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Flower_4_Single", "where": {"region": ["westRift", "brineCoast", "verdant", "mosslands", "vesperCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Plant_7", "weight": 2, "where": {"region": ["westRift", "brineCoast", "verdant", "mosslands", "vesperCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Plant_7_Big", "where": {"region": ["westRift", "brineCoast", "verdant", "mosslands", "vesperCoast"]}}, {"model": "Stylized-Nature-MegaKit/glTF/Mushroom_Laetiporus", "weight": 2, "where": {"region": ["brineCoast", "verdant", "westRift"]}}],
     "player": [{"model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody", "anims": "humanoid", "fit": "none", "where": {"sex": "male"}, "parts": {"outfit": ["Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant", "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Ranger"], "hair": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale", null], "brows": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"], "beard": [null, "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard"]}, "tint": {"MI_Superhero_*": "skin", "MI_Regular_*": "skin", "MI_Hair*": "hair"}, "keep": {"MI_Superhero_*": ["neck_01"]}}, {"model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Female_FullBody", "anims": "humanoid", "fit": "none", "where": {"sex": "female"}, "parts": {"outfit": ["Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant", "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Ranger"], "hair": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed", null], "brows": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"]}, "tint": {"MI_Superhero_*": "skin", "MI_Regular_*": "skin", "MI_Hair*": "hair"}, "keep": {"MI_Superhero_*": ["neck_01"]}}],
-    "creature.scamp": [
+    "creature.cinderling": [
       {
         "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Imp",
         "anims": "monster",
@@ -470,7 +470,7 @@
         "height": 1.45
       }
     ],
-    "creature.riekling": [
+    "creature.frostling": [
       {
         "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin",
         "anims": "monster",
@@ -491,13 +491,13 @@
       { "model": "Fantasy-Props-MegaKit/Exports/glTF/Axe_Bronze", "fit": "none", "offset": [0, 0.3, 0], "weight": 2, "where": { "material": ["iron", "chitin"] } },
       { "model": "Fantasy-Props-MegaKit/Exports/glTF/Pickaxe_Bronze", "fit": "none", "offset": [0, 0.4, 0], "where": { "material": ["iron", "chitin"] } }
     ],
-    "shield": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden", "where": { "material": ["iron", "chitin", "netch leather", "bonemold"] } }],
+    "shield": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden", "where": { "material": ["iron", "chitin", "drifter leather", "bonecast"] } }],
     "artifact.razor": [{ "model": "Swordtember2022-GLB/15-Paranormal" }],
-    "artifact.goldbrand": [{ "model": "Swordtember2022-GLB/4-Elemental" }],
-    "artifact.umbra": [{ "model": "Swordtember2022-GLB/17-Smoke" }],
+    "artifact.sunbrand": [{ "model": "Swordtember2022-GLB/4-Elemental" }],
+    "artifact.nightdrinker": [{ "model": "Swordtember2022-GLB/17-Smoke" }],
     "artifact.iceBlade": [{ "model": "Swordtember2022-GLB/1-Crystal" }],
     "artifact.fang": [{ "model": "Swordtember2022-GLB/10-Snake" }],
-    "artifact.stalhrim": [{ "model": "Swordtember2022-GLB/18-Geometric" }],
+    "artifact.rimeBlade": [{ "model": "Swordtember2022-GLB/18-Geometric" }],
     "artifact.cogblade": [{ "model": "Swordtember2022-GLB/3-Gears" }],
     "artifact.sporeblade": [{ "model": "Swordtember2022-GLB/5-Edible" }],
     "artifact.inkfang": [{ "model": "Swordtember2022-GLB/7-Cephalopod" }],
@@ -508,7 +508,7 @@
     "artifact.conchblade": [{ "model": "Swordtember2022-GLB/16-Shell" }],
     "artifact.oldHouse": [{ "model": "Swordtember2022-GLB/19-Heirloom" }],
     "artifact.leafblade": [{ "model": "Swordtember2022-GLB/20-Leaf" }],
-    "artifact.hircineAntler": [{ "model": "Swordtember2022-GLB/22-Antler" }],
+    "artifact.huntmotherAntler": [{ "model": "Swordtember2022-GLB/22-Antler" }],
     "artifact.coralThorn": [{ "model": "Swordtember2022-GLB/24-Coral" }],
     "artifact.driftwood": [{ "model": "Swordtember2022-GLB/26-Wooden" }],
     "artifact.runeblade": [{ "model": "Swordtember2022-GLB/27-Pattern" }],
@@ -539,9 +539,9 @@
       {
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "sorvenn"
           ]
         },
         "wall": [
@@ -719,9 +719,9 @@
       {
         "where": {
           "style": [
-            "redoran",
-            "nord",
-            "ashlander"
+            "durath",
+            "hrothi",
+            "ashwalker"
           ]
         },
         "wall": [
@@ -881,9 +881,9 @@
       {
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "sorvenn"
           ]
         },
         "grid": 2,
@@ -930,9 +930,9 @@
       {
         "where": {
           "style": [
-            "redoran",
-            "nord",
-            "ashlander"
+            "durath",
+            "hrothi",
+            "ashwalker"
           ]
         },
         "grid": 2,

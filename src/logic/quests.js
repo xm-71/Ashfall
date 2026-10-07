@@ -8,7 +8,7 @@ export function reserveQuestIds(maxUsed) {
   questCounter = Math.max(questCounter, maxUsed + 1)
 }
 
-const REGION_CREATURES = ["nixHound", "kagouti", "alit", "cliffRacer", "mudcrab", "netch", "scamp", "ashZombie", "guar", "clannfear"]
+const REGION_CREATURES = ["ashHound", "tuskback", "snapjaw", "skyscreamer", "shellback", "drifter", "cinderling", "ashHusk", "loper", "gnashclaw"]
 
 // Build a faction (or freelance) quest appropriate to the player's level.
 export function generateQuest(rng, world, npc, factionId, playerLevel, rank = 0) {
@@ -49,7 +49,7 @@ export function generateQuest(rng, world, npc, factionId, playerLevel, rank = 0)
     q.type = "deliver"
     q.recipient = recipient.id
     q.recipientName = recipient.name
-    q.item = rng.pick(["Sealed Letter", "Package of Moon Sugar", "Ledger", "Crate of Scrolls", "Bundle of Kwama Eggs", "Sealed Writ"])
+    q.item = rng.pick(["Sealed Letter", "Package of Dreamdust", "Ledger", "Crate of Scrolls", "Bundle of Burrowgrub Eggs", "Sealed Writ"])
     q.title = `Deliver the ${q.item}`
     q.desc = `${npc.name} asked you to deliver a ${q.item} to ${recipient.name} in ${town.name}.`
     q.reward.gold = Math.round(q.reward.gold * 0.6)
@@ -63,7 +63,7 @@ export function generateQuest(rng, world, npc, factionId, playerLevel, rank = 0)
   q.count = rng.int(3, 6)
   q.killed = 0
   q.title = `Cull the ${CREATURES[creatureId].name}s`
-  q.desc = `${npc.name} of ${giverTown.name} wants ${q.count} ${CREATURES[creatureId].name}s killed. They roam the wilds of Vvardenfell.`
+  q.desc = `${npc.name} of ${giverTown.name} wants ${q.count} ${CREATURES[creatureId].name}s killed. They roam the wilds of Cindermere.`
   return q
 }
 
@@ -73,7 +73,7 @@ export function rankFor(rep) {
   return r
 }
 
-// Promotion also requires favored-skill proficiency, as in Morrowind.
+// Promotion also requires favored-skill proficiency, as in Cindermere.
 export function canPromote(character, factionId) {
   const m = character.factions[factionId]
   if (!m) return { ok: false, reason: "not a member" }

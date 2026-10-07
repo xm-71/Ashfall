@@ -4,7 +4,7 @@ import { buildFlora, GrassField, floraTime } from "../render/flora.js"
 import { buildTown, buildEntrance, GLOW, GLOW_COOL } from "../render/buildings.js"
 import { generateInterior, FOOTPRINT } from "../logic/interiors.js"
 import { buildInterior } from "../render/interiors.js"
-import { buildSignpost, buildDock, buildWreck, buildStronghold, buildPropylon, buildGhostfence, buildSeabed, GHOST_GLOW } from "../render/landmarks.js"
+import { buildSignpost, buildDock, buildWreck, buildStronghold, buildWaystone, buildWardwall, buildSeabed, GHOST_GLOW } from "../render/landmarks.js"
 import { Q } from "../core/quality.js"
 import { buildDungeonMesh, buildChestMesh, buildStairs } from "../render/dungeonMesh.js"
 import { Sky } from "../render/sky.js"
@@ -75,7 +75,7 @@ export class OverworldArea {
       },
     })
     steps.push({
-      label: "Growing emperor parasols",
+      label: "Growing giant parasols",
       run: () => {
         this.flora = buildFlora(world, this.colliders)
         this.scene.add(this.flora)
@@ -111,15 +111,15 @@ export class OverworldArea {
       },
     })
     steps.push({
-      label: "Raising the Ghostfence",
+      label: "Raising the Wardwall",
       run: () => {
         this.landmarks = []
         for (const l of world.landmarks || []) {
           let built
           if (l.type === "wreck" || l.type === "sunken") built = buildWreck(l, this.colliders)
           else if (l.type === "stronghold") built = buildStronghold(l, this.colliders)
-          else if (l.type === "propylon") built = buildPropylon(l, this.colliders)
-          else if (l.type === "ghostfence") built = { group: buildGhostfence(l, world.heightAt, this.colliders) }
+          else if (l.type === "waystone") built = buildWaystone(l, this.colliders)
+          else if (l.type === "wardwall") built = { group: buildWardwall(l, world.heightAt, this.colliders) }
           if (!built) continue
           this.scene.add(built.group)
           this.landmarks.push({ l, ...built })
@@ -193,7 +193,7 @@ export class OverworldArea {
     }
     for (const m of this.landmarks || []) {
       if (m.chest) list.push({ type: "use", verb: "Open", pos: m.chest, name: "Chest", range: 3, act: g => g.openLandmarkChest(m.l) })
-      if (m.stone) list.push({ type: "use", verb: "Touch", pos: m.stone, name: "Propylon Index", range: 3.5, act: g => g.usePropylon(m.l) })
+      if (m.stone) list.push({ type: "use", verb: "Touch", pos: m.stone, name: "Waystone Index", range: 3.5, act: g => g.useWaystone(m.l) })
     }
     for (const c of this.corpses) if (!c.looted) list.push({ type: "corpse", pos: c.center, name: c.name, ref: c, range: 3.5 })
     for (const s of this.sacks) list.push({ type: "sack", pos: s.pos, name: "Dropped Items", ref: s, range: 3 })
@@ -213,7 +213,7 @@ export class OverworldArea {
       if (h < 0.3 || this.townAt(x, z, 25) || this.world.lavaAt(x, z)) continue
       const region = this.world.regionAt(x, z)
       const distStart = Math.hypot(x - this.world.startTown.x, z - this.world.startTown.z)
-      const maxLevel = Math.max(2, Math.round(playerLevel * 1.2 + 1 + distStart / 250 + (region === "redMountain" ? 4 : 0)))
+      const maxLevel = Math.max(2, Math.round(playerLevel * 1.2 + 1 + distStart / 250 + (region === "hearthpeak" ? 4 : 0)))
       const pool = creaturesFor(region, maxLevel)
       if (!pool.length) continue
       const def = pool[Math.floor(Math.random() * pool.length)]
@@ -276,7 +276,7 @@ export class OverworldArea {
     for (const t of this.towns) t.group.visible = Math.hypot(t.town.x - g.pc.pos.x, t.town.z - g.pc.pos.z) < far + t.town.radius
     for (const e of this.entrances) e.group.visible = Math.hypot(e.dungeon.x - g.pc.pos.x, e.dungeon.z - g.pc.pos.z) < far
     for (const m of this.landmarks || []) {
-      if (m.l.type === "ghostfence") continue
+      if (m.l.type === "wardwall") continue
       const d = Math.hypot(m.l.x - g.pc.pos.x, m.l.z - g.pc.pos.z)
       m.group.visible = d < far + 30
       // bandits hold the old forts; they return every few days
@@ -345,14 +345,14 @@ export class DungeonArea {
     lvl.spawns.forEach((s, i) => {
       if (state.dead.has(i)) return
       const story = s.boss && dungeon.isleStory
-      const e = new Enemy(game, this, story ? "draugrLord" : s.creature, this.cellCenter(s.x, s.y), {
+      const e = new Enemy(game, this, story ? "grimwightLord" : s.creature, this.cellCenter(s.x, s.y), {
         boss: s.boss,
         tier: dungeon.tier,
         spawnKey: i,
         relic: s.boss ? dungeon.relic : null,
         artifact: s.boss ? dungeon.artifact : null,
         questItem: story ? { name: "Horn of the Ancestors", questId: "isle" } : s.boss ? dungeon.questItem : null,
-        name: s.boss ? (s.creature === "dagoth" ? game.world.mainQuest.dagoth : game.bossName(s.creature, dungeon)) : undefined,
+        name: s.boss ? (s.creature === "emberlord" ? game.world.mainQuest.emberlord : game.bossName(s.creature, dungeon)) : undefined,
       })
       this.enemies.push(e)
     })
@@ -540,7 +540,7 @@ export class DungeonArea {
 
   interactables() {
     const list = []
-    list.push({ type: "stairsUp", pos: this.upStairs.position.clone().setY(this.upStairs.position.y + 1.5), name: this.levelIndex === 0 ? `Exit to Vvardenfell` : `Stairs up (level ${this.levelIndex})`, range: 3.2 })
+    list.push({ type: "stairsUp", pos: this.upStairs.position.clone().setY(this.upStairs.position.y + 1.5), name: this.levelIndex === 0 ? `Exit to Cindermere` : `Stairs up (level ${this.levelIndex})`, range: 3.2 })
     if (this.downStairs) list.push({ type: "stairsDown", pos: this.downStairs.position.clone().setY(this.downStairs.position.y + 1.5), name: `Stairs down (level ${this.levelIndex + 2})`, range: 3.2 })
     for (const c of this.chests) list.push({ type: "chest", pos: c.pos.clone().setY(c.pos.y + 0.6), name: c.state.opened ? "Chest (opened)" : c.state.locked ? `Locked Chest (lock ${c.state.lockLevel})` : "Chest", ref: c, range: 3 })
     for (const c of this.corpses) if (!c.looted) list.push({ type: "corpse", pos: c.center, name: c.name, ref: c, range: 3.5 })

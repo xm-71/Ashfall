@@ -1,33 +1,47 @@
-// Syllable tables for procedural Morrowind-flavored names.
-export const DUNMER_FIRST_A = ["Ald", "Bal", "Dren", "Ery", "Fal", "Gil", "Hlo", "Ind", "Lle", "Mal", "Nel", "Ral", "Sar", "Tel", "Ule", "Vel", "Dra", "Ser", "Gor", "Ath", "Bra", "Dar", "Mev", "Ven", "Tral", "Nil", "Vos", "Dun"]
-export const DUNMER_FIRST_B = ["os", "vas", "eth", "ms", "ri", "vyn", "ar", "is", "eno", "ros", "ena", "asa", "aren", "ila", "yne", "ul", "eni", "ano", "ise", "yn", "ath", "or", "ise", "ura"]
-export const DUNMER_LAST_A = ["Ral", "Dren", "Omo", "Sad", "Ind", "Hla", "Tel", "Ule", "Ver", "Dra", "Sar", "Aryo", "Rethan", "Andre", "Bero", "Llend", "Hlerv", "Dar"]
-export const DUNMER_LAST_B = ["ethi", "vani", "ril", "rano", "alas", "vel", "ano", "ndas", "ron", "thys", "o", "u", "ari", "lo", "anyon", "oril", "yon"]
+// Syllable tables for the procedural names of Ashfall's peoples and places
+// (see docs/lore.md).
 
-export const NORD_FIRST = ["Hrord", "Sigrun", "Ulfgar", "Brunhilda", "Thorek", "Ingrid", "Bjorn", "Helga", "Eirik", "Solveig", "Hlormar", "Gunnar", "Ragna", "Skjari"]
-export const NORD_LAST = ["the Bold", "Iron-Hand", "Snow-Beard", "Ice-Veins", "the Unyielding", "Wolf-Born", "Ashen-Eye", "Frost-Tooth"]
-export const IMP_FIRST = ["Caius", "Marcus", "Lucia", "Octavia", "Gaius", "Julia", "Flavia", "Titus", "Livia", "Aulus", "Crassius", "Severa", "Vedam", "Larrius"]
-export const IMP_LAST = ["Aurelius", "Varro", "Maro", "Cosades", "Quintilius", "Varus", "Curio", "Direnni", "Lucanus", "Septim", "Hosidius", "Frontinius"]
-export const KHAJIIT = ["J'Zirr", "Ra'Virr", "M'Aiq", "Dro'Zahn", "S'Rava", "Ahnassi", "Khinjarsi", "Ri'Shan", "Jo'Vassa", "Ma'Zaddha", "Tsabhi", "Dahleena"]
-export const ARGONIAN_A = ["Hides", "Tree", "Walks", "Sings", "Swims", "Bosses", "Deep", "Sees", "Many", "Only", "Tail", "Wind", "Gathers"]
-export const ARGONIAN_B = ["His-Eyes", "Moons", "in-Shadow", "to-Rain", "the-Waters", "Nine-Stars", "Scales", "the-Trees", "Branches", "Marsh", "Rocks"]
-export const ALTMER_A = ["Ang", "Cur", "Eld", "Fal", "Ilm", "Lan", "Nar", "Ond", "Sin", "Tan", "Und", "Aer"]
-export const ALTMER_B = ["arion", "ande", "irine", "atar", "iel", "imo", "ano", "esse", "ondil", "arra", "ethil"]
-export const ORC_FIRST = ["Gro", "Bash", "Umug", "Mazoga", "Dul", "Shagrol", "Yashnag", "Durgash", "Ghola", "Lurbuk"]
-export const ORC_LAST = ["gro-Shub", "gra-Bagol", "gro-Malog", "gra-Yak", "gro-Durbul", "gra-Mog"]
+// Cindari (ash-elf) given names and family names
+export const CINDARI_FIRST_A = ["Ash", "Bel", "Cyr", "Dov", "Esh", "Fen", "Gal", "Hes", "Ith", "Kav", "Lor", "Mer", "Nav", "Oth", "Rav", "Sel", "Tav", "Ulv", "Vash", "Zer", "Dris", "Kael", "Mys", "Vor", "Thal", "Nyr", "Sev", "Orv"]
+export const CINDARI_FIRST_B = ["en", "ira", "ath", "os", "yra", "un", "ael", "is", "eth", "ana", "or", "ys", "ev", "ila", "ar", "esh", "ina", "aris", "ul", "ane", "ith", "ova", "el", "eda"]
+export const CINDARI_LAST_A = ["Vel", "Dor", "Ash", "Kel", "Mor", "Sar", "Thren", "Ul", "Vash", "Dral", "Esh", "Cor", "Nar", "Ith", "Rav", "Sev", "Tal", "Orv"]
+export const CINDARI_LAST_B = ["ennis", "avar", "orin", "essa", "ath", "ovar", "eth", "andis", "uryn", "ira", "os", "eli", "aran", "omyr", "ethis", "avel", "un"]
 
-export const PLACE_A = ["Ald", "Bal", "Vos", "Mol", "Gnis", "Sura", "Tel", "Hla", "Mora", "Ebon", "Cal", "Pel", "Seyda", "Khu", "Mar", "Dagon", "Sad", "Ghost", "Ur", "Mas", "Gna", "Dre", "Ash", "Ind", "Bthu", "Nchu", "Arkng", "Mzah", "Endu"]
-export const PLACE_B = ["run", "mora", "ruhn", "ith", "ad", "ria", "gard", "heart", "ga", "anga", "iad", "neen", "haki", "ius", "dar", "on", "ushan", "athi", "ris", "fel", "ahn", "anpa", "rah", "ossa"]
+// Hrothi (northern folk)
+export const HROTHI_FIRST = ["Hakon", "Sigrid", "Torvald", "Ylva", "Brann", "Astrid", "Ketil", "Runa", "Orm", "Gudrun", "Stig", "Halla", "Vigdis", "Arnulf"]
+export const HROTHI_LAST = ["the Steady", "Iron-Grip", "Rime-Beard", "Frost-Born", "the Unbent", "Bear-Hand", "Grey-Eye", "Cold-Tooth"]
+// Vessari, Caldrin and Qasiri share the Concord's naming
+export const VESSARI_FIRST = ["Aurel", "Cassia", "Davin", "Livara", "Corvin", "Marena", "Tessaly", "Quill", "Seraphin", "Orella", "Valen", "Ibbet", "Rodric", "Maelis"]
+export const VESSARI_LAST = ["Varnell", "Castor", "Duvane", "Arrowmere", "Hollis", "Brightwater", "Calvane", "Orrin", "Selwyn", "Tarrow", "Wexley", "Doran"]
+// Rakhai (feline folk)
+export const RAKHAI = ["Ra'shiri", "Kha'tavi", "Ziri'an", "Mo'rasha", "Ta'jhen", "Shazzir", "Rhakeen", "Aa'vesh", "Nisrah", "Jha'zara", "Qamira", "Sabithi"]
+// Saurek (scaled folk): deed-names
+export const SAUREK_A = ["Watches", "Wades", "Hums", "Climbs", "Dreams", "Counts", "Still", "Bright", "Quick", "Old", "Low", "Green", "Keeps"]
+export const SAUREK_B = ["the-Reeds", "Two-Moons", "in-Mud", "the-Tide", "Many-Roots", "Seven-Stones", "the-Fog", "Warm-Rain", "Deep-Water", "the-Shallows", "Lily"]
+// Aurelin and Wyldren (elves)
+export const AURELIN_A = ["Aer", "Cael", "Eri", "Fae", "Ilan", "Lyr", "Myr", "Oriel", "Sael", "Tir", "Vael", "Ys"]
+export const AURELIN_B = ["andor", "ith", "ione", "aran", "ael", "ion", "esse", "ondil", "ara", "ethel", "ean"]
+// Tuskar
+export const TUSKAR_FIRST = ["Grosh", "Urza", "Mog", "Thrakka", "Durz", "Bolgra", "Kruk", "Yarza", "Ghash", "Lugdra"]
+export const TUSKAR_LAST = ["of the Red Tusk", "of the Iron Holds", "of Clan Gor", "of the Broken Anvil", "of Clan Murra", "of the Ash Hold"]
 
-export const DWEMER_A = ["Bthu", "Nchu", "Arkng", "Mzah", "Bamz", "Nchard", "Druim", "Mzul", "Tham", "Aleft", "Odro", "Bthan", "Nchul", "Raz"]
-export const DWEMER_B = ["and", "left", "thand", "nchend", "amz", "uleft", "ark", "ynd", "chuand", "gzor", "unch", "zdrem"]
-export const DAEDRIC_A = ["Ald", "Kushtashpi", "Ashal", "Yas", "Assur", "Anud", "Ebern", "Ald Sotha", "Bal", "Onn", "Zaint", "Yans", "Addad"]
-export const DAEDRIC_B = ["", "adus", "anit", "urn", "nisi", "abal", "irra", "mmu", "baddon", "eth"]
-export const CAVE_SUFFIX = ["Grotto", "Cave", "Cavern", "Egg Mine", "Hollow", "Den", "Sinkhole"]
-export const TOMB_FAMILIES = ["Sarys", "Andrano", "Ravel", "Salothran", "Nerano", "Drethan", "Hleran", "Indalen", "Sadryon", "Arano", "Dralas", "Venim", "Othrelas", "Thelas", "Llethri", "Dareleth"]
+// towns and caves
+export const PLACE_A = ["Ash", "Bel", "Cor", "Dun", "Esh", "Fal", "Gor", "Hel", "Ir", "Kel", "Mor", "Nar", "Or", "Sel", "Thar", "Ul", "Vel", "Zar", "Cind", "Ember", "Tor", "Ves", "Dra", "Lum", "Ker", "Ost", "Rav", "Sev", "Ith"]
+export const PLACE_B = ["vale", "mere", "hold", "ith", "an", "oria", "gard", "reach", "a", "anth", "os", "ene", "hara", "ius", "dor", "on", "uvar", "esh", "ris", "fen", "ath", "ova", "rah", "oss"]
 
+// Kaldur ruins
+export const KALDUR_A = ["Kal", "Drum", "Borr", "Thun", "Grav", "Okk", "Bram", "Durn", "Holt", "Zarr", "Krag", "Mund", "Gorr", "Brass"]
+export const KALDUR_B = ["hollow", "deep", "forge", "gate", "halls", "vault", "anvil", "gear", "bore", "spire", "works", "delve"]
+// Abyssal shrines
+export const ABYSSAL_A = ["Vhar", "Xyr", "Mal", "Ixil", "Nyx", "Zhaal", "Seph", "Ghor", "Ulth", "Khar", "Vex", "Ashk", "Dreth"]
+export const ABYSSAL_B = ["", "oth", "amun", "esh", "iril", "agul", "ath", "uun", "ennon", "ix"]
+export const CAVE_SUFFIX = ["Grotto", "Cave", "Cavern", "Grub Mine", "Hollow", "Den", "Sinkhole"]
+export const TOMB_FAMILIES = ["Velenn", "Dorvar", "Asheth", "Korinn", "Saravel", "Ithandis", "Moreth", "Thrennis", "Ulvaran", "Dralis", "Esharan", "Nyrovar", "Seveth", "Orvanis", "Calenth", "Dovareth"]
+
+// relics and bosses
 export const ARTIFACT_NOUNS = ["Tear", "Crown", "Blade", "Lantern", "Codex", "Mask", "Heart", "Chalice", "Seal", "Shard", "Idol", "Reliquary"]
-export const ARTIFACT_OWNERS = ["Saint Veloth", "Saint Felms", "Saint Llothis", "Saint Olms", "Saint Aralor", "Saint Rilms", "Saint Delyn", "Nerevar", "Vivec", "Almalexia", "Sotha Sil", "Kagrenac", "Dumac", "Boethiah", "Azura", "Mephala"]
+export const ARTIFACT_OWNERS = ["Saint Ilvara", "Saint Corvane", "Saint Sethis", "Saint Ardent", "Mother Lira", "the Returned", "Durnagh", "the Iron Emperor", "the Barrow King", "Seraphe", "Lady Vesper", "Ixilith", "the First Ashwalker", "the Drowned Queen", "Varenn", "the Lantern-Keeper"]
 
-export const BOSS_EPITHETS = ["the Uncouth", "the Flayer", "Ash-Eater", "the Hollow", "the Returned", "Blood-Drinker", "the Unmourned", "Red-Hand", "the Scourge", "the Pale", "Night-Mother's Own", "the Bitter"]
-export const DAGOTH_NAMES = ["Ur", "Gares", "Endus", "Uthol", "Irvyn", "Aladus", "Odros", "Vemyn", "Tureynul", "Gilvoth", "Rather", "Mulyn"]
+export const BOSS_EPITHETS = ["the Uncouth", "the Flayer", "Ash-Eater", "the Hollow", "the Returned", "Blood-Drinker", "the Unmourned", "Red-Hand", "the Scourge", "the Pale", "Mother of Rot", "the Bitter"]
+// lords of the Ember Court: "Vael <name>"
+export const EMBER_NAMES = ["Ashur", "Morvane", "Ithrel", "Sorrow", "Kethis", "Draval", "Unnor", "Velith", "Corruth", "Ossian", "Thariel", "Nemyr"]

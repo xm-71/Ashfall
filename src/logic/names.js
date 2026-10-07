@@ -4,27 +4,27 @@ const cap = s => s.charAt(0).toUpperCase() + s.slice(1)
 
 export function npcName(rng, race) {
   switch (race) {
-    case "nord": return `${rng.pick(N.NORD_FIRST)} ${rng.pick(N.NORD_LAST)}`
-    case "imperial":
-    case "breton":
-    case "redguard": return `${rng.pick(N.IMP_FIRST)} ${rng.pick(N.IMP_LAST)}`
-    case "khajiit": return rng.pick(N.KHAJIIT)
-    case "argonian": return `${rng.pick(N.ARGONIAN_A)}-${rng.pick(N.ARGONIAN_B)}`
-    case "altmer":
-    case "bosmer": return cap(rng.pick(N.ALTMER_A) + rng.pick(N.ALTMER_B))
-    case "orc": return `${rng.pick(N.ORC_FIRST)} ${rng.pick(N.ORC_LAST)}`
+    case "hrothi": return `${rng.pick(N.HROTHI_FIRST)} ${rng.pick(N.HROTHI_LAST)}`
+    case "vessari":
+    case "caldrin":
+    case "qasiri": return `${rng.pick(N.VESSARI_FIRST)} ${rng.pick(N.VESSARI_LAST)}`
+    case "rakhai": return rng.pick(N.RAKHAI)
+    case "saurek": return `${rng.pick(N.SAUREK_A)}-${rng.pick(N.SAUREK_B)}`
+    case "aurelin":
+    case "wyldren": return cap(rng.pick(N.AURELIN_A) + rng.pick(N.AURELIN_B))
+    case "tuskar": return `${rng.pick(N.TUSKAR_FIRST)} ${rng.pick(N.TUSKAR_LAST)}`
     default:
-      return `${rng.pick(N.DUNMER_FIRST_A)}${rng.pick(N.DUNMER_FIRST_B)} ${rng.pick(N.DUNMER_LAST_A)}${rng.pick(N.DUNMER_LAST_B)}`
+      return `${rng.pick(N.CINDARI_FIRST_A)}${rng.pick(N.CINDARI_FIRST_B)} ${rng.pick(N.CINDARI_LAST_A)}${rng.pick(N.CINDARI_LAST_B)}`
   }
 }
 
-const NORD_A = ["Skal", "Thir", "Hrot", "Frost", "Wolf", "Isin", "Brod", "Kolb", "Rav", "Hjal", "Storm", "Svar"]
-const NORD_B = ["heim", "stad", "vik", "holm", "garth", "mund", "fjell", "rik"]
+const HROTHI_A = ["Skal", "Thir", "Hrot", "Frost", "Wolf", "Isin", "Brod", "Kolb", "Rav", "Hjal", "Storm", "Svar"]
+const HROTHI_B = ["heim", "stad", "vik", "holm", "garth", "mund", "fjell", "rik"]
 
 export function placeName(rng, used = new Set(), style = null) {
-  if (style === "nord")
+  if (style === "hrothi")
     for (let i = 0; i < 50; i++) {
-      const name = rng.pick(NORD_A) + rng.pick(NORD_B)
+      const name = rng.pick(HROTHI_A) + rng.pick(HROTHI_B)
       if (!used.has(name)) {
         used.add(name)
         return name
@@ -39,17 +39,17 @@ export function placeName(rng, used = new Set(), style = null) {
       return name
     }
   }
-  return `Nchu${used.size}`
+  return `Cindhold ${used.size}`
 }
 
 export function dungeonName(rng, type, used = new Set()) {
   for (let i = 0; i < 50; i++) {
     let name
-    if (type === "dwemer") name = rng.pick(N.DWEMER_A) + rng.pick(N.DWEMER_B)
-    else if (type === "daedric") name = `${rng.pick(N.DAEDRIC_A)}${rng.pick(N.DAEDRIC_B)} Shrine`.replace(/\s+/g, " ")
+    if (type === "kaldur") name = rng.pick(N.KALDUR_A) + rng.pick(N.KALDUR_B)
+    else if (type === "abyssal") name = `${rng.pick(N.ABYSSAL_A)}${rng.pick(N.ABYSSAL_B)} Shrine`.replace(/\s+/g, " ")
     else if (type === "tomb") name = `${rng.pick(N.TOMB_FAMILIES)} Ancestral Tomb`
-    else if (type === "barrow") name = `${rng.pick(NORD_A)}${rng.pick(["mund", "grim", "vald", "hal"])} Barrow`
-    else if (type === "citadel") name = "Dagoth Ur Citadel"
+    else if (type === "barrow") name = `${rng.pick(HROTHI_A)}${rng.pick(["mund", "grim", "vald", "hal"])} Barrow`
+    else if (type === "citadel") name = "The Ember Citadel"
     else name = `${placeName(rng)} ${rng.pick(N.CAVE_SUFFIX)}`
     if (!used.has(name)) {
       used.add(name)
@@ -67,6 +67,6 @@ export function bossName(rng, baseName) {
   return `${baseName} ${rng.pick(N.BOSS_EPITHETS)}`
 }
 
-export function dagothName(rng) {
-  return `Dagoth ${rng.pick(N.DAGOTH_NAMES)}`
+export function emberName(rng) {
+  return `Vael ${rng.pick(N.EMBER_NAMES)}`
 }

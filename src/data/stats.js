@@ -45,19 +45,19 @@ export const SKILLS = {
 export const SKILL_IDS = Object.keys(SKILLS)
 
 export const RACES = {
-  dunmer: {
-    name: "Dunmer",
-    desc: "Dark Elves, native to Morrowind. Proud, fire-kissed, and deadly with blade and spell alike.",
+  cindari: {
+    name: "Cindari",
+    desc: "Ash-elves, native to Cindermere. Proud, fire-kissed, and deadly with blade and spell alike.",
     attrs: { strength: 40, intelligence: 40, willpower: 30, agility: 40, speed: 50, endurance: 40, personality: 30, luck: 40 },
     skills: { longBlade: 5, destruction: 10, shortBlade: 10, lightArmor: 5, athletics: 5, mysticism: 5 },
     resist: { fire: 0.75 },
-    power: "ancestorGuardian",
+    power: "ancestralWard",
     skin: 0x6f7e8a,
     hair: 0x1c1c22,
   },
-  altmer: {
-    name: "Altmer",
-    desc: "High Elves of the Summerset Isles. Unrivaled magical aptitude, fragile against magic in turn.",
+  aurelin: {
+    name: "Aurelin",
+    desc: "Sun-elves of the Sunward Isles. Unrivaled magical aptitude, fragile against magic in turn.",
     attrs: { strength: 30, intelligence: 50, willpower: 40, agility: 40, speed: 30, endurance: 40, personality: 40, luck: 40 },
     skills: { destruction: 10, alteration: 10, illusion: 5, conjuration: 5, mysticism: 5, restoration: 5 },
     resist: { magic: -0.5, fire: -0.5, frost: -0.5, shock: -0.5 },
@@ -65,9 +65,9 @@ export const RACES = {
     skin: 0xd9c47e,
     hair: 0xe0d7a8,
   },
-  argonian: {
-    name: "Argonian",
-    desc: "Reptilian folk of Black Marsh. Immune to poison, at home in the water.",
+  saurek: {
+    name: "Saurek",
+    desc: "Reptilian folk of the Saurek Fens. Immune to poison, at home in the water.",
     attrs: { strength: 40, intelligence: 40, willpower: 30, agility: 50, speed: 50, endurance: 30, personality: 30, luck: 40 },
     skills: { athletics: 15, alteration: 5, illusion: 5, mediumArmor: 5, spear: 5, unarmored: 5 },
     resist: { poison: 1 },
@@ -75,18 +75,18 @@ export const RACES = {
     skin: 0x5b7a3c,
     hair: 0x3f5a2a,
   },
-  bosmer: {
-    name: "Bosmer",
-    desc: "Wood Elves of Valenwood. Nimble archers and scouts.",
+  wyldren: {
+    name: "Wyldren",
+    desc: "Wood-elves of the Wyldwood. Nimble archers and scouts.",
     attrs: { strength: 30, intelligence: 40, willpower: 30, agility: 50, speed: 50, endurance: 30, personality: 40, luck: 40 },
     skills: { marksman: 15, lightArmor: 10, sneak: 10, acrobatics: 5, alteration: 5 },
     resist: { poison: 0.5 },
     skin: 0xa77a4f,
     hair: 0x4b2f1a,
   },
-  breton: {
-    name: "Breton",
-    desc: "Mixed Elven and human blood from High Rock. Natural resistance to magic.",
+  caldrin: {
+    name: "Caldrin",
+    desc: "Half-elven folk of Caldmoor. Natural resistance to magic.",
     attrs: { strength: 40, intelligence: 50, willpower: 50, agility: 30, speed: 30, endurance: 30, personality: 40, luck: 40 },
     skills: { conjuration: 10, mysticism: 10, restoration: 10, alteration: 5, illusion: 5 },
     resist: { magic: 0.5 },
@@ -94,44 +94,44 @@ export const RACES = {
     skin: 0xe6c3a5,
     hair: 0x6b4423,
   },
-  imperial: {
-    name: "Imperial",
-    desc: "Citizens of Cyrodiil. Silver-tongued diplomats and disciplined legionnaires.",
+  vessari: {
+    name: "Vessari",
+    desc: "Citizens of the Concord, from its capital Valecrest. Silver-tongued diplomats and disciplined legionnaires.",
     attrs: { strength: 40, intelligence: 40, willpower: 30, agility: 30, speed: 40, endurance: 40, personality: 50, luck: 40 },
     skills: { speechcraft: 10, mercantile: 10, longBlade: 10, bluntWeapon: 5, lightArmor: 5, handToHand: 5 },
     skin: 0xdcb08f,
     hair: 0x2a1c12,
   },
-  khajiit: {
-    name: "Khajiit",
-    desc: "Feline people of Elsweyr. Agile, quick, and hard to catch.",
+  rakhai: {
+    name: "Rakhai",
+    desc: "Feline people of the Rakhai Steppes. Agile, quick, and hard to catch.",
     attrs: { strength: 40, intelligence: 40, willpower: 30, agility: 50, speed: 40, endurance: 30, personality: 40, luck: 40 },
     skills: { acrobatics: 15, athletics: 5, handToHand: 5, lightArmor: 5, security: 5, shortBlade: 5, sneak: 5 },
     nightEye: true,
     skin: 0xc49a5c,
     hair: 0x8a6a3a,
   },
-  nord: {
-    name: "Nord",
-    desc: "Tall, hardy warriors of Skyrim. Shrug off frost and shock.",
+  hrothi: {
+    name: "Hrothi",
+    desc: "Tall, hardy warriors of Hrothmark. Shrug off frost and shock.",
     attrs: { strength: 50, intelligence: 30, willpower: 40, agility: 30, speed: 40, endurance: 50, personality: 30, luck: 40 },
     skills: { axe: 10, bluntWeapon: 10, mediumArmor: 10, heavyArmor: 5, longBlade: 5, spear: 5 },
     resist: { frost: 1, shock: 0.5 },
     skin: 0xf0d2bd,
     hair: 0xc9a05a,
   },
-  orc: {
-    name: "Orc",
-    desc: "Orsimer of Wrothgar. Unmatched armorers and berserkers.",
+  tuskar: {
+    name: "Tuskar",
+    desc: "Tusked clans of the Tusk Holds. Unmatched armorers and berserkers.",
     attrs: { strength: 45, intelligence: 30, willpower: 50, agility: 35, speed: 30, endurance: 50, personality: 30, luck: 40 },
     skills: { heavyArmor: 10, mediumArmor: 10, block: 10, axe: 5 },
     resist: { magic: 0.25 },
     skin: 0x6a8a4a,
     hair: 0x1a1a1a,
   },
-  redguard: {
-    name: "Redguard",
-    desc: "Warrior-folk of Hammerfell. The finest natural swordsmen of Tamriel.",
+  qasiri: {
+    name: "Qasiri",
+    desc: "Warrior-folk of Qasir. The finest natural swordsmen of Aurenna.",
     attrs: { strength: 50, intelligence: 30, willpower: 30, agility: 40, speed: 40, endurance: 50, personality: 30, luck: 40 },
     skills: { longBlade: 15, athletics: 5, axe: 5, bluntWeapon: 5, heavyArmor: 5, mediumArmor: 5, shortBlade: 5 },
     resist: { poison: 0.75 },
@@ -156,7 +156,7 @@ export const CLASSES = {
     attrs: ["strength", "speed"],
     major: ["axe", "mediumArmor", "bluntWeapon", "athletics", "block"],
     minor: ["acrobatics", "lightArmor", "handToHand", "unarmored", "longBlade"],
-    kit: ["iron battle axe", "bonemold cuirass", "potion:health", "potion:health"],
+    kit: ["iron battle axe", "bonecast cuirass", "potion:health", "potion:health"],
     spells: [],
   },
   knight: {
@@ -184,7 +184,7 @@ export const CLASSES = {
     major: ["destruction", "alteration", "restoration", "mysticism", "illusion"],
     minor: ["conjuration", "shortBlade", "unarmored", "speechcraft", "security"],
     kit: ["iron dagger", "potion:magicka", "potion:magicka"],
-    spells: ["fireBite", "frostbite", "heal", "light", "divineIntervention"],
+    spells: ["fireBite", "frostbite", "heal", "light", "lightwardRecall"],
   },
   healer: {
     name: "Healer",
@@ -193,7 +193,7 @@ export const CLASSES = {
     major: ["restoration", "mysticism", "alteration", "handToHand", "speechcraft"],
     minor: ["illusion", "unarmored", "bluntWeapon", "mercantile", "block"],
     kit: ["iron club", "potion:magicka"],
-    spells: ["heal", "greatHeal", "shield", "almsiviIntervention", "sparks"],
+    spells: ["heal", "greatHeal", "shield", "triuneRecall", "sparks"],
   },
   spellsword: {
     name: "Spellsword",
@@ -201,7 +201,7 @@ export const CLASSES = {
     attrs: ["willpower", "endurance"],
     major: ["longBlade", "destruction", "restoration", "mediumArmor", "block"],
     minor: ["alteration", "bluntWeapon", "athletics", "axe", "illusion"],
-    kit: ["iron longsword", "bonemold cuirass", "potion:health"],
+    kit: ["iron longsword", "bonecast cuirass", "potion:health"],
     spells: ["sparks", "heal"],
   },
   nightblade: {
@@ -210,7 +210,7 @@ export const CLASSES = {
     attrs: ["willpower", "speed"],
     major: ["mysticism", "illusion", "alteration", "sneak", "shortBlade"],
     minor: ["lightArmor", "unarmored", "destruction", "marksman", "security"],
-    kit: ["steel shortsword", "netch leather cuirass", "potion:health"],
+    kit: ["steel shortsword", "drifter leather cuirass", "potion:health"],
     spells: ["chameleon", "sparks", "detectCreature"],
   },
   thief: {
@@ -219,7 +219,7 @@ export const CLASSES = {
     attrs: ["speed", "agility"],
     major: ["security", "sneak", "acrobatics", "lightArmor", "shortBlade"],
     minor: ["marksman", "speechcraft", "handToHand", "mercantile", "athletics"],
-    kit: ["iron tanto", "netch leather cuirass", "lockpick", "lockpick", "potion:health"],
+    kit: ["iron tanto", "drifter leather cuirass", "lockpick", "lockpick", "potion:health"],
     spells: [],
   },
   assassin: {
@@ -237,7 +237,7 @@ export const CLASSES = {
     attrs: ["speed", "endurance"],
     major: ["sneak", "longBlade", "mediumArmor", "athletics", "block"],
     minor: ["marksman", "alteration", "restoration", "lightArmor", "unarmored"],
-    kit: ["chitin short bow", "arrows:50", "iron shortsword", "bonemold cuirass", "potion:health"],
+    kit: ["chitin short bow", "arrows:50", "iron shortsword", "bonecast cuirass", "potion:health"],
     spells: ["heal"],
   },
   monk: {
@@ -269,18 +269,19 @@ export const CLASSES = {
   },
 }
 
+// The constellations of Cindermere's sky (docs/lore.md).
 export const BIRTHSIGNS = {
-  warrior: { name: "The Warrior", desc: "+10 Strength, +10 attack chance.", attrs: { strength: 10 }, attack: 10 },
-  mage: { name: "The Mage", desc: "+50% maximum Magicka.", magickaMult: 0.5 },
-  thief: { name: "The Thief", desc: "+10 Agility, harder to hit (+10 evasion).", attrs: { agility: 10 }, evasion: 10 },
-  lady: { name: "The Lady", desc: "+25 Personality, +25 Endurance.", attrs: { personality: 25, endurance: 25 } },
-  steed: { name: "The Steed", desc: "+25 Speed.", attrs: { speed: 25 } },
-  lord: { name: "The Lord", desc: "Power: Blood of the North (heal 60 over 5s). Weak to fire.", resist: { fire: -0.5 }, power: "bloodOfTheNorth" },
-  apprentice: { name: "The Apprentice", desc: "+150% Magicka, but 50% weakness to magic.", magickaMult: 1.5, resist: { magic: -0.5 } },
-  atronach: { name: "The Atronach", desc: "+200% Magicka and 50% spell absorption, but no Magicka regeneration.", magickaMult: 2.0, absorb: 0.5, noMagickaRegen: true },
-  ritual: { name: "The Ritual", desc: "Power: Mara's Gift (fully restore Health). Spell: Blessed Word.", power: "marasGift" },
-  lover: { name: "The Lover", desc: "+25 Agility. Power: Lover's Kiss (paralyze foe).", attrs: { agility: 25 }, power: "loversKiss" },
-  shadow: { name: "The Shadow", desc: "Power: Moonshadow (invisibility for 30s).", power: "moonshadow" },
-  tower: { name: "The Tower", desc: "+15 Security, spell: Open Lock.", skills: { security: 15 }, spells: ["openLock"] },
-  serpent: { name: "The Serpent", desc: "Spell: Star-Curse (heavy poison damage, costs you health).", spells: ["starCurse"] },
+  anvil: { name: "The Anvil", desc: "+10 Strength, +10 attack chance.", attrs: { strength: 10 }, attack: 10 },
+  lantern: { name: "The Lantern", desc: "+50% maximum Magicka.", magickaMult: 0.5 },
+  magpie: { name: "The Magpie", desc: "+10 Agility, harder to hit (+10 evasion).", attrs: { agility: 10 }, evasion: 10 },
+  matron: { name: "The Matron", desc: "+25 Personality, +25 Endurance.", attrs: { personality: 25, endurance: 25 } },
+  hare: { name: "The Hare", desc: "+25 Speed.", attrs: { speed: 25 } },
+  oak: { name: "The Oak", desc: "Power: Heartwood (heal 60 over 5s). Weak to fire.", resist: { fire: -0.5 }, power: "heartwood" },
+  candle: { name: "The Candle", desc: "+150% Magicka, but 50% weakness to magic.", magickaMult: 1.5, resist: { magic: -0.5 } },
+  vessel: { name: "The Vessel", desc: "+200% Magicka and 50% spell absorption, but no Magicka regeneration.", magickaMult: 2.0, absorb: 0.5, noMagickaRegen: true },
+  chalice: { name: "The Chalice", desc: "Power: Chalice's Gift (fully restore Health). Spell: Blessed Word.", power: "chalicesGift" },
+  rose: { name: "The Rose", desc: "+25 Agility. Power: Rose's Kiss (paralyze foe).", attrs: { agility: 25 }, power: "rosesKiss" },
+  moth: { name: "The Moth", desc: "Power: Moonshadow (invisibility for 30s).", power: "moonshadow" },
+  key: { name: "The Key", desc: "+15 Security, spell: The Unhinging.", skills: { security: 15 }, spells: ["openLock"] },
+  adder: { name: "The Adder", desc: "Spell: Adder's Curse (heavy poison damage, costs you health).", spells: ["addersCurse"] },
 }

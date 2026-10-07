@@ -1,4 +1,4 @@
-// Formulas loosely modelled on Morrowind's, softened a little for real-time play.
+// Formulas loosely modelled on Cindermere's, softened a little for real-time play.
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
 export function hitChance({ skill, agility, luck, fatigue, bonus = 0 }, evasion = 0) {

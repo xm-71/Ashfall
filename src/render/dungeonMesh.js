@@ -19,8 +19,8 @@ export const THEME_LOOK = {
   cave: { floor: "caveRock", wall: "caveRock", ceil: "caveRock", floorTint: 0x8a7a68, wallTint: 0xb0a090, ceilTint: 0x6a5e50, height: 5, light: 0xffa050, fog: 0x0c0906, ambient: 0x3a3026, wall3: [0x6a, 0x5e, 0x50], organic: true },
   barrow: { floor: "floorTiles", wall: "tombBrick", ceil: "caveRock", floorTint: 0x9aa4b0, wallTint: 0x9aa8b8, ceilTint: 0x6a7a8a, height: 4.2, light: 0x9ac8ff, fog: 0x06090e, ambient: 0x283444, wall3: [0x6a, 0x74, 0x80], trim: "sandstone", beams: "planks" },
   tomb: { floor: "floorTiles", wall: "tombBrick", ceil: "tombBrick", floorTint: 0xb0a898, wallTint: 0xd0c4b0, ceilTint: 0x8a8070, height: 3.8, light: 0xc0d0ff, fog: 0x08080c, ambient: 0x2e3038, wall3: [0x8a, 0x7e, 0x68], trim: "sandstone", beams: "planks" },
-  dwemer: { floor: "dwemerFloor", wall: "dwemerMetal", ceil: "dwemerMetal", floorTint: 0xffffff, wallTint: 0xffffff, ceilTint: 0x9a8a70, height: 6, light: 0xffd080, fog: 0x0e0a06, ambient: 0x3a3020, wall3: [0xa0, 0x80, 0x40], trim: "dwemerMetal", pipes: true },
-  daedric: { floor: "daedricStone", wall: "daedricStone", ceil: "daedricStone", floorTint: 0xb0a0a0, wallTint: 0xffffff, ceilTint: 0x6a5a5a, height: 7, light: 0xff5a30, fog: 0x0c0404, ambient: 0x3a2020, wall3: [0x5a, 0x3a, 0x30], trim: "daedricStone", ribs: true },
+  kaldur: { floor: "kaldurFloor", wall: "kaldurMetal", ceil: "kaldurMetal", floorTint: 0xffffff, wallTint: 0xffffff, ceilTint: 0x9a8a70, height: 6, light: 0xffd080, fog: 0x0e0a06, ambient: 0x3a3020, wall3: [0xa0, 0x80, 0x40], trim: "kaldurMetal", pipes: true },
+  abyssal: { floor: "abyssalStone", wall: "abyssalStone", ceil: "abyssalStone", floorTint: 0xb0a0a0, wallTint: 0xffffff, ceilTint: 0x6a5a5a, height: 7, light: 0xff5a30, fog: 0x0c0404, ambient: 0x3a2020, wall3: [0x5a, 0x3a, 0x30], trim: "abyssalStone", ribs: true },
   citadel: { floor: "flesh", wall: "flesh", ceil: "flesh", floorTint: 0x9a7a70, wallTint: 0xffffff, ceilTint: 0x7a5a50, height: 7, light: 0xff4020, fog: 0x100404, ambient: 0x3a1a14, wall3: [0x6a, 0x30, 0x28], organic: true },
 }
 
@@ -162,7 +162,7 @@ export function buildDungeonMesh(lvl) {
 
   // architectural detail, props and lights merged per level
   const B = new Builder()
-  const trim = look.trim ? texturedMaterial(look.trim, { color: 0xb0a8a0, metal: look.trim === "dwemerMetal" }) : null
+  const trim = look.trim ? texturedMaterial(look.trim, { color: 0xb0a8a0, metal: look.trim === "kaldurMetal" }) : null
   const center = (x, y) => [x * CELL + CELL / 2, y * CELL + CELL / 2]
   if (!organic) {
     for (let y = 0; y < lvl.h; y++)
@@ -304,25 +304,25 @@ function addProp(B, p, look, center) {
       B.add(new THREE.BoxGeometry(1.05, 0.12, 2.3), TM("wood", 0x6a5040), { pos: at(0, 0.66, 0), rot: [0, r + 0.08, 0], uv: 1 })
       break
     case "pipe":
-      B.add(new THREE.CylinderGeometry(0.3, 0.3, look.height, seg(12)), TM("dwemerMetal", 0xffffff, { metal: true }), { pos: at(0, look.height / 2, 0), uv: 1 })
-      for (const y of [0.4, look.height - 0.6]) B.add(new THREE.TorusGeometry(0.34, 0.07, 5, seg(14)), TM("dwemerMetal", 0xa08050, { metal: true }), { pos: at(0, y, 0), rot: [Math.PI / 2, 0, 0], uv: 1 })
+      B.add(new THREE.CylinderGeometry(0.3, 0.3, look.height, seg(12)), TM("kaldurMetal", 0xffffff, { metal: true }), { pos: at(0, look.height / 2, 0), uv: 1 })
+      for (const y of [0.4, look.height - 0.6]) B.add(new THREE.TorusGeometry(0.34, 0.07, 5, seg(14)), TM("kaldurMetal", 0xa08050, { metal: true }), { pos: at(0, y, 0), rot: [Math.PI / 2, 0, 0], uv: 1 })
       break
     case "gear": {
-      const m = TM("dwemerMetal", 0xffffff, { metal: true })
+      const m = TM("kaldurMetal", 0xffffff, { metal: true })
       B.add(new THREE.CylinderGeometry(0.6, 0.6, 0.12, seg(16)), m, { pos: at(0, 0.08, 0), uv: 1 })
       for (let i = 0; i < 12; i++) B.add(new THREE.BoxGeometry(0.16, 0.12, 0.2), m, { pos: at(Math.cos((i / 12) * Math.PI * 2) * 0.68, 0.08, Math.sin((i / 12) * Math.PI * 2) * 0.68), rot: [0, -(i / 12) * Math.PI * 2, 0], uv: 1 })
       break
     }
     case "lamp":
-      B.add(new THREE.CylinderGeometry(0.05, 0.12, 1.7, 8), TM("dwemerMetal", 0xffffff, { metal: true }), { pos: at(0, 0.85, 0), uv: 1 })
+      B.add(new THREE.CylinderGeometry(0.05, 0.12, 1.7, 8), TM("kaldurMetal", 0xffffff, { metal: true }), { pos: at(0, 0.85, 0), uv: 1 })
       B.add(new THREE.SphereGeometry(0.22, seg(10), 8), GLOW, { pos: at(0, 1.85, 0) })
-      B.add(new THREE.TorusGeometry(0.24, 0.04, 4, seg(12)), TM("dwemerMetal", 0xffffff, { metal: true }), { pos: at(0, 1.85, 0), uv: 1 })
+      B.add(new THREE.TorusGeometry(0.24, 0.04, 4, seg(12)), TM("kaldurMetal", 0xffffff, { metal: true }), { pos: at(0, 1.85, 0), uv: 1 })
       break
     case "stalagmite":
       B.add(rockGeometry(p.x * 13 + p.y, 1, 0.5, 0.3), TM(look.wall, look.wallTint), { pos: at(0, 0, 0), scale: [1, 3.2, 1], uv: 1 })
       break
     case "statue": {
-      const m = TM("daedricStone", 0x9a8a8a)
+      const m = TM("abyssalStone", 0x9a8a8a)
       B.add(new THREE.BoxGeometry(1, 0.6, 1), m, { pos: at(0, 0.3, 0), rot: [0, r, 0], uv: 1 })
       B.add(lathe([[0.3, 0], [0.42, 0.4], [0.28, 1.2], [0.36, 1.8], [0.2, 2.1], [0.01, 2.15]], seg(10)), m, { pos: at(0, 0.6, 0), uv: 1 })
       B.add(new THREE.SphereGeometry(0.28, seg(10), 8), m, { pos: at(0, 3, 0), uv: 1 })
@@ -334,8 +334,8 @@ function addProp(B, p, look, center) {
       B.add(new THREE.ConeGeometry(0.35, 0.8, 7), GLOW, { pos: at(0, 1.45, 0) })
       break
     case "altar":
-      B.add(new THREE.BoxGeometry(2.2, 1, 1.1), TM("daedricStone"), { pos: at(0, 0.5, 0), rot: [0, r, 0], uv: 1 })
-      B.add(new THREE.BoxGeometry(2.4, 0.15, 1.3), TM("daedricStone", 0x8a7070), { pos: at(0, 1.05, 0), rot: [0, r, 0], uv: 1 })
+      B.add(new THREE.BoxGeometry(2.2, 1, 1.1), TM("abyssalStone"), { pos: at(0, 0.5, 0), rot: [0, r, 0], uv: 1 })
+      B.add(new THREE.BoxGeometry(2.4, 0.15, 1.3), TM("abyssalStone", 0x8a7070), { pos: at(0, 1.05, 0), rot: [0, r, 0], uv: 1 })
       for (const s of [-0.8, 0.8]) B.add(new THREE.ConeGeometry(0.04, 0.1, 5), GLOW, { pos: at(s, 1.2, 0) })
       break
     case "fleshpillar":

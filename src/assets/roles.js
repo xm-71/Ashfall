@@ -17,13 +17,13 @@
 
 const FLORA = {
   parasol: { height: 12, words: ["parasol", "mushroom", "fungus", "shroom"], about: "Giant emperor-parasol mushroom tree" },
-  gashTree: { height: 9, words: ["tree", "oak", "birch", "ash_tree"], about: "Broadleaf or conifer tree of the West Gash" },
+  gashTree: { height: 9, words: ["tree", "oak", "birch", "ash_tree"], about: "Broadleaf or conifer tree of the West Rift" },
   pine: { height: 10, words: ["pine", "fir", "spruce", "conifer"], about: "Snowy pine (northern isle)" },
-  swampTree: { height: 8, words: ["swamp", "mangrove", "willow"], about: "Rooted swamp tree (Bitter Coast)" },
+  swampTree: { height: 8, words: ["swamp", "mangrove", "willow"], about: "Rooted swamp tree (Brine Coast)" },
   deadTree: { height: 7, words: ["dead", "bare", "dry_tree", "snag"], about: "Dead, leafless tree" },
   shrub: { height: 1.2, words: ["bush", "shrub", "plant", "fern"], about: "Bush or fern" },
   grass: { height: 0.6, words: ["grass", "weed", "reed"], about: "Grass tuft (scattered flora, not the grass carpet)" },
-  trama: { height: 1.4, words: ["thorn", "bramble", "trama", "root"], about: "Thorny trama root" },
+  thornroot: { height: 1.4, words: ["thorn", "bramble", "thornroot", "root"], about: "Thorny thornroot" },
   rock: { height: 0.8, words: ["rock", "stone", "pebble"], about: "Small rock" },
   boulder: { height: 3, words: ["boulder", "cliff", "big_rock", "rock_large"], about: "Large boulder (has a collider)" },
 }
@@ -55,7 +55,7 @@ ROLES.building = {
   height: 7,
   where: ["style", "type"],
   words: ["house", "building", "bld_", "hut", "cottage", "shop", "tavern", "inn", "temple", "tower", "hall"],
-  about: "A town building. Filter with style (hlaalu, redoran, telvanni, imperial, ashlander, nord) and type (house, shop, smithy, temple, guild, manor, fort, hall, yurt)",
+  about: "A town building. Filter with style (merovan, durath, sorvenn, vessari, ashwalker, hrothi) and type (house, shop, smithy, temple, guild, manor, fort, hall, yurt)",
 }
 
 for (const piece of ["wall", "floor", "ceiling", "pillar"])
@@ -65,7 +65,7 @@ for (const piece of ["wall", "floor", "ceiling", "pillar"])
     height: piece === "floor" || piece === "ceiling" ? 0.3 : 4,
     where: ["theme"],
     words: { wall: ["wall"], floor: ["floor", "tile"], ceiling: ["ceiling", "roof"], pillar: ["pillar", "column"] }[piece],
-    about: `Modular dungeon ${piece}. Filter with theme (cave, barrow, tomb, dwemer, daedric, citadel)`,
+    about: `Modular dungeon ${piece}. Filter with theme (cave, barrow, tomb, kaldur, abyssal, citadel)`,
   }
 
 ROLES.npc = {
@@ -80,7 +80,7 @@ ROLES.npc = {
 // Dressing: props scattered where the world would otherwise look bare.
 const DECOR = {
   town: { where: ["style"], about: "Clutter beside town buildings and around the plaza: crates, barrels, sacks, carts, benches, fences. Filter with style" },
-  entrance: { where: ["theme"], about: "Props on the ground around dungeon entrances: crates, urns, torches, rocks. Filter with theme (cave, tomb, barrow, dwemer, daedric, citadel)" },
+  entrance: { where: ["theme"], about: "Props on the ground around dungeon entrances: crates, urns, torches, rocks. Filter with theme (cave, tomb, barrow, kaldur, abyssal, citadel)" },
   wild: { where: ["region"], about: "Small ground cover scattered through the wilds: pebbles, flowers, clover, mushrooms. Filter with region" },
 }
 for (const [k, d] of Object.entries(DECOR)) ROLES[`decor.${k}`] = { group: "decor", fit: "none", height: 1, where: d.where, words: [], about: d.about }
@@ -122,7 +122,7 @@ export function weaponRoles(bases, uniques) {
       height: 1,
       where: ["material"],
       words: [base.replace(/ /g, "_"), base.replace(/ /g, "")],
-      about: `Weapon: ${base}. Filter with material (iron, chitin, steel, silver, orcish, dwemer, adamantium, glass, ebony, daedric). Grip at the origin, blade up +Y`,
+      about: `Weapon: ${base}. Filter with material (iron, chitin, steel, silver, tuskar, kaldur, starmetal, crystal, obsidian, abyssal). Grip at the origin, blade up +Y`,
     }
   }
   ROLES.shield = { group: "weapon", fit: "none", height: 0.7, where: ["material"], words: ["shield"], about: "Shield, worn on the left arm. Filter with material. Front facing +Z" }

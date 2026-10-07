@@ -12,7 +12,7 @@ assets.index = {
     "p/rock": { min: [10, 2, 10], max: [12, 3, 12], size: [2, 1, 2], bytes: 1 },
   },
   roles: {
-    building: [{ model: "p/house", where: { style: ["hlaalu", "imperial"] } }, { model: "p/house", where: { style: "nord", type: "hall" }, weight: 3 }],
+    building: [{ model: "p/house", where: { style: ["merovan", "vessari"] } }, { model: "p/house", where: { style: "hrothi", type: "hall" }, weight: 3 }],
     "dungeon.wall": [{ model: "p/wall" }],
     "flora.rock": [{ model: "p/rock" }],
   },
@@ -24,16 +24,16 @@ const apply = (m, x, y, z) => new THREE.Vector3(x, y, z).applyMatrix4(m)
 const near = (v, x, y, z) => assert.ok(v.distanceTo(new THREE.Vector3(x, y, z)) < 1e-6, `${v.toArray()} vs ${[x, y, z]}`)
 
 test("roles cover every group the generators ask for", () => {
-  for (const r of ["flora.parasol", "flora.boulder", "prop.barrel", "prop.chest", "building", "dungeon.wall", "dungeon.floor", "npc", "creature.guar", "creature.bandit"]) assert.ok(ROLES[r], r)
+  for (const r of ["flora.parasol", "flora.boulder", "prop.barrel", "prop.chest", "building", "dungeon.wall", "dungeon.floor", "npc", "creature.loper", "creature.bandit"]) assert.ok(ROLES[r], r)
 })
 
 test("entries filter on context, ignoring keys the entry does not mention", () => {
-  assert.equal(matches({ where: { style: ["hlaalu"] } }, { style: "hlaalu", type: "shop" }), true)
-  assert.equal(matches({ where: { style: ["hlaalu"] } }, { style: "nord" }), false)
-  assert.equal(matches({ where: { style: "nord", type: "hall" } }, { style: "nord", type: "house" }), false)
+  assert.equal(matches({ where: { style: ["merovan"] } }, { style: "merovan", type: "shop" }), true)
+  assert.equal(matches({ where: { style: ["merovan"] } }, { style: "hrothi" }), false)
+  assert.equal(matches({ where: { style: "hrothi", type: "hall" } }, { style: "hrothi", type: "house" }), false)
   assert.equal(matches({}, { anything: 1 }), true)
-  assert.equal(assets.entries("building", { style: "telvanni" }).length, 0)
-  assert.equal(assets.entries("building", { style: "imperial", type: "shop" }).length, 1)
+  assert.equal(assets.entries("building", { style: "sorvenn" }).length, 0)
+  assert.equal(assets.entries("building", { style: "vessari", type: "shop" }).length, 1)
   assert.equal(assets.has("prop.barrel"), false)
 })
 

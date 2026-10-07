@@ -2,9 +2,9 @@ import { ARTIFACT_IDS } from "../data/artifacts.js"
 import { planRoads, planSignposts, planDock, roadIndex } from "./roads.js"
 import { RNG } from "../core/rng.js"
 import { createNoise2D } from "../core/noise.js"
-import { placeName, dungeonName, npcName, artifactName, dagothName } from "./names.js"
+import { placeName, dungeonName, npcName, artifactName, emberName } from "./names.js"
 
-// The map is 1800 m across: Vvardenfell fills the middle 1400 m, and a frozen
+// The map is 1800 m across: Cindermere fills the middle 1400 m, and a frozen
 // isle lies across a narrow strait to the north.
 export const WORLD_SIZE = 1800
 export const WORLD_RES = 330
@@ -13,37 +13,37 @@ export const SEA_LEVEL = 0
 
 export const REGIONS = {
   ashlands: { name: "Ashlands", base: 14, rough: 10, ridge: 14, low: [0x55, 0x4e, 0x46], high: [0x6e, 0x64, 0x5a], fog: 0x8a7a6a, ash: 0.35, flora: { deadTree: 0.5, boulder: 1.2, rock: 1.5 } },
-  redMountain: { name: "Red Mountain", base: 20, rough: 10, ridge: 16, low: [0x4a, 0x38, 0x30], high: [0x6a, 0x46, 0x38], fog: 0x9a5a40, ash: 0.7, flora: { boulder: 1.5, rock: 1 } },
-  westGash: { name: "West Gash", base: 12, rough: 9, ridge: 18, low: [0x62, 0x6a, 0x42], high: [0x7c, 0x78, 0x62], fog: 0xa0a490, ash: 0, flora: { gashTree: 1.3, rock: 1.4, boulder: 0.8, shrub: 1 } },
-  bitterCoast: { name: "Bitter Coast", base: 2.5, rough: 3, ridge: 0, low: [0x48, 0x52, 0x34], high: [0x5a, 0x5c, 0x40], fog: 0x7a8a6a, ash: 0, flora: { swampTree: 2.2, parasol: 0.4, shrub: 1.8 } },
-  ascadian: { name: "Ascadian Isles", base: 5, rough: 5, ridge: 2, low: [0x5c, 0x80, 0x34], high: [0x78, 0x96, 0x46], fog: 0xb0c4b0, ash: 0, flora: { parasol: 1.6, shrub: 2, grass: 2, rock: 0.4 } },
-  grazelands: { name: "Grazelands", base: 9, rough: 5, ridge: 3, low: [0x92, 0x92, 0x52], high: [0xa8, 0xa0, 0x62], fog: 0xc8c0a0, ash: 0, flora: { grass: 3.5, trama: 1.2, rock: 0.4 } },
-  azurasCoast: { name: "Azura's Coast", base: 5, rough: 7, ridge: 10, low: [0x74, 0x72, 0x62], high: [0x8c, 0x84, 0x72], fog: 0xb8b0c8, ash: 0, flora: { rock: 2, boulder: 1, shrub: 0.8, parasol: 0.4 } },
-  molagAmur: { name: "Molag Amur", base: 12, rough: 11, ridge: 12, low: [0x3a, 0x28, 0x24], high: [0x56, 0x3a, 0x2c], fog: 0x7a4a3a, ash: 0.5, lava: true, flora: { boulder: 1.5, deadTree: 0.3, rock: 1 } },
+  hearthpeak: { name: "Hearthpeak", base: 20, rough: 10, ridge: 16, low: [0x4a, 0x38, 0x30], high: [0x6a, 0x46, 0x38], fog: 0x9a5a40, ash: 0.7, flora: { boulder: 1.5, rock: 1 } },
+  westRift: { name: "West Rift", base: 12, rough: 9, ridge: 18, low: [0x62, 0x6a, 0x42], high: [0x7c, 0x78, 0x62], fog: 0xa0a490, ash: 0, flora: { gashTree: 1.3, rock: 1.4, boulder: 0.8, shrub: 1 } },
+  brineCoast: { name: "Brine Coast", base: 2.5, rough: 3, ridge: 0, low: [0x48, 0x52, 0x34], high: [0x5a, 0x5c, 0x40], fog: 0x7a8a6a, ash: 0, flora: { swampTree: 2.2, parasol: 0.4, shrub: 1.8 } },
+  verdant: { name: "Verdant Isles", base: 5, rough: 5, ridge: 2, low: [0x5c, 0x80, 0x34], high: [0x78, 0x96, 0x46], fog: 0xb0c4b0, ash: 0, flora: { parasol: 1.6, shrub: 2, grass: 2, rock: 0.4 } },
+  mosslands: { name: "Mosslands", base: 9, rough: 5, ridge: 3, low: [0x92, 0x92, 0x52], high: [0xa8, 0xa0, 0x62], fog: 0xc8c0a0, ash: 0, flora: { grass: 3.5, thornroot: 1.2, rock: 0.4 } },
+  vesperCoast: { name: "Vesper Coast", base: 5, rough: 7, ridge: 10, low: [0x74, 0x72, 0x62], high: [0x8c, 0x84, 0x72], fog: 0xb8b0c8, ash: 0, flora: { rock: 2, boulder: 1, shrub: 0.8, parasol: 0.4 } },
+  cinderfall: { name: "Cinderfall", base: 12, rough: 11, ridge: 12, low: [0x3a, 0x28, 0x24], high: [0x56, 0x3a, 0x2c], fog: 0x7a4a3a, ash: 0.5, lava: true, flora: { boulder: 1.5, deadTree: 0.3, rock: 1 } },
   frostholm: { name: "Frostholm", base: 9, rough: 7, ridge: 12, low: [0xc8, 0xcc, 0xd4], high: [0xe8, 0xec, 0xf2], fog: 0xc0ccd8, ash: 0, snow: true, flora: { pine: 4, rock: 0.9, boulder: 0.6 } },
 }
 
-const RING = ["ashlands", "grazelands", "azurasCoast", "molagAmur", "ascadian", "bitterCoast", "westGash"]
+const RING = ["ashlands", "mosslands", "vesperCoast", "cinderfall", "verdant", "brineCoast", "westRift"]
 
 const STYLE_BY_REGION = {
-  ashlands: "redoran",
-  westGash: "redoran",
-  bitterCoast: "hlaalu",
-  ascadian: "hlaalu",
-  grazelands: "ashlander",
-  azurasCoast: "telvanni",
-  molagAmur: "imperial",
+  ashlands: "durath",
+  westRift: "durath",
+  brineCoast: "merovan",
+  verdant: "merovan",
+  mosslands: "ashwalker",
+  vesperCoast: "sorvenn",
+  cinderfall: "vessari",
 }
 
 const DUNGEON_TYPES_BY_REGION = {
-  ashlands: ["cave", "dwemer", "daedric", "cave"],
-  westGash: ["cave", "tomb", "dwemer", "tomb"],
-  bitterCoast: ["cave", "tomb", "cave"],
-  ascadian: ["tomb", "cave", "tomb"],
-  grazelands: ["cave", "daedric", "tomb"],
-  azurasCoast: ["daedric", "cave", "dwemer"],
-  molagAmur: ["daedric", "dwemer", "cave"],
-  redMountain: ["dwemer", "cave"],
+  ashlands: ["cave", "kaldur", "abyssal", "cave"],
+  westRift: ["cave", "tomb", "kaldur", "tomb"],
+  brineCoast: ["cave", "tomb", "cave"],
+  verdant: ["tomb", "cave", "tomb"],
+  mosslands: ["cave", "abyssal", "tomb"],
+  vesperCoast: ["abyssal", "cave", "kaldur"],
+  cinderfall: ["abyssal", "kaldur", "cave"],
+  hearthpeak: ["kaldur", "cave"],
   frostholm: ["barrow", "cave"],
 }
 
@@ -56,12 +56,12 @@ export function generateWorld(seed) {
   const half = WORLD_SIZE / 2
   const MAIN = MAIN_HALF
 
-  // Red Mountain sits roughly central, with the regions arranged around it.
+  // the Hearthpeak sits roughly central, with the regions arranged around it.
   const rm = { x: rng.range(-90, 90), z: rng.range(-90, 90) }
   const rot = rng.range(0, Math.PI * 2)
   const ring = [...RING]
   if (rng.chance(0.5)) ring.reverse()
-  const seeds = [{ id: "redMountain", x: rm.x, z: rm.z }]
+  const seeds = [{ id: "hearthpeak", x: rm.x, z: rm.z }]
   ring.forEach((id, i) => {
     const a = rot + (i / ring.length) * Math.PI * 2 + rng.range(-0.2, 0.2)
     const d = rng.range(290, 380)
@@ -119,7 +119,7 @@ export function generateWorld(seed) {
       h += w * (R.base + f + r)
     }
     h += noise.fbm(x * 0.05, z * 0.05, 2) * 1.2
-    // Red Mountain cone and crater
+    // the Hearthpeak cone and crater
     const r = Math.hypot(dx, dz)
     h += 120 * Math.exp(-((r / 125) ** 2)) + 30 * Math.exp(-((r / 240) ** 2))
     h -= 42 * Math.exp(-((r / 30) ** 2))
@@ -147,7 +147,7 @@ export function generateWorld(seed) {
     }
   }
 
-  const { heightAt, regionAt, lavaAt, slopeAt } = samplers({ seed, heights, flatMask, regions, regionIds, redMountain: rm })
+  const { heightAt, regionAt, lavaAt, slopeAt } = samplers({ seed, heights, flatMask, regions, regionIds, hearthpeak: rm })
 
   function flatten(cx, cz, radius, targetH) {
     const r2 = radius * 1.8
@@ -180,12 +180,12 @@ export function generateWorld(seed) {
     return null
   }
 
-  // starting town: a coastal village in the Bitter Coast / Ascadian south-west
+  // starting town: a coastal village in the Brine Coast / Verdant south-west
   const startSpot =
     findSpot((x, z) => {
       const h = heightAt(x, z)
       const reg = regionAt(x, z)
-      return (reg === "bitterCoast" || reg === "ascadian") && h > 1.2 && h < 5 && slopeAt(x, z) < 0.4
+      return (reg === "brineCoast" || reg === "verdant") && h > 1.2 && h < 5 && slopeAt(x, z) < 0.4
     }) || findSpot((x, z) => heightAt(x, z) > 1.5 && heightAt(x, z) < 8 && distToRM(x, z) > 250)
 
   const townPlan = [{ ...startSpot, start: true }]
@@ -199,16 +199,16 @@ export function generateWorld(seed) {
 
   townPlan.forEach((spot, idx) => {
     const region = regionAt(spot.x, spot.z)
-    let style = STYLE_BY_REGION[region] || "hlaalu"
-    if (spot.start) style = "imperial"
+    let style = STYLE_BY_REGION[region] || "merovan"
+    if (spot.start) style = "vessari"
     const name = spot.start ? placeName(rng, usedNames) : placeName(rng, usedNames)
     const y = Math.max(2.2, heightAt(spot.x, spot.z))
-    const radius = style === "ashlander" ? 22 : 34
+    const radius = style === "ashwalker" ? 22 : 34
     flatten(spot.x, spot.z, radius, y)
     towns.push(buildTown(rng.fork(`town:${idx}`), { id: idx, name, x: spot.x, z: spot.z, y, style, region, radius, start: !!spot.start }))
   })
 
-  // A Nord village on the frozen isle.
+  // A Hrothi village on the frozen isle.
   const vRng = rng.fork("isle-village")
   let vSpot = null
   for (let t = 0; t < 3000 && !vSpot; t++) {
@@ -220,7 +220,7 @@ export function generateWorld(seed) {
   if (vSpot) {
     const y = heightAt(vSpot.x, vSpot.z)
     flatten(vSpot.x, vSpot.z, 26, y)
-    towns.push(buildTown(vRng.fork("town"), { id: towns.length, name: placeName(vRng, usedNames, "nord"), x: vSpot.x, z: vSpot.z, y, style: "nord", region: "frostholm", radius: 26, isle: true }))
+    towns.push(buildTown(vRng.fork("town"), { id: towns.length, name: placeName(vRng, usedNames, "hrothi"), x: vSpot.x, z: vSpot.z, y, style: "hrothi", region: "frostholm", radius: 26, isle: true }))
   }
 
   // ---------- roads, harbours and guides ----------
@@ -241,7 +241,7 @@ export function generateWorld(seed) {
         }
     }
   const extraNpc = (t, role, props) => {
-    const race = props.race || (t.style === "nord" ? "nord" : rng.pick(["dunmer", "imperial", "dunmer", "breton"]))
+    const race = props.race || (t.style === "hrothi" ? "hrothi" : rng.pick(["cindari", "vessari", "cindari", "caldrin"]))
     t.npcs.push({ id: `${t.id}:${t.npcs.length}`, townId: t.id, name: npcName(rng, race), race, role, faction: null, disposition: rng.int(40, 60), seed: rng.int(1, 1e9), ...props })
   }
   for (const t of towns) {
@@ -273,17 +273,17 @@ export function generateWorld(seed) {
     const type = rng.pick(DUNGEON_TYPES_BY_REGION[region] || ["cave"])
     const dist = Math.hypot(x - startTown.x, z - startTown.z)
     let tier = 1 + Math.floor((dist / maxDist) * 5 + rng.range(-0.4, 0.8))
-    if (region === "redMountain" || region === "molagAmur") tier += 1
+    if (region === "hearthpeak" || region === "cinderfall") tier += 1
     tier = Math.max(1, Math.min(6, tier))
     const levels = Math.max(1, Math.min(3, 1 + Math.floor((tier - 1) / 2) + (rng.chance(0.3) ? 1 : 0)))
     flatten(x, z, 6, h)
     dungeons.push({ id: dungeons.length, name: dungeonName(rng, type, usedDungeonNames), type, x, z, y: h, tier, levels, region, seed: rng.int(1, 1e9), discovered: false, cleared: false })
   }
 
-  // Main quest: three relics in three strongholds, then the Citadel under Red Mountain.
-  const relicNames = ["Sunder", "Keening", "Wraithguard"]
-  const relicTypes = ["dwemer", "daedric", "tomb"]
-  const mainQuest = { dagoth: dagothName(rng), relics: [] }
+  // Main quest: three relics in three strongholds, then the Citadel under the Hearthpeak.
+  const relicNames = ["Riven", "Lament", "Soulward"]
+  const relicTypes = ["kaldur", "abyssal", "tomb"]
+  const mainQuest = { emberlord: emberName(rng), relics: [] }
   relicTypes.forEach((type, i) => {
     const candidates = dungeons.filter(d => !d.relic && d.type === type).sort((a, b) => b.tier - a.tier)
     const target = candidates[0] || dungeons.filter(d => !d.relic).sort((a, b) => b.tier - a.tier)[0]
@@ -292,14 +292,14 @@ export function generateWorld(seed) {
     target.levels = Math.max(target.levels, 2)
     mainQuest.relics.push({ name: relicNames[i], dungeonId: target.id })
   })
-  // Legendary artifacts: every Daedric shrine's master carries one, and a few
+  // Legendary artifacts: every Abyssal shrine's master carries one, and a few
   // other strong dungeon bosses guard the rest. Forked RNG keeps worlds stable.
   const artRng = rng.fork("artifacts")
   const pool = artRng.shuffle([...ARTIFACT_IDS])
-  const holders = [...dungeons.filter(d => d.type === "daedric"), ...artRng.shuffle(dungeons.filter(d => d.type !== "daedric" && d.tier >= 3))]
-  for (const d of holders.slice(0, Math.min(pool.length, dungeons.filter(d => d.type === "daedric").length + 4))) d.artifact = pool.pop()
+  const holders = [...dungeons.filter(d => d.type === "abyssal"), ...artRng.shuffle(dungeons.filter(d => d.type !== "abyssal" && d.tier >= 3))]
+  for (const d of holders.slice(0, Math.min(pool.length, dungeons.filter(d => d.type === "abyssal").length + 4))) d.artifact = pool.pop()
   const cr = { x: rm.x + 6, z: rm.z + 6 }
-  const citadel = { id: dungeons.length, name: "Dagoth Ur Citadel", type: "citadel", x: cr.x, z: cr.z, y: heightAt(cr.x, cr.z), tier: 7, levels: 3, region: "redMountain", seed: rng.int(1, 1e9), discovered: true, cleared: false, sealed: true, citadel: true }
+  const citadel = { id: dungeons.length, name: "The Ember Citadel", type: "citadel", x: cr.x, z: cr.z, y: heightAt(cr.x, cr.z), tier: 7, levels: 3, region: "hearthpeak", seed: rng.int(1, 1e9), discovered: true, cleared: false, sealed: true, citadel: true }
   flatten(cr.x, cr.z, 8, citadel.y)
   dungeons.push(citadel)
   mainQuest.citadelId = citadel.id
@@ -326,9 +326,9 @@ export function generateWorld(seed) {
   const lRng = rng.fork("landmarks")
   const clearOf = (x, z, d) => farFromTowns(x, z, d) && dungeons.every(o => Math.hypot(o.x - x, o.z - z) > 50) && landmarks.every(o => Math.hypot(o.x - x, o.z - z) > d)
   const names = list => lRng.shuffle([...list])
-  const shipNames = names(["Grey Gull", "Saint Olms", "Morning Star", "Emperor's Tithe", "Sea Netch", "Tribute", "Ald Skar", "Silver Kagouti"])
-  const fortNames = names(["Darius", "Moonmoth", "Hawkmoth", "Buckmoth", "Falensarano", "Ebonheart", "Pelagiad", "Firemoth"])
-  const propNames = names(["Valenvaryon", "Rotheran", "Hlormaren", "Falasmaryon", "Marandus", "Telasero", "Berandas", "Indoranyon", "Andasreth"])
+  const shipNames = names(["Grey Gull", "Saint Ilvara", "Morning Star", "Concord's Tithe", "Sea Drifter", "Tribute", "Ash Maiden", "Silver Loper"])
+  const fortNames = names(["Greywatch", "Lanternhold", "Kestrel", "Saltgate", "Cinderwatch", "Valecrest Rest", "Hollowmere", "Emberguard"])
+  const propNames = names(["Ithmaren", "Dorvaril", "Sethandis", "Korvanos", "Ulvareth", "Asharion", "Belmyrr", "Thrennaros", "Velunis"])
   const place = (pred, tries = 12000) => {
     for (let t = 0; t < tries; t++) {
       const x = lRng.range(-MAIN * 0.9, MAIN * 0.9)
@@ -337,7 +337,7 @@ export function generateWorld(seed) {
     }
     return null
   }
-  // Velothi towers: some ancestral tombs are old Dunmer watchtowers instead
+  // ancient towers: some ancestral tombs are old Cindari watchtowers instead
   lRng.shuffle(dungeons.filter(d => d.type === "tomb" && !d.relic)).slice(0, 3).forEach(d => {
     d.tower = true
     d.name = d.name.replace("Ancestral Tomb", "Tower")
@@ -352,7 +352,7 @@ export function generateWorld(seed) {
     })
     if (s) landmarks.push({ id: landmarks.length, type: "wreck", name: `Wreck of the ${shipNames.pop()}`, x: s.x, z: s.z, y: heightAt(s.x, s.z), rot: lRng.range(0, 6.28), seed: lRng.int(1, 1e9), tier: 2 })
   }
-  // abandoned Imperial strongholds, held by bandits
+  // abandoned Vessari strongholds, held by bandits
   for (let i = 0; i < 2; i++) {
     const s = place((x, z) => {
       const h = heightAt(x, z)
@@ -363,16 +363,16 @@ export function generateWorld(seed) {
     flatten(s.x, s.z, 16, y)
     landmarks.push({ id: landmarks.length, type: "stronghold", name: `Fort ${fortNames.pop()}`, x: s.x, z: s.z, y, rot: lRng.range(0, 6.28), seed: lRng.int(1, 1e9), tier: 3 })
   }
-  // Propylon chambers: an ancient Dunmer teleport network
+  // Waystone chambers: an ancient Cindari teleport network
   for (let i = 0; i < 4; i++) {
     const s = place((x, z) => {
       const h = heightAt(x, z)
-      return h > 3 && h < 45 && slopeAt(x, z) < 0.4 && !lavaAt(x, z) && regionAt(x, z) !== "frostholm" && distToRM(x, z) > 170 && farFromTowns(x, z, 60) && dungeons.every(o => Math.hypot(o.x - x, o.z - z) > 30) && landmarks.every(o => Math.hypot(o.x - x, o.z - z) > (o.type === "propylon" ? 280 : 60))
+      return h > 3 && h < 45 && slopeAt(x, z) < 0.4 && !lavaAt(x, z) && regionAt(x, z) !== "frostholm" && distToRM(x, z) > 170 && farFromTowns(x, z, 60) && dungeons.every(o => Math.hypot(o.x - x, o.z - z) > 30) && landmarks.every(o => Math.hypot(o.x - x, o.z - z) > (o.type === "waystone" ? 280 : 60))
     })
     if (!s) continue
     const y = heightAt(s.x, s.z)
     flatten(s.x, s.z, 9, y)
-    landmarks.push({ id: landmarks.length, type: "propylon", name: `${propNames.pop()} Propylon`, x: s.x, z: s.z, y, rot: lRng.range(0, 6.28), seed: lRng.int(1, 1e9) })
+    landmarks.push({ id: landmarks.length, type: "waystone", name: `${propNames.pop()} Waystone`, x: s.x, z: s.z, y, rot: lRng.range(0, 6.28), seed: lRng.int(1, 1e9) })
   }
   // sunken wrecks on the sea floor, and clam beds along the coasts
   for (let i = 0; i < 2; i++) {
@@ -391,13 +391,13 @@ export function generateWorld(seed) {
     clams.push({ id: clams.length, x, z, y: h, rot: lRng.range(0, 6.28), seed: lRng.int(1, 1e9) })
   }
 
-  // the Ghostfence rings Red Mountain; the Ghostgate faces the nearest town
+  // the Wardwall rings the Hearthpeak; the Wardgate faces the nearest town
   const nearest = [...towns].filter(t => !t.isle).sort((a, b) => distToRM(a.x, a.z) - distToRM(b.x, b.z))[0]
   const gateAngle = Math.atan2(nearest.z - rm.z, nearest.x - rm.x)
   const fenceR = 150
   const gx = rm.x + Math.cos(gateAngle) * fenceR
   const gz = rm.z + Math.sin(gateAngle) * fenceR
-  landmarks.push({ id: landmarks.length, type: "ghostfence", name: "Ghostgate", x: gx, z: gz, y: heightAt(gx, gz), cx: rm.x, cz: rm.z, r: fenceR, gateAngle })
+  landmarks.push({ id: landmarks.length, type: "wardwall", name: "Wardgate", x: gx, z: gz, y: heightAt(gx, gz), cx: rm.x, cz: rm.z, r: fenceR, gateAngle })
   flatten(gx, gz, 10, heightAt(gx, gz))
 
   // ---------- flora ----------
@@ -407,7 +407,7 @@ export function generateWorld(seed) {
   const inClearing = (x, z) =>
     towns.some(t => Math.hypot(t.x - x, t.z - z) < t.radius + 8) ||
     dungeons.some(d => Math.hypot(d.x - x, d.z - z) < 9) ||
-    landmarks.some(l => (l.type === "ghostfence" ? Math.abs(Math.hypot(x - l.cx, z - l.cz) - l.r) < 5 || Math.hypot(l.x - x, l.z - z) < 14 : Math.hypot(l.x - x, l.z - z) < (l.type === "stronghold" ? 22 : 12))) ||
+    landmarks.some(l => (l.type === "wardwall" ? Math.abs(Math.hypot(x - l.cx, z - l.cz) - l.r) < 5 || Math.hypot(l.x - x, l.z - z) < 14 : Math.hypot(l.x - x, l.z - z) < (l.type === "stronghold" ? 22 : 12))) ||
     roadIndexLocal(x, z) > 0.1
   const attempts = Math.round(26000 * (WORLD_SIZE / 1400) ** 2)
   for (let n = 0; n < attempts; n++) {
@@ -433,7 +433,7 @@ export function generateWorld(seed) {
     flatMask,
     regionIds,
     regions,
-    redMountain: rm,
+    hearthpeak: rm,
     towns,
     dungeons,
     flora,
@@ -447,7 +447,7 @@ export function generateWorld(seed) {
 
 // Lookup functions over the generated grids. Rebuilt from plain data so a world
 // generated in a worker (or restored from a save) behaves identically.
-export function samplers({ seed, heights, flatMask, regions, regionIds, redMountain: rm, roads = [] }) {
+export function samplers({ seed, heights, flatMask, regions, regionIds, hearthpeak: rm, roads = [] }) {
   const half = WORLD_SIZE / 2
   const N = WORLD_RES + 1
   const cell = WORLD_SIZE / WORLD_RES
@@ -479,7 +479,7 @@ export function samplers({ seed, heights, flatMask, regions, regionIds, redMount
   const lavaAt = (x, z) => {
     const reg = regionAt(x, z)
     if (Math.hypot(x - rm.x, z - rm.z) < 16) return true
-    if (reg !== "molagAmur") return false
+    if (reg !== "cinderfall") return false
     return noise.fbm(x * 0.018 + 300, z * 0.018 - 300, 3) > 0.32
   }
   const slopeAt = (x, z) => {
@@ -504,23 +504,23 @@ export function worldData(w) {
 // ---------- town layout ----------
 
 const STYLE_RACES = {
-  redoran: [["dunmer", 8], ["imperial", 1], ["nord", 1], ["orc", 1]],
-  hlaalu: [["dunmer", 6], ["imperial", 2], ["khajiit", 1], ["argonian", 1], ["breton", 1], ["redguard", 1]],
-  telvanni: [["dunmer", 8], ["argonian", 2], ["altmer", 1]],
-  imperial: [["imperial", 4], ["dunmer", 3], ["nord", 2], ["breton", 2], ["redguard", 1], ["khajiit", 1], ["argonian", 1], ["bosmer", 1], ["orc", 1]],
-  ashlander: [["dunmer", 1]],
-  nord: [["nord", 8], ["imperial", 1], ["breton", 1]],
+  durath: [["cindari", 8], ["vessari", 1], ["hrothi", 1], ["tuskar", 1]],
+  merovan: [["cindari", 6], ["vessari", 2], ["rakhai", 1], ["saurek", 1], ["caldrin", 1], ["qasiri", 1]],
+  sorvenn: [["cindari", 8], ["saurek", 2], ["aurelin", 1]],
+  vessari: [["vessari", 4], ["cindari", 3], ["hrothi", 2], ["caldrin", 2], ["qasiri", 1], ["rakhai", 1], ["saurek", 1], ["wyldren", 1], ["tuskar", 1]],
+  ashwalker: [["cindari", 1]],
+  hrothi: [["hrothi", 8], ["vessari", 1], ["caldrin", 1]],
 }
 
-const HOUSE_OF_STYLE = { redoran: "redoran", hlaalu: "hlaalu", telvanni: "telvanni" }
+const HOUSE_OF_STYLE = { durath: "durath", merovan: "merovan", sorvenn: "sorvenn" }
 
 // How far the door sits from a building's centre, for each style.
 function doorOffset(style, b) {
   const big = b.type === "manor" || b.type === "hall"
-  if (style === "redoran") return b.d / 2 + 2.3
-  if (style === "telvanni") return b.w * 0.26 * 1.05 + 0.5
-  if (style === "ashlander") return b.w / 2 + 0.4
-  if (style === "nord") return (big ? b.d * 0.75 : b.d / 2) + 0.6
+  if (style === "durath") return b.d / 2 + 2.3
+  if (style === "sorvenn") return b.w * 0.26 * 1.05 + 0.5
+  if (style === "ashwalker") return b.w / 2 + 0.4
+  if (style === "hrothi") return (big ? b.d * 0.75 : b.d / 2) + 0.6
   if (b.type === "fort") return b.d / 2 + 1.5
   return b.d / 2 + 0.6
 }
@@ -548,27 +548,27 @@ function buildTown(rng, town) {
 
   // Which institutions does this town have?
   const plan = []
-  const isAsh = town.style === "ashlander"
-  const isNord = town.style === "nord"
+  const isAsh = town.style === "ashwalker"
+  const isHrothi = town.style === "hrothi"
   plan.push({ type: "shop", label: "Trader", role: "trader" })
-  if (isNord) {
-    // a small Nord village: trader, smith, shaman and the elder's longhouse
+  if (isHrothi) {
+    // a small Hrothi village: trader, smith, shaman and the elder's longhouse
     plan.push({ type: "smithy", label: "Smith", role: "smith" })
     plan.push({ type: "hall", label: "Shaman's Lodge", role: "priest", faction: null })
     plan.push({ type: "manor", label: "Elder's Longhouse", role: "elder", faction: null })
     for (let i = 0; i < rng.int(3, 4); i++) plan.push({ type: "house", label: null, role: null })
   }
-  if (isNord) {
+  if (isHrothi) {
     /* no guilds, temples or forts out here */
   } else {
   if (!isAsh) plan.push({ type: "smithy", label: "Smith", role: "smith" })
   if (!isAsh) plan.push({ type: "temple", label: "Temple", role: "priest", faction: "temple" })
-  if (town.style === "imperial" || town.start) plan.push({ type: "fort", label: "Imperial Legion", role: "guildmaster", faction: "legion" })
+  if (town.style === "vessari" || town.start) plan.push({ type: "fort", label: "Concord Legion", role: "guildmaster", faction: "legion" })
   if (!isAsh) plan.push({ type: "guild", label: "Fighters Guild", role: "guildmaster", faction: "fightersGuild" })
-  if (!isAsh && (town.style !== "redoran" || rng.chance(0.5))) plan.push({ type: "guild", label: "Mages Guild", role: "guildmaster", faction: "magesGuild" })
-  if (town.style === "hlaalu" || town.style === "imperial" || rng.chance(0.3)) plan.push({ type: "house", label: "Cornerclub", role: "guildmaster", faction: "thievesGuild" })
+  if (!isAsh && (town.style !== "durath" || rng.chance(0.5))) plan.push({ type: "guild", label: "Mages Guild", role: "guildmaster", faction: "magesGuild" })
+  if (town.style === "merovan" || town.style === "vessari" || rng.chance(0.3)) plan.push({ type: "house", label: "Back-Alley Den", role: "guildmaster", faction: "thievesGuild" })
   if (HOUSE_OF_STYLE[town.style]) plan.push({ type: "manor", label: `${town.style[0].toUpperCase()}${town.style.slice(1)} Council`, role: "guildmaster", faction: HOUSE_OF_STYLE[town.style] })
-  if (rng.chance(0.25)) plan.push({ type: "house", label: "Morag Tong Guildhall", role: "guildmaster", faction: "moragTong" })
+  if (rng.chance(0.25)) plan.push({ type: "house", label: "Quiet Hand Guildhall", role: "guildmaster", faction: "quietHand" })
   if (isAsh) plan.push({ type: "yurt", label: "Wise Woman's Yurt", role: "priest", faction: null })
   const houses = isAsh ? rng.int(3, 5) : rng.int(3, 6)
   for (let i = 0; i < houses; i++) plan.push({ type: isAsh ? "yurt" : "house", label: null, role: null })
@@ -578,7 +578,7 @@ function buildTown(rng, town) {
   const n = plan.length
   plan.forEach((b, i) => {
     const a = (i / n) * Math.PI * 2 + rng.range(-0.12, 0.12)
-    const dist = (isAsh ? 12 : isNord ? 14 : 17) + rng.range(0, isAsh ? 6 : isNord ? 6 : 12)
+    const dist = (isAsh ? 12 : isHrothi ? 14 : 17) + rng.range(0, isAsh ? 6 : isHrothi ? 6 : 12)
     const x = town.x + Math.cos(a) * dist
     const z = town.z + Math.sin(a) * dist
     const big = b.type === "temple" || b.type === "fort" || b.type === "manor"
@@ -612,26 +612,26 @@ function buildTown(rng, town) {
     }
   })
 
-  // Silt strider port outside town
+  // longstrider port outside town
   const portAngle = rng.range(0, Math.PI * 2)
   town.port = { x: town.x + Math.cos(portAngle) * (town.radius + 6), z: town.z + Math.sin(portAngle) * (town.radius + 6), angle: portAngle }
-  if (!isNord) addNpc("caravaner", { x: town.port.x - Math.cos(portAngle) * 4, z: town.port.z - Math.sin(portAngle) * 4, building: "Silt Strider" })
+  if (!isHrothi) addNpc("caravaner", { x: town.port.x - Math.cos(portAngle) * 4, z: town.port.z - Math.sin(portAngle) * 4, building: "Longstrider" })
 
   // Main quest contact lives in the starting town.
-  if (town.start) addNpc("blade", { race: "imperial", x: town.x + 3, z: town.z - 2, building: "Blades Safehouse" })
+  if (town.start) addNpc("lantern", { race: "vessari", x: town.x + 3, z: town.z - 2, building: "Lanterns Safehouse" })
 
   // Commoners and guards wander the plaza
   for (let i = 0; i < rng.int(3, 6); i++) addNpc("commoner", { x: town.x + rng.range(-8, 8), z: town.z + rng.range(-8, 8), wander: true })
-  if (!isAsh) for (let i = 0; i < 2; i++) addNpc("guard", { race: town.style === "imperial" ? "imperial" : isNord ? "nord" : "dunmer", x: town.x + rng.range(-12, 12), z: town.z + rng.range(-12, 12), wander: true })
+  if (!isAsh) for (let i = 0; i < 2; i++) addNpc("guard", { race: town.style === "vessari" ? "vessari" : isHrothi ? "hrothi" : "cindari", x: town.x + rng.range(-12, 12), z: town.z + rng.range(-12, 12), wander: true })
 
   return { ...town, buildings, npcs, hasTemple: plan.some(p => p.type === "temple"), hasFort: plan.some(p => p.type === "fort") }
 }
 
 export function relicDescription(name) {
   return {
-    Sunder: "the hammer Sunder, forged by Kagrenac to strike the Heart",
-    Keening: "the blade Keening, which flays power from the Heart",
-    Wraithguard: "the gauntlet Wraithguard, which shields its bearer from the tools' fury",
+    Riven: "the hammer Riven, forged by Durnagh to strike the Heart",
+    Lament: "the blade Lament, which flays power from the Heart",
+    Soulward: "the gauntlet Soulward, which shields its bearer from the tools' fury",
   }[name]
 }
 

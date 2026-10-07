@@ -13,8 +13,8 @@ import { DUNGEON_THEMES } from "../logic/dungeongen.js"
 import { attackDamage, attackTypeFor, weaponConditionMult, ammoTypeOf, isBroken } from "../logic/items.js"
 import { strikeEnemy, wearWeapon, coatWeapon, useRepairTool } from "./combat.js"
 
-const REGION_SURFACE = { ashlands: "ash", redMountain: "ash", molagAmur: "ash", bitterCoast: "mud", azurasCoast: "gravel", westGash: "grass", ascadian: "grass", grazelands: "grass" }
-const DUNGEON_SURFACE = { cave: "gravel", tomb: "stone", dwemer: "metal", daedric: "stone", citadel: "flesh" }
+const REGION_SURFACE = { ashlands: "ash", hearthpeak: "ash", cinderfall: "ash", brineCoast: "mud", vesperCoast: "gravel", westRift: "grass", verdant: "grass", mosslands: "grass" }
+const DUNGEON_SURFACE = { cave: "gravel", tomb: "stone", kaldur: "metal", abyssal: "stone", citadel: "flesh" }
 
 // What the player is standing on, for footstep sounds.
 export function surfaceUnder(game) {
@@ -22,7 +22,7 @@ export function surfaceUnder(game) {
   const area = game.area
   if (pc.swimming || pc.wading) return "water"
   if (area.kind === "dungeon") return DUNGEON_SURFACE[area.dungeon.type] || "stone"
-  if (area.kind === "interior") return area.town.style === "imperial" || area.layout.kind === "temple" ? "stone" : area.town.style === "ashlander" ? "grass" : "wood"
+  if (area.kind === "interior") return area.town.style === "vessari" || area.layout.kind === "temple" ? "stone" : area.town.style === "ashwalker" ? "grass" : "wood"
   if (pc.pos.y < SEA_LEVEL + 0.15) return "water"
   const w = game.world
   if (pc.pos.y > w.heightAt(pc.pos.x, pc.pos.z) + 0.4) return "wood" // docks, stairs and floors
@@ -200,7 +200,7 @@ export function updatePlayer(game, dt) {
   updateInteraction(game)
 }
 
-// Holding your breath under water; Argonians breathe water.
+// Holding your breath under water; Saurek breathe water.
 function updateBreath(game, dt) {
   const c = game.char
   const pc = game.pc
@@ -267,7 +267,7 @@ function updateAttack(game, dt) {
       if (w.ranged) fireRanged(game, w, charge)
       else if (w.thrown) throwWeapon(game, w, charge)
       else {
-        // the direction you move picks the attack, as in Morrowind
+        // the direction you move picks the attack, as in Cindermere
         const fwd = (inp.action("forward") || inp.down("ArrowUp") ? 1 : 0) - (inp.action("back") || inp.down("ArrowDown") ? 1 : 0)
         const strafe = (inp.action("right") || inp.down("ArrowRight") ? 1 : 0) - (inp.action("left") || inp.down("ArrowLeft") ? 1 : 0)
         const type = attackTypeFor(fwd, strafe)
@@ -347,7 +347,7 @@ function aimRay(game, charge, skill) {
   const cam = game.camera.getWorldPosition(new THREE.Vector3())
   const dir = game.camera.getWorldDirection(new THREE.Vector3())
   const pos = cam.clone().addScaledVector(dir, 0.6)
-  // Marksman accuracy is rolled on release, like Morrowind.
+  // Marksman accuracy is rolled on release, like Cindermere.
   const hit = Math.random() < hitChance(attackStats(game, skill), 0)
   if (!hit) {
     dir.x += (Math.random() - 0.5) * 0.12

@@ -5192,10 +5192,10 @@
           "role": [
             "guard",
             "guildmaster",
-            "blade",
+            "lantern",
             "bandit",
             "smuggler",
-            "ashlander",
+            "ashwalker",
             "hunter"
           ]
         },
@@ -5228,10 +5228,10 @@
           "role": [
             "guard",
             "guildmaster",
-            "blade",
+            "lantern",
             "bandit",
             "smuggler",
-            "ashlander",
+            "ashwalker",
             "hunter"
           ]
         },
@@ -5322,11 +5322,11 @@
         "weight": 3,
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5334,11 +5334,11 @@
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples",
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5347,11 +5347,11 @@
         "weight": 2,
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5360,11 +5360,11 @@
         "weight": 2,
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5376,11 +5376,11 @@
         "model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Apple",
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5388,11 +5388,11 @@
         "model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Carrot",
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5400,11 +5400,11 @@
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Wooden_1",
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5412,11 +5412,11 @@
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Bench",
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5424,11 +5424,11 @@
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Holder",
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5436,11 +5436,11 @@
         "model": "Medieval-Village-MegaKit/glTF/Prop_WoodenFence_Single",
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
@@ -5449,31 +5449,31 @@
         "weight": 0.6,
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "redoran",
-            "nord",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "durath",
+            "hrothi",
+            "sorvenn"
           ]
         }
       },
       {
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1",
         "where": {
-          "style": "ashlander"
+          "style": "ashwalker"
         }
       },
       {
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2",
         "weight": 2,
         "where": {
-          "style": "ashlander"
+          "style": "ashwalker"
         }
       },
       {
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4",
         "where": {
-          "style": "ashlander"
+          "style": "ashwalker"
         }
       }
     ],
@@ -5522,7 +5522,7 @@
         "where": {
           "theme": [
             "tomb",
-            "daedric"
+            "abyssal"
           ]
         }
       },
@@ -5539,7 +5539,7 @@
           "theme": [
             "tomb",
             "barrow",
-            "daedric"
+            "abyssal"
           ]
         }
       },
@@ -5552,28 +5552,28 @@
       {
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Cage_Small",
         "where": {
-          "theme": "daedric"
+          "theme": "abyssal"
         }
       },
       {
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Chain_Coil",
         "where": {
           "theme": [
-            "daedric",
-            "dwemer"
+            "abyssal",
+            "kaldur"
           ]
         }
       },
       {
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal",
         "where": {
-          "theme": "dwemer"
+          "theme": "kaldur"
         }
       },
       {
         "model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Metal",
         "where": {
-          "theme": "dwemer"
+          "theme": "kaldur"
         }
       }
     ],
@@ -5621,11 +5621,11 @@
         "weight": 2,
         "where": {
           "region": [
-            "westGash",
-            "bitterCoast",
-            "ascadian",
-            "grazelands",
-            "azurasCoast"
+            "westRift",
+            "brineCoast",
+            "verdant",
+            "mosslands",
+            "vesperCoast"
           ]
         }
       },
@@ -5634,11 +5634,11 @@
         "weight": 2,
         "where": {
           "region": [
-            "westGash",
-            "bitterCoast",
-            "ascadian",
-            "grazelands",
-            "azurasCoast"
+            "westRift",
+            "brineCoast",
+            "verdant",
+            "mosslands",
+            "vesperCoast"
           ]
         }
       },
@@ -5646,11 +5646,11 @@
         "model": "Stylized-Nature-MegaKit/glTF/Flower_3_Single",
         "where": {
           "region": [
-            "westGash",
-            "bitterCoast",
-            "ascadian",
-            "grazelands",
-            "azurasCoast"
+            "westRift",
+            "brineCoast",
+            "verdant",
+            "mosslands",
+            "vesperCoast"
           ]
         }
       },
@@ -5658,11 +5658,11 @@
         "model": "Stylized-Nature-MegaKit/glTF/Flower_4_Single",
         "where": {
           "region": [
-            "westGash",
-            "bitterCoast",
-            "ascadian",
-            "grazelands",
-            "azurasCoast"
+            "westRift",
+            "brineCoast",
+            "verdant",
+            "mosslands",
+            "vesperCoast"
           ]
         }
       },
@@ -5671,11 +5671,11 @@
         "weight": 2,
         "where": {
           "region": [
-            "westGash",
-            "bitterCoast",
-            "ascadian",
-            "grazelands",
-            "azurasCoast"
+            "westRift",
+            "brineCoast",
+            "verdant",
+            "mosslands",
+            "vesperCoast"
           ]
         }
       },
@@ -5683,11 +5683,11 @@
         "model": "Stylized-Nature-MegaKit/glTF/Plant_7_Big",
         "where": {
           "region": [
-            "westGash",
-            "bitterCoast",
-            "ascadian",
-            "grazelands",
-            "azurasCoast"
+            "westRift",
+            "brineCoast",
+            "verdant",
+            "mosslands",
+            "vesperCoast"
           ]
         }
       },
@@ -5696,9 +5696,9 @@
         "weight": 2,
         "where": {
           "region": [
-            "bitterCoast",
-            "ascadian",
-            "westGash"
+            "brineCoast",
+            "verdant",
+            "westRift"
           ]
         }
       }
@@ -5779,7 +5779,7 @@
         }
       }
     ],
-    "creature.scamp": [
+    "creature.cinderling": [
       {
         "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Imp",
         "anims": "monster",
@@ -5787,7 +5787,7 @@
         "height": 1.45
       }
     ],
-    "creature.riekling": [
+    "creature.frostling": [
       {
         "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin",
         "anims": "monster",
@@ -5936,8 +5936,8 @@
           "material": [
             "iron",
             "chitin",
-            "netch leather",
-            "bonemold"
+            "drifter leather",
+            "bonecast"
           ]
         }
       }
@@ -5947,12 +5947,12 @@
         "model": "Swordtember2022-GLB/15-Paranormal"
       }
     ],
-    "artifact.goldbrand": [
+    "artifact.sunbrand": [
       {
         "model": "Swordtember2022-GLB/4-Elemental"
       }
     ],
-    "artifact.umbra": [
+    "artifact.nightdrinker": [
       {
         "model": "Swordtember2022-GLB/17-Smoke"
       }
@@ -5967,7 +5967,7 @@
         "model": "Swordtember2022-GLB/10-Snake"
       }
     ],
-    "artifact.stalhrim": [
+    "artifact.rimeBlade": [
       {
         "model": "Swordtember2022-GLB/18-Geometric"
       }
@@ -6022,7 +6022,7 @@
         "model": "Swordtember2022-GLB/20-Leaf"
       }
     ],
-    "artifact.hircineAntler": [
+    "artifact.huntmotherAntler": [
       {
         "model": "Swordtember2022-GLB/22-Antler"
       }
@@ -6289,9 +6289,9 @@
       {
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "sorvenn"
           ]
         },
         "wall": [
@@ -6469,9 +6469,9 @@
       {
         "where": {
           "style": [
-            "redoran",
-            "nord",
-            "ashlander"
+            "durath",
+            "hrothi",
+            "ashwalker"
           ]
         },
         "wall": [
@@ -6631,9 +6631,9 @@
       {
         "where": {
           "style": [
-            "hlaalu",
-            "imperial",
-            "telvanni"
+            "merovan",
+            "vessari",
+            "sorvenn"
           ]
         },
         "grid": 2,
@@ -6680,9 +6680,9 @@
       {
         "where": {
           "style": [
-            "redoran",
-            "nord",
-            "ashlander"
+            "durath",
+            "hrothi",
+            "ashwalker"
           ]
         },
         "grid": 2,
@@ -6727,5 +6727,5 @@
       }
     ]
   },
-  "version": "12a9905db7f8"
+  "version": "8c1a0a6da963"
 }

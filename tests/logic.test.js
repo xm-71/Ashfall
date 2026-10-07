@@ -35,7 +35,7 @@ test("different seeds give different worlds", () => {
   assert.notDeepEqual(a.towns.map(t => t.name), b.towns.map(t => t.name))
 })
 
-for (const type of ["cave", "tomb", "dwemer", "daedric", "citadel"]) {
+for (const type of ["cave", "tomb", "kaldur", "abyssal", "citadel"]) {
   test(`dungeon ${type} levels are connected`, () => {
     for (let level = 0; level < 3; level++) {
       const lvl = generateDungeonLevel({ seed: 42 + level, type, tier: 3, level, levels: 3, citadel: type === "citadel" })
@@ -59,7 +59,7 @@ test("every race/class/sign combination creates a valid character", () => {
 })
 
 test("skills level by use and grant levels", () => {
-  const c = createCharacter({ name: "T", race: "nord", cls: "warrior", sign: "warrior" })
+  const c = createCharacter({ name: "T", race: "hrothi", cls: "warrior", sign: "anvil" })
   const before = c.skills.longBlade
   let ready = false
   for (let i = 0; i < 4000 && !ready; i++) {
@@ -96,7 +96,7 @@ test("quests target real places", () => {
     assert.ok(q.title && q.desc)
     if (q.dungeonId !== undefined) assert.ok(world.dungeons[q.dungeonId])
   }
-  const c = createCharacter({ name: "T", race: "dunmer", cls: "mage", sign: "mage" })
+  const c = createCharacter({ name: "T", race: "cindari", cls: "mage", sign: "lantern" })
   assert.equal(canPromote(c, "magesGuild").ok, false)
 })
 
@@ -109,7 +109,7 @@ test("combat formulas stay in range", () => {
 test("quick-slots start filled and follow stacks", async () => {
   const { assignQuickslot, itemForSlot, slotForItem, removeItem, addItem } = await import("../src/logic/character.js")
   const { makePotion } = await import("../src/logic/items.js")
-  const c = createCharacter({ name: "T", race: "breton", cls: "mage", sign: "mage" })
+  const c = createCharacter({ name: "T", race: "caldrin", cls: "mage", sign: "lantern" })
   assert.equal(c.quickslots.length, 9)
   assert.equal(c.quickslots[0].type, "spell")
   const potion = c.inventory.find(i => i.kind === "potion")
@@ -127,9 +127,9 @@ test("music: moods, keys and the main theme", async () => {
   assert.equal(pickMood({ mode: "title" }).key, "title")
   assert.equal(pickMood({ mode: "play", area: "overworld", region: "ashlands" }).key, "ashlands")
   assert.equal(pickMood({ mode: "play", area: "overworld", region: "ashlands", inTown: true }).key, "town")
-  assert.equal(pickMood({ mode: "play", area: "dungeon", theme: "dwemer" }).key, "dwemer")
-  const calm = pickMood({ mode: "play", region: "grazelands" })
-  const fight = pickMood({ mode: "play", region: "grazelands", combat: 1 })
+  assert.equal(pickMood({ mode: "play", area: "dungeon", theme: "kaldur" }).key, "kaldur")
+  const calm = pickMood({ mode: "play", region: "mosslands" })
+  const fight = pickMood({ mode: "play", region: "mosslands", combat: 1 })
   assert.equal(calm.layers.drums, 0)
   assert.ok(fight.layers.drums > 0.9 && fight.bpm > calm.bpm)
   assert.ok(pickMood({ mode: "play", area: "dungeon", theme: "citadel", combat: 1, boss: true }).layers.choir > 0.5)
@@ -153,13 +153,13 @@ test("audio helpers: body materials, weapon classes, greeting lines", async () =
   const { CREATURES } = await import("../src/data/creatures.js")
   const { greetingLine } = await import("../src/audio/voice.js")
   assert.equal(bodyMaterial(CREATURES.skeleton), "bone")
-  assert.equal(bodyMaterial(CREATURES.centurionSphere), "metal")
-  assert.equal(bodyMaterial(CREATURES.mudcrab), "chitin")
-  assert.equal(bodyMaterial(CREATURES.ancestorGhost), "ghost")
-  assert.equal(bodyMaterial(CREATURES.kagouti), "flesh")
+  assert.equal(bodyMaterial(CREATURES.brassSentinel), "metal")
+  assert.equal(bodyMaterial(CREATURES.shellback), "chitin")
+  assert.equal(bodyMaterial(CREATURES.ancestralShade), "ghost")
+  assert.equal(bodyMaterial(CREATURES.tuskback), "flesh")
   assert.equal(weaponClass(null), "fist")
   assert.equal(weaponClass({ skill: "bluntWeapon" }), "blunt")
-  assert.equal(greetingLine("What do you want, n'wah? Go away."), "What do you want, n'wah?")
+  assert.equal(greetingLine("What do you want, ashling? Go away."), "What do you want, ashling?")
 })
 
 test("weapons: attack types, thrown stacks, ammo types and artifacts", async () => {
@@ -181,21 +181,21 @@ test("weapons: attack types, thrown stacks, ammo types and artifacts", async () 
   assert.equal(I.makeWeapon("steel", "crossbow").ammo, "bolt")
   assert.equal(I.ammoTypeOf(I.makeBolts(5)), "bolt")
   assert.equal(I.ammoTypeOf({ kind: "ammo" }), "arrow") // old saves
-  const fire = I.makeArrows(5, "glass", "fire")
+  const fire = I.makeArrows(5, "crystal", "fire")
   assert.equal(fire.enchant.element, "fire")
-  assert.notEqual(fire.stackKey, I.makeArrows(5, "glass").stackKey)
+  assert.notEqual(fire.stackKey, I.makeArrows(5, "crystal").stackKey)
   assert.equal(I.makeItemFromSpec("steel throwing knife:15").qty, 15)
   for (const id of ARTIFACT_IDS) {
     const a = I.makeArtifact(id)
     assert.ok(a.name && a.lore && a.artifact === id, id)
   }
-  assert.ok(I.makeArtifact("goldbrand").indestructible)
+  assert.ok(I.makeArtifact("sunbrand").indestructible)
 })
 
 test("durability: wear, breaking, repair and smith cost", async () => {
   const I = await import("../src/logic/items.js")
   const C = await import("../src/logic/character.js")
-  const c = C.createCharacter({ name: "T", race: "nord", cls: "warrior", sign: "warrior" })
+  const c = C.createCharacter({ name: "T", race: "hrothi", cls: "warrior", sign: "anvil" })
   assert.equal(C.getSkill(c, "armorer") >= 5, true)
   const sw = I.makeWeapon("iron", "longsword")
   assert.equal(sw.cond, sw.maxCond)
@@ -229,6 +229,6 @@ test("worlds hide legendary artifacts with dungeon bosses", () => {
   const held = w.dungeons.filter(d => d.artifact)
   assert.ok(held.length >= 4)
   assert.equal(new Set(held.map(d => d.artifact)).size, held.length)
-  for (const d of w.dungeons.filter(d => d.type === "daedric")) assert.ok(d.artifact, "every Daedric shrine has one")
+  for (const d of w.dungeons.filter(d => d.type === "abyssal")) assert.ok(d.artifact, "every Abyssal shrine has one")
   assert.deepEqual(generateWorld("artifact-test").dungeons.map(d => d.artifact), w.dungeons.map(d => d.artifact))
 })

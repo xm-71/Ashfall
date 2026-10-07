@@ -50,7 +50,7 @@ This starts the game's development server and opens the Workbench in your browse
 | **Offset** | A model floats or sinks. Change the middle (Y) number. |
 | **Align** | `base` stands the model on the ground, centred. `pivot` keeps the origin the artist set, which modular kit pieces need. |
 | **Weight** | One model should appear more or less often than the others in the same role. |
-| **Filters (where)** | A model belongs only in some places. For example `{"region": ["ashlands"]}` for a tree, or `{"style": ["redoran"]}` for a building. |
+| **Filters (where)** | A model belongs only in some places. For example `{"region": ["ashlands"]}` for a tree, or `{"style": ["durath"]}` for a building. |
 | **Animations** | Which animation set a person or creature uses. Sets are defined in the Manifest tab under `"animations"`. |
 | **Parts / Tint / Keep** | People made of several files (see below). |
 
@@ -62,7 +62,7 @@ This starts the game's development server and opens the Workbench in your browse
 3. Click Save & rebuild.
 
 **A building's windows are see-through holes.**
-1. In modular kits, the window frame and glass are separate pieces. In Buildings → the kit, give each window panel its frame:
+1. In modular kits, the window frame and crystal are separate pieces. In Buildings → the kit, give each window panel its frame:
    ```json
    { "model": ".../Wall_Plaster_Window_Wide_Round", "with": [".../Window_Wide_Round1", { "oneOf": [".../WindowShutters_Wide_Round_Open", null] }] }
    ```

@@ -108,7 +108,7 @@ export function addFeatures(lvl, rng, { tier, level, chestsOut, spawns = [], pro
 
   // ---- lava or flood water over the low ground ----
   let liquid = null
-  const lavaTypes = ["cave", "daedric", "citadel", "dwemer"]
+  const lavaTypes = ["cave", "abyssal", "citadel", "kaldur"]
   const waterTypes = ["tomb", "barrow", "cave"]
   if (level >= 1 && rng.chance(0.4)) {
     const lava = lavaTypes.includes(lvl.type) && (!waterTypes.includes(lvl.type) || rng.chance(0.5))

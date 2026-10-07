@@ -27,52 +27,52 @@ export const FACTIONS = {
     hall: "guild",
   },
   temple: {
-    name: "Tribunal Temple",
+    name: "Temple of the Triune",
     color: "#c8a040",
-    ranks: ["Novice", "Initiate", "Acolyte", "Adept", "Curate", "Disciple", "Diviner", "Master", "Patriarch", "Archcanon"],
+    ranks: ["Novice", "Initiate", "Acolyte", "Adept", "Curate", "Disciple", "Diviner", "Master", "Patriarch", "High Hierophant"],
     skills: ["restoration", "mysticism", "alteration", "bluntWeapon", "speechcraft", "unarmored"],
     questTypes: ["clear", "retrieve", "deliver"],
     services: ["spells", "healing"],
     hall: "temple",
   },
   legion: {
-    name: "Imperial Legion",
+    name: "Concord Legion",
     color: "#a02828",
-    ranks: ["Recruit", "Spearman", "Trooper", "Agent", "Champion", "Knight Errant", "Knight Bachelor", "Knight Protector", "Knight of the Garland", "Knight of the Imperial Dragon"],
+    ranks: ["Recruit", "Spearman", "Trooper", "Agent", "Champion", "Knight Errant", "Knight Bachelor", "Knight Protector", "Knight of the Laurel", "Knight of the Concord Crown"],
     skills: ["longBlade", "spear", "heavyArmor", "block", "athletics", "bluntWeapon"],
     questTypes: ["bounty", "cull", "clear"],
     services: ["training", "barter"],
     hall: "fort",
   },
-  redoran: {
-    name: "House Redoran",
+  durath: {
+    name: "House Durath",
     color: "#a0502a",
-    ranks: ["Hireling", "Retainer", "Oathman", "Lawman", "Kinsman", "House Cousin", "House Brother", "Councilman", "Archmaster", "Hortator"],
+    ranks: ["Hireling", "Retainer", "Oathman", "Lawman", "Kinsman", "House Cousin", "House Brother", "Councilman", "Archmaster", "High Marshal"],
     skills: ["longBlade", "spear", "mediumArmor", "heavyArmor", "athletics", "block"],
     questTypes: ["bounty", "clear", "cull"],
     services: ["training"],
     hall: "manor",
   },
-  hlaalu: {
-    name: "House Hlaalu",
+  merovan: {
+    name: "House Merovan",
     color: "#c0a060",
-    ranks: ["Hireling", "Retainer", "Oathman", "Lawman", "Kinsman", "House Cousin", "House Brother", "Councilman", "Grandmaster", "Hortator"],
+    ranks: ["Hireling", "Retainer", "Oathman", "Lawman", "Kinsman", "House Cousin", "House Brother", "Councilman", "Grandmaster", "High Marshal"],
     skills: ["speechcraft", "mercantile", "shortBlade", "lightArmor", "sneak", "marksman"],
     questTypes: ["deliver", "retrieve", "bounty"],
     services: ["barter", "training"],
     hall: "manor",
   },
-  telvanni: {
-    name: "House Telvanni",
+  sorvenn: {
+    name: "House Sorvenn",
     color: "#7a4aa0",
-    ranks: ["Hireling", "Retainer", "Oathman", "Lawman", "Mouth", "Spellwright", "Wizard", "Master", "Magister", "Archmagister"],
+    ranks: ["Hireling", "Retainer", "Oathman", "Lawman", "Mouth", "Spellwright", "Wizard", "Master", "Magister", "Grand Magister"],
     skills: ["mysticism", "alteration", "illusion", "destruction", "conjuration", "restoration"],
     questTypes: ["retrieve", "clear", "deliver"],
     services: ["spells"],
     hall: "manor",
   },
-  moragTong: {
-    name: "Morag Tong",
+  quietHand: {
+    name: "Quiet Hand",
     color: "#6a1a1a",
     ranks: ["Associate", "Brother", "Operator", "Contractor", "Executioner", "Assassin", "Calm Hand", "Exalted", "Master", "Grandmaster"],
     skills: ["shortBlade", "sneak", "acrobatics", "lightArmor", "marksman", "illusion"],
@@ -88,9 +88,9 @@ export const FACTION_IDS = Object.keys(FACTIONS)
 export const RANK_REP = [0, 5, 12, 20, 30, 42, 56, 72, 90, 110]
 
 export const HOUSE_STYLE = {
-  redoran: "redoran",
-  hlaalu: "hlaalu",
-  telvanni: "telvanni",
-  imperial: "imperial",
-  ashlander: "ashlander",
+  durath: "durath",
+  merovan: "merovan",
+  sorvenn: "sorvenn",
+  vessari: "vessari",
+  ashwalker: "ashwalker",
 }

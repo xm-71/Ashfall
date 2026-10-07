@@ -29,7 +29,7 @@ export function generateInterior(town, b) {
   const right = W / 2 - 0.6
   // facing the door (toward -z) is yaw π
   const facingDoor = Math.PI
-  const kind = b.label === "Fighters Guild" ? "fighters" : b.label === "Mages Guild" ? "mages" : b.label === "Cornerclub" ? "thieves" : b.label === "Morag Tong Guildhall" ? "tong" : b.type
+  const kind = b.label === "Fighters Guild" ? "fighters" : b.label === "Mages Guild" ? "mages" : b.label === "Back-Alley Den" ? "thieves" : b.label === "Quiet Hand Guildhall" ? "quietHand" : b.type
 
   switch (kind) {
     case "shop":
@@ -96,7 +96,7 @@ export function generateInterior(town, b) {
       add("barrel", left + 1.1, back - 0.3)
       lights.push([0, H - 0.8, 0, 0xffb060])
       break
-    case "tong":
+    case "quietHand":
       add("table", 0, back - 1.4)
       add("chair", 0, back - 0.6, facingDoor)
       spots.push({ x: 1.2, z: back - 1.6, yaw: facingDoor })
@@ -110,7 +110,7 @@ export function generateInterior(town, b) {
       for (let x = -2; x <= 2; x += 1.3) for (const sz of [-1, 1]) add("chair", x, 0.5 + sz * 1.1, sz > 0 ? Math.PI : 0)
       add("throne", 0, back - 0.8)
       spots.push({ x: 0, z: back - 1.8, yaw: facingDoor })
-      if (style === "nord") add("hearth", 0, -1.2)
+      if (style === "hrothi") add("hearth", 0, -1.2)
       for (const sx of [-1, 1]) add("banner", sx * (W / 2 - 0.05), 1, sx > 0 ? -Math.PI / 2 : Math.PI / 2)
       lights.push([0, H - 1, 0], [0, H - 1, back - 2])
       break
@@ -137,7 +137,7 @@ export function generateInterior(town, b) {
       add("table", -0.6, 0.6)
       add("chair", -0.6, 1.5, Math.PI)
       add("chair", -1.6, 0.6, Math.PI / 2)
-      add(style === "nord" ? "hearth" : rng.chance(0.5) ? "loom" : "shelf", left + (style === "nord" ? 1.2 : 0), back - (style === "nord" ? 0.6 : 0), 0)
+      add(style === "hrothi" ? "hearth" : rng.chance(0.5) ? "loom" : "shelf", left + (style === "hrothi" ? 1.2 : 0), back - (style === "hrothi" ? 0.6 : 0), 0)
       add("rug", 0.3, -0.5)
       if (rng.chance(0.6)) add("barrel", left + 0.3, -D / 2 + 1.2)
       if (rng.chance(0.6)) add("urn", right - 0.4, -D / 2 + 1)

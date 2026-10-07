@@ -37,12 +37,12 @@ export const WEAPON_MATERIALS = {
   chitin: { tier: 1, mult: 1.0, value: 1.4, color: 0x5a4a2a },
   steel: { tier: 2, mult: 1.2, value: 2.2, color: 0xa8adb3 },
   silver: { tier: 3, mult: 1.35, value: 4, color: 0xd9dde2, silver: true },
-  orcish: { tier: 4, mult: 1.5, value: 6, color: 0x5a6a4a, weightMult: 1.1 },
-  dwemer: { tier: 4, mult: 1.6, value: 8, color: 0xb08a3e },
-  adamantium: { tier: 5, mult: 1.85, value: 14, color: 0x9ab0a8, weightMult: 0.9 },
-  glass: { tier: 5, mult: 2.0, value: 18, color: 0x7fe0a0, weightMult: 0.6 },
-  ebony: { tier: 6, mult: 2.35, value: 30, color: 0x1a1a24, weightMult: 1.3 },
-  daedric: { tier: 7, mult: 2.8, value: 60, color: 0x4a1010, weightMult: 1.5 },
+  tuskar: { tier: 4, mult: 1.5, value: 6, color: 0x5a6a4a, weightMult: 1.1 },
+  kaldur: { tier: 4, mult: 1.6, value: 8, color: 0xb08a3e },
+  starmetal: { tier: 5, mult: 1.85, value: 14, color: 0x9ab0a8, weightMult: 0.9 },
+  crystal: { tier: 5, mult: 2.0, value: 18, color: 0x7fe0a0, weightMult: 0.6 },
+  obsidian: { tier: 6, mult: 2.35, value: 30, color: 0x1a1a24, weightMult: 1.3 },
+  abyssal: { tier: 7, mult: 2.8, value: 60, color: 0x4a1010, weightMult: 1.5 },
 }
 
 // Ammunition: arrows for bows, bolts for crossbows. Enchanted kinds add an element.
@@ -59,7 +59,7 @@ export const AMMO_ENCHANTS = {
 
 // Blade poisons: coat a weapon, and the next few strikes carry the effect.
 export const POISONS = {
-  venom: { name: "Netch Venom", effect: "dot", element: "poison", amount: 3, duration: 8, hits: 3, value: 40, color: 0x60d040 },
+  venom: { name: "Drifter Venom", effect: "dot", element: "poison", amount: 3, duration: 8, hits: 3, value: 40, color: 0x60d040 },
   bile: { name: "Racer Bile", effect: "dot", element: "poison", amount: 6, duration: 8, hits: 3, value: 90, color: 0x9ac030 },
   paralytic: { name: "Paralytic Draught", effect: "paralyze", duration: 3, hits: 2, value: 120, color: 0xb0a0e0 },
   marrowRot: { name: "Marrow-Rot", effect: "weaken", amount: 0.35, duration: 20, hits: 2, value: 70, color: 0x8a7a50 },
@@ -83,18 +83,18 @@ export const ARMOR_SLOTS = {
 }
 
 export const ARMOR_MATERIALS = {
-  "netch leather": { class: "lightArmor", tier: 1, ar: 8, weight: 12, value: 20, color: 0x7a5a3a },
+  "drifter leather": { class: "lightArmor", tier: 1, ar: 8, weight: 12, value: 20, color: 0x7a5a3a },
   chitin: { class: "lightArmor", tier: 1, ar: 10, weight: 10, value: 30, color: 0x6b5a2a },
-  glass: { class: "lightArmor", tier: 5, ar: 30, weight: 18, value: 900, color: 0x7fe0a0 },
-  bonemold: { class: "mediumArmor", tier: 2, ar: 15, weight: 24, value: 90, color: 0xc9b58a },
-  orcish: { class: "mediumArmor", tier: 4, ar: 24, weight: 26, value: 400, color: 0x5a6a4a },
-  adamantium: { class: "mediumArmor", tier: 5, ar: 28, weight: 24, value: 900, color: 0x9ab0a8 },
-  indoril: { class: "mediumArmor", tier: 5, ar: 30, weight: 28, value: 1100, color: 0x9a7a3a },
+  crystal: { class: "lightArmor", tier: 5, ar: 30, weight: 18, value: 900, color: 0x7fe0a0 },
+  bonecast: { class: "mediumArmor", tier: 2, ar: 15, weight: 24, value: 90, color: 0xc9b58a },
+  tuskar: { class: "mediumArmor", tier: 4, ar: 24, weight: 26, value: 400, color: 0x5a6a4a },
+  starmetal: { class: "mediumArmor", tier: 5, ar: 28, weight: 24, value: 900, color: 0x9ab0a8 },
+  warden: { class: "mediumArmor", tier: 5, ar: 30, weight: 28, value: 1100, color: 0x9a7a3a },
   iron: { class: "heavyArmor", tier: 1, ar: 12, weight: 30, value: 25, color: 0x6a6e73 },
   steel: { class: "heavyArmor", tier: 2, ar: 16, weight: 30, value: 60, color: 0xa8adb3 },
-  dwemer: { class: "heavyArmor", tier: 4, ar: 22, weight: 32, value: 300, color: 0xb08a3e },
-  ebony: { class: "heavyArmor", tier: 6, ar: 36, weight: 40, value: 2500, color: 0x1a1a24 },
-  daedric: { class: "heavyArmor", tier: 7, ar: 46, weight: 50, value: 6000, color: 0x4a1010 },
+  kaldur: { class: "heavyArmor", tier: 4, ar: 22, weight: 32, value: 300, color: 0xb08a3e },
+  obsidian: { class: "heavyArmor", tier: 6, ar: 36, weight: 40, value: 2500, color: 0x1a1a24 },
+  abyssal: { class: "heavyArmor", tier: 7, ar: 46, weight: 50, value: 6000, color: 0x4a1010 },
 }
 
 export const POTIONS = {
@@ -115,22 +115,22 @@ export const POTION_QUALITY = [
 
 // Ingredients / valuables — sellable, and edible for a small effect.
 export const MISC_ITEMS = {
-  "kwama egg": { value: 3, weight: 0.5, eat: { fatigue: 8 }, tags: ["cave"] },
-  "saltrice": { value: 2, weight: 0.1, eat: { fatigue: 5 }, tags: ["town"] },
-  "scrib jelly": { value: 8, weight: 0.1, eat: { magicka: 5 }, tags: ["cave"] },
-  "marshmerrow": { value: 4, weight: 0.1, eat: { health: 4 }, tags: ["wild"] },
-  "trama root": { value: 6, weight: 0.5, eat: { magicka: 4 }, tags: ["wild"] },
+  "grub egg": { value: 3, weight: 0.5, eat: { fatigue: 8 }, tags: ["cave"] },
+  "ashgrain": { value: 2, weight: 0.1, eat: { fatigue: 5 }, tags: ["town"] },
+  "mite jelly": { value: 8, weight: 0.1, eat: { magicka: 5 }, tags: ["cave"] },
+  "bogberry": { value: 4, weight: 0.1, eat: { health: 4 }, tags: ["wild"] },
+  "thornroot": { value: 6, weight: 0.5, eat: { magicka: 4 }, tags: ["wild"] },
   "bonemeal": { value: 8, weight: 0.2, tags: ["tomb"] },
   "ectoplasm": { value: 12, weight: 0.1, tags: ["tomb"] },
-  "dwemer coherer": { value: 120, weight: 5, tags: ["dwemer"] },
-  "dwemer gear": { value: 40, weight: 2, tags: ["dwemer"] },
-  "daedra heart": { value: 220, weight: 1, eat: { magicka: 25 }, tags: ["daedric"] },
-  "fire salts": { value: 90, weight: 0.1, tags: ["daedric"] },
-  "corprus weepings": { value: 60, weight: 0.1, eat: { health: -5, fatigue: 20 }, tags: ["citadel"] },
+  "kaldur coherer": { value: 120, weight: 5, tags: ["kaldur"] },
+  "kaldur gear": { value: 40, weight: 2, tags: ["kaldur"] },
+  "hollowborn heart": { value: 220, weight: 1, eat: { magicka: 25 }, tags: ["abyssal"] },
+  "fire salts": { value: 90, weight: 0.1, tags: ["abyssal"] },
+  "cinderrot weepings": { value: 60, weight: 0.1, eat: { health: -5, fatigue: 20 }, tags: ["citadel"] },
   "ash salts": { value: 30, weight: 0.1, tags: ["citadel", "ash"] },
   "pearl": { value: 60, weight: 0.2, tags: ["cave", "coast"] },
-  "raw glass": { value: 180, weight: 2, tags: ["cave"] },
-  "raw ebony": { value: 250, weight: 10, tags: ["cave"] },
+  "raw crystal": { value: 180, weight: 2, tags: ["cave"] },
+  "raw obsidian": { value: 250, weight: 10, tags: ["cave"] },
   "wolf pelt": { value: 25, weight: 2, tags: ["wild"] },
   "bear pelt": { value: 70, weight: 5, tags: ["wild"] },
   "diamond": { value: 250, weight: 0.2, tags: ["any"] },
