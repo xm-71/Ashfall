@@ -10,6 +10,7 @@ npm run dev      # http://localhost:5173
 npm run build    # static build in dist/ (relative paths, host anywhere)
 npm test         # logic tests (world gen, dungeons, leveling, quests, asset placement)
 npm run assets   # convert asset packs in assets/packs and publish the ones the manifest uses
+npm run workbench  # visual editor for how pack models are used (see docs/fixing-assets.md)
 ```
 
 Click the game to capture the mouse. Esc releases it. Every key below can be rebound in **Settings** (title screen or the in-game menu), which also has mouse sensitivity, invert Y, field of view, music, effects and ambience volume, spoken NPC greetings (off by default), and a compass toggle.

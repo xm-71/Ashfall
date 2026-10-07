@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "node --test tests/*.test.js",
     "assets": "npm install --prefix tools/assets --no-audit --no-fund --loglevel=error && node tools/assets/build.mjs",
-    "assets:review": "npm install --prefix tools/assets --no-audit --no-fund --loglevel=error && node tools/assets/review.mjs"
+    "assets:review": "npm install --prefix tools/assets --no-audit --no-fund --loglevel=error && node tools/assets/review.mjs",
+    "workbench": "vite --open /workbench.html"
   },
   "dependencies": {
     "three": "^0.186.1"

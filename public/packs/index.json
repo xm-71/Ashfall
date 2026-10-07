@@ -1414,6 +1414,28 @@
       "clips": [],
       "bytes": 7743
     },
+    "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant": {
+      "url": "packs/Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant.gltf",
+      "tris": 12894,
+      "min": [
+        -0.899,
+        -0.004,
+        -0.184
+      ],
+      "max": [
+        0.899,
+        1.559,
+        0.168
+      ],
+      "size": [
+        1.799,
+        1.563,
+        0.352
+      ],
+      "skinned": true,
+      "clips": [],
+      "bytes": 532618
+    },
     "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed": {
       "url": "packs/Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed.gltf",
       "tris": 830,
@@ -1502,49 +1524,49 @@
       "clips": [],
       "bytes": 160354
     },
-    "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular": {
-      "url": "packs/Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular.gltf",
-      "tris": 984,
+    "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody": {
+      "url": "packs/Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody.gltf",
+      "tris": 14318,
       "min": [
-        -0.062,
-        1.695,
-        0.057
+        -0.929,
+        -0.01,
+        -0.163
       ],
       "max": [
-        0.062,
-        1.725,
-        0.094
+        0.929,
+        1.81,
+        0.128
       ],
       "size": [
-        0.125,
-        0.031,
-        0.038
+        1.859,
+        1.82,
+        0.291
       ],
       "skinned": true,
       "clips": [],
-      "bytes": 160445
+      "bytes": 479385
     },
-    "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant": {
-      "url": "packs/Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant.gltf",
-      "tris": 12894,
+    "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant": {
+      "url": "packs/Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant.gltf",
+      "tris": 13568,
       "min": [
-        -0.899,
-        -0.004,
-        -0.184
+        -0.832,
+        -0.007,
+        -0.167
       ],
       "max": [
-        0.899,
-        1.559,
+        0.832,
+        1.518,
         0.168
       ],
       "size": [
-        1.799,
-        1.563,
-        0.352
+        1.664,
+        1.525,
+        0.335
       ],
       "skinned": true,
       "clips": [],
-      "bytes": 532618
+      "bytes": 395401
     },
     "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns": {
       "url": "packs/Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns.gltf",
@@ -1590,49 +1612,27 @@
       "clips": [],
       "bytes": 158756
     },
-    "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female": {
-      "url": "packs/Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female.gltf",
-      "tris": 1480,
+    "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Female_FullBody": {
+      "url": "packs/Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Female_FullBody.gltf",
+      "tris": 15060,
       "min": [
-        -0.063,
-        1.649,
-        0.051
+        -0.834,
+        -0.008,
+        -0.162
       ],
       "max": [
-        0.063,
-        1.687,
-        0.092
+        0.834,
+        1.767,
+        0.14
       ],
       "size": [
-        0.126,
-        0.038,
-        0.04
+        1.669,
+        1.775,
+        0.303
       ],
       "skinned": true,
       "clips": [],
-      "bytes": 203614
-    },
-    "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant": {
-      "url": "packs/Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant.gltf",
-      "tris": 13568,
-      "min": [
-        -0.832,
-        -0.007,
-        -0.167
-      ],
-      "max": [
-        0.832,
-        1.518,
-        0.168
-      ],
-      "size": [
-        1.664,
-        1.525,
-        0.335
-      ],
-      "skinned": true,
-      "clips": [],
-      "bytes": 395401
+      "bytes": 514019
     },
     "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Ranger": {
       "url": "packs/Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Ranger.gltf",
@@ -1854,6 +1854,72 @@
       "clips": [],
       "bytes": 513870
     },
+    "Medieval-Village-MegaKit/glTF/Window_Wide_Round1": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Window_Wide_Round1.gltf",
+      "tris": 354,
+      "min": [
+        -0.682,
+        1.016,
+        -0.252
+      ],
+      "max": [
+        0.682,
+        2.742,
+        0.277
+      ],
+      "size": [
+        1.365,
+        1.726,
+        0.53
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 243608
+    },
+    "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Open": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Open.gltf",
+      "tris": 136,
+      "min": [
+        -1.2,
+        1.093,
+        0.091
+      ],
+      "max": [
+        1.104,
+        2.74,
+        0.563
+      ],
+      "size": [
+        2.303,
+        1.647,
+        0.472
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 240754
+    },
+    "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Closed": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Closed.gltf",
+      "tris": 136,
+      "min": [
+        -0.673,
+        1.093,
+        0.152
+      ],
+      "max": [
+        0.673,
+        2.74,
+        0.288
+      ],
+      "size": [
+        1.347,
+        1.647,
+        0.136
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 240527
+    },
     "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat": {
       "url": "packs/Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat.gltf",
       "tris": 96,
@@ -1876,6 +1942,72 @@
       "clips": [],
       "bytes": 513599
     },
+    "Medieval-Village-MegaKit/glTF/Window_Wide_Flat1": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Window_Wide_Flat1.gltf",
+      "tris": 160,
+      "min": [
+        -0.804,
+        0.944,
+        -0.267
+      ],
+      "max": [
+        0.804,
+        2.524,
+        0.417
+      ],
+      "size": [
+        1.608,
+        1.58,
+        0.683
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 241236
+    },
+    "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open.gltf",
+      "tris": 120,
+      "min": [
+        -1.239,
+        1.093,
+        0.137
+      ],
+      "max": [
+        1.242,
+        2.517,
+        0.593
+      ],
+      "size": [
+        2.481,
+        1.424,
+        0.457
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 240209
+    },
+    "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Closed": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Closed.gltf",
+      "tris": 120,
+      "min": [
+        -0.673,
+        1.093,
+        0.152
+      ],
+      "max": [
+        0.673,
+        2.517,
+        0.288
+      ],
+      "size": [
+        1.347,
+        1.424,
+        0.136
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 239933
+    },
     "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Thin_Round": {
       "url": "packs/Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Thin_Round.gltf",
       "tris": 166,
@@ -1897,6 +2029,72 @@
       "skinned": false,
       "clips": [],
       "bytes": 514532
+    },
+    "Medieval-Village-MegaKit/glTF/Window_Thin_Round1": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Window_Thin_Round1.gltf",
+      "tris": 418,
+      "min": [
+        -0.444,
+        1.016,
+        -0.252
+      ],
+      "max": [
+        0.444,
+        2.621,
+        0.092
+      ],
+      "size": [
+        0.888,
+        1.605,
+        0.344
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 244279
+    },
+    "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Open": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Open.gltf",
+      "tris": 112,
+      "min": [
+        -0.82,
+        1.093,
+        0.059
+      ],
+      "max": [
+        0.787,
+        2.612,
+        0.436
+      ],
+      "size": [
+        1.606,
+        1.518,
+        0.376
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 240033
+    },
+    "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Closed": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Closed.gltf",
+      "tris": 112,
+      "min": [
+        -0.429,
+        1.093,
+        0.152
+      ],
+      "max": [
+        0.439,
+        2.612,
+        0.288
+      ],
+      "size": [
+        0.867,
+        1.518,
+        0.136
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 239797
     },
     "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat2": {
       "url": "packs/Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat2.gltf",
@@ -2932,7 +3130,7 @@
     ],
     "npc": [
       {
-        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant",
+        "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody",
         "anims": "humanoid",
         "fit": "none",
         "where": {
@@ -2951,6 +3149,9 @@
           ]
         },
         "parts": {
+          "outfit": [
+            "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant"
+          ],
           "hair": [
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed",
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted",
@@ -2961,18 +3162,21 @@
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard",
             null,
             null
-          ],
-          "brows": [
-            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"
           ]
         },
         "tint": {
+          "MI_Superhero_*": "skin",
           "MI_Regular_*": "skin",
           "MI_Hair*": "hair"
+        },
+        "keep": {
+          "MI_Superhero_*": [
+            "neck_01"
+          ]
         }
       },
       {
-        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant",
+        "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Female_FullBody",
         "anims": "humanoid",
         "fit": "none",
         "where": {
@@ -2991,22 +3195,28 @@
           ]
         },
         "parts": {
+          "outfit": [
+            "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant"
+          ],
           "hair": [
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns",
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long",
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale"
-          ],
-          "brows": [
-            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"
           ]
         },
         "tint": {
+          "MI_Superhero_*": "skin",
           "MI_Regular_*": "skin",
           "MI_Hair*": "hair"
+        },
+        "keep": {
+          "MI_Superhero_*": [
+            "neck_01"
+          ]
         }
       },
       {
-        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Ranger",
+        "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody",
         "anims": "humanoid",
         "fit": "none",
         "where": {
@@ -3022,8 +3232,8 @@
           ]
         },
         "parts": {
-          "brows": [
-            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"
+          "outfit": [
+            "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Ranger"
           ],
           "beard": [
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard",
@@ -3031,12 +3241,18 @@
           ]
         },
         "tint": {
+          "MI_Superhero_*": "skin",
           "MI_Regular_*": "skin",
           "MI_Hair*": "hair"
+        },
+        "keep": {
+          "MI_Superhero_*": [
+            "neck_01"
+          ]
         }
       },
       {
-        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Ranger",
+        "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Female_FullBody",
         "anims": "humanoid",
         "fit": "none",
         "where": {
@@ -3052,23 +3268,32 @@
           ]
         },
         "parts": {
-          "brows": [
-            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"
+          "outfit": [
+            "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Ranger"
           ]
         },
         "tint": {
+          "MI_Superhero_*": "skin",
           "MI_Regular_*": "skin",
           "MI_Hair*": "hair"
+        },
+        "keep": {
+          "MI_Superhero_*": [
+            "neck_01"
+          ]
         }
       },
       {
-        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant",
+        "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody",
         "anims": "humanoid",
         "fit": "none",
         "where": {
           "sex": "male"
         },
         "parts": {
+          "outfit": [
+            "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant"
+          ],
           "hair": [
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed",
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted",
@@ -3079,39 +3304,48 @@
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard",
             null,
             null
-          ],
-          "brows": [
-            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"
           ]
         },
         "tint": {
+          "MI_Superhero_*": "skin",
           "MI_Regular_*": "skin",
           "MI_Hair*": "hair"
         },
-        "weight": 0.01
+        "weight": 0.01,
+        "keep": {
+          "MI_Superhero_*": [
+            "neck_01"
+          ]
+        }
       },
       {
-        "model": "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant",
+        "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Female_FullBody",
         "anims": "humanoid",
         "fit": "none",
         "where": {
           "sex": "female"
         },
         "parts": {
+          "outfit": [
+            "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant"
+          ],
           "hair": [
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns",
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long",
             "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale"
-          ],
-          "brows": [
-            "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"
           ]
         },
         "tint": {
+          "MI_Superhero_*": "skin",
           "MI_Regular_*": "skin",
           "MI_Hair*": "hair"
         },
-        "weight": 0.01
+        "weight": 0.01,
+        "keep": {
+          "MI_Superhero_*": [
+            "neck_01"
+          ]
+        }
       }
     ],
     "creature.scamp": [
@@ -3252,10 +3486,62 @@
           "Medieval-Village-MegaKit/glTF/Wall_Plaster_Straight_Base"
         ],
         "window": [
-          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Round",
-          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat",
-          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Thin_Round",
-          "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat2"
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Round",
+            "with": [
+              "Medieval-Village-MegaKit/glTF/Window_Wide_Round1",
+              {
+                "oneOf": [
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Open",
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Closed",
+                  null,
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Open"
+                ]
+              }
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat",
+            "with": [
+              "Medieval-Village-MegaKit/glTF/Window_Wide_Flat1",
+              {
+                "oneOf": [
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open",
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Closed",
+                  null,
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open"
+                ]
+              }
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Thin_Round",
+            "with": [
+              "Medieval-Village-MegaKit/glTF/Window_Thin_Round1",
+              {
+                "oneOf": [
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Open",
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Closed",
+                  null,
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Open"
+                ]
+              }
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Wall_Plaster_Window_Wide_Flat2",
+            "with": [
+              "Medieval-Village-MegaKit/glTF/Window_Wide_Flat1",
+              {
+                "oneOf": [
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open",
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Closed",
+                  null,
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open"
+                ]
+              }
+            ]
+          }
         ],
         "door": [
           "Medieval-Village-MegaKit/glTF/Wall_Plaster_Door_Round"
@@ -3289,33 +3575,33 @@
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_4_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           }
         ],
@@ -3374,9 +3660,48 @@
           "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Straight"
         ],
         "window": [
-          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Wide_Round",
-          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Wide_Flat",
-          "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Thin_Round"
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Wide_Round",
+            "with": [
+              "Medieval-Village-MegaKit/glTF/Window_Wide_Round1",
+              {
+                "oneOf": [
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Open",
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Closed",
+                  null,
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Round_Open"
+                ]
+              }
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Wide_Flat",
+            "with": [
+              "Medieval-Village-MegaKit/glTF/Window_Wide_Flat1",
+              {
+                "oneOf": [
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open",
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Closed",
+                  null,
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Wide_Flat_Open"
+                ]
+              }
+            ]
+          },
+          {
+            "model": "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Window_Thin_Round",
+            "with": [
+              "Medieval-Village-MegaKit/glTF/Window_Thin_Round1",
+              {
+                "oneOf": [
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Open",
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Closed",
+                  null,
+                  "Medieval-Village-MegaKit/glTF/WindowShutters_Thin_Round_Open"
+                ]
+              }
+            ]
+          }
         ],
         "door": [
           "Medieval-Village-MegaKit/glTF/Wall_UnevenBrick_Door_Round"
@@ -3410,33 +3735,33 @@
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_4_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           }
         ],
@@ -3511,25 +3836,25 @@
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           }
         ]
@@ -3559,30 +3884,30 @@
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_1_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_2_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           },
           {
             "model": "Medieval-Village-MegaKit/glTF/Door_8_Round",
             "offset": [
-              -0.56,
+              -0.51,
               0,
-              -0.12
+              -0.11
             ]
           }
         ]
       }
     ]
   },
-  "version": "2aff6d96f6cc"
+  "version": "372779e55e7c"
 }

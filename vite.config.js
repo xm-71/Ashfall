@@ -1,6 +1,66 @@
 import { defineConfig } from "vite"
-import { readdirSync, readFileSync, writeFileSync, statSync } from "node:fs"
-import { join, relative } from "node:path"
+import { readdirSync, readFileSync, writeFileSync, statSync, existsSync, createReadStream } from "node:fs"
+import { join, relative, resolve } from "node:path"
+import { spawn } from "node:child_process"
+
+// Workbench API (dev server only): the asset workbench (workbench.html) reads
+// and saves assets/manifest.json, previews converted models from
+// assets/.cache, and runs the asset build.
+function workbenchApi() {
+  const root = process.cwd()
+  const send = (res, code, body, type = "application/json") => {
+    res.writeHead(code, { "content-type": type, "cache-control": "no-cache" })
+    res.end(body)
+  }
+  const readBody = req =>
+    new Promise((ok, fail) => {
+      let s = ""
+      req.on("data", c => (s += c))
+      req.on("end", () => ok(s))
+      req.on("error", fail)
+    })
+  return {
+    name: "ashfall-workbench",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use("/__wb", async (req, res) => {
+        try {
+          const url = decodeURIComponent(req.url.split("?")[0])
+          if (url === "/catalog") {
+            const f = join(root, "assets/catalog.json")
+            return existsSync(f) ? send(res, 200, readFileSync(f)) : send(res, 404, JSON.stringify({ error: "Run npm run assets first" }))
+          }
+          if (url === "/manifest" && req.method === "GET") return send(res, 200, readFileSync(join(root, "assets/manifest.json")))
+          if (url === "/manifest" && req.method === "POST") {
+            const text = await readBody(req)
+            const json = JSON.parse(text) // refuse anything that isn't JSON
+            writeFileSync(join(root, "assets/manifest.json"), JSON.stringify(json, null, 2) + "\n")
+            return send(res, 200, JSON.stringify({ ok: true }))
+          }
+          if (url === "/build" && req.method === "POST") {
+            const cmd = process.platform === "win32" ? "npm.cmd" : "npm"
+            const child = spawn(cmd, ["run", "assets"], { cwd: root })
+            let log = ""
+            child.stdout.on("data", d => (log += d))
+            child.stderr.on("data", d => (log += d))
+            child.on("close", code => send(res, 200, JSON.stringify({ code, log })))
+            return
+          }
+          if (url.startsWith("/model/")) {
+            const base = resolve(root, "assets/.cache/models")
+            const file = resolve(base, url.slice("/model/".length))
+            if (!file.startsWith(base + "/") || !file.endsWith(".glb") || !existsSync(file)) return send(res, 404, "not found", "text/plain")
+            res.writeHead(200, { "content-type": "model/gltf-binary", "cache-control": "no-cache" })
+            return createReadStream(file).pipe(res)
+          }
+          send(res, 404, JSON.stringify({ error: "unknown" }))
+        } catch (e) {
+          send(res, 500, JSON.stringify({ error: e.message }))
+        }
+      })
+    },
+  }
+}
 
 // Write the list of built files into the service worker, so the whole game
 // is cached for offline play on the first visit.
@@ -41,5 +101,5 @@ function precacheList() {
 export default defineConfig({
   base: "./",
   build: { chunkSizeWarningLimit: 1200 },
-  plugins: [precacheList()],
+  plugins: [precacheList(), workbenchApi()],
 })

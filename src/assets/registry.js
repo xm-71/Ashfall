@@ -99,7 +99,40 @@ function prepareMaterial(src) {
   return m
 }
 
-class AssetRegistry {
+// "MI_Skin_*" -> /^MI_Skin_.*$/i
+function globRe(glob) {
+  return new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`, "i")
+}
+
+// The triangles of a skinned mesh whose vertices mostly follow the given
+// bones or their children. Cached per source geometry and bone list.
+function keepBoneRegion(mesh, boneNames, cache) {
+  const key = `${mesh.geometry.uuid}|${boneNames.join(",")}`
+  if (cache.has(key)) return cache.get(key)
+  const bones = mesh.skeleton.bones
+  const keep = new Set()
+  bones.forEach((b, i) => {
+    for (let o = b; o; o = o.parent) if (boneNames.includes(o.name)) return keep.add(i)
+  })
+  const geo = mesh.geometry
+  const si = geo.attributes.skinIndex
+  const sw = geo.attributes.skinWeight
+  const inRegion = new Uint8Array(si.count)
+  for (let v = 0; v < si.count; v++) {
+    let best = 0
+    for (let k = 1; k < 4; k++) if (sw.getComponent(v, k) > sw.getComponent(v, best)) best = k
+    inRegion[v] = keep.has(si.getComponent(v, best)) ? 1 : 0
+  }
+  const src = geo.index ? geo.index.array : Array.from({ length: si.count }, (_, i) => i)
+  const out = []
+  for (let t = 0; t < src.length; t += 3) if (inRegion[src[t]] + inRegion[src[t + 1]] + inRegion[src[t + 2]] >= 2) out.push(src[t], src[t + 1], src[t + 2])
+  const trimmed = geo.clone()
+  trimmed.setIndex(out)
+  cache.set(key, trimmed)
+  return trimmed
+}
+
+export class AssetRegistry {
   constructor() {
     this.index = { models: {}, roles: {}, animations: {} }
     this.gltf = new Map() // model id -> loaded glTF
@@ -435,6 +468,18 @@ class AssetRegistry {
         }
       }
     }
+    // entry.keep: { materialGlob: [bone names] } keeps only the part of those
+    // meshes driven by the bones (and their children), e.g. just the head of a
+    // base body, so it doesn't show through clothes made for another build
+    if (entry.keep) {
+      for (const [glob, boneNames] of Object.entries(entry.keep)) {
+        const re = globRe(glob)
+        model.traverse(o => {
+          if (!o.isSkinnedMesh || !re.test(o.material.name)) return
+          o.geometry = keepBoneRegion(o, boneNames, this.trimCache ||= new Map())
+        })
+      }
+    }
     // per-character colours: skin by race, hair colour
     const tints = entry.tint ? Object.entries(entry.tint) : []
     model.traverse(o => {
@@ -443,7 +488,7 @@ class AssetRegistry {
       o.frustumCulled = false // skinned bounds don't follow the pose
       for (const [glob, key] of tints) {
         const c = ctx.tints?.[key]
-        if (c == null || !new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`, "i").test(o.material.name)) continue
+        if (c == null || !globRe(glob).test(o.material.name)) continue
         o.material = o.material.clone()
         o.material.color.multiply(new THREE.Color(c))
       }
@@ -574,7 +619,14 @@ export function kitModels(k) {
   const ids = []
   for (const [key, v] of Object.entries(k)) {
     if (key === "where" || key === "stories") continue
-    if (Array.isArray(v)) for (const x of v) ids.push(typeof x === "string" ? x : x.model)
+    const add = x => {
+      if (!x) return
+      if (typeof x === "string") return ids.push(x)
+      if (x.oneOf) return x.oneOf.forEach(add)
+      ids.push(x.model)
+      for (const w of x.with || []) add(w)
+    }
+    if (Array.isArray(v)) v.forEach(add)
     else if (v && typeof v === "object") ids.push(...Object.values(v).filter(x => typeof x === "string"))
   }
   return ids.filter(Boolean)

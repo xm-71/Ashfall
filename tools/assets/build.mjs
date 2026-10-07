@@ -550,7 +550,16 @@ async function main() {
       let ok = true
       for (const [key, v] of Object.entries(k)) {
         if (key === "where" || key === "stories" || key.startsWith("_") || typeof v !== "object") continue
-        const ids = Array.isArray(v) ? v.map(x => (typeof x === "string" ? x : x.model)) : Object.values(v)
+        const ids = []
+        const add = x => {
+          if (!x) return
+          if (typeof x === "string") return ids.push(x)
+          if (x.oneOf) return x.oneOf.forEach(add)
+          ids.push(x.model)
+          for (const w of x.with || []) add(w)
+        }
+        if (Array.isArray(v)) v.forEach(add)
+        else ids.push(...Object.values(v).filter(x => typeof x === "string"))
         for (const id of ids) {
           if (!catalog.models[id]) {
             errors.push(`kits.${name}.${key}: no model "${id}"`)

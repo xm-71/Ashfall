@@ -72,7 +72,7 @@ export function buildInterior(layout) {
 //   floor      floor tiles, laid on a grid and stretched to fit
 //   wall       wall panels (their outer face +Z), stacked to the room height
 //   door, doorLeaf   the doorway panel in the front wall and its door
-function kitShell(b, kit, { W, D, H }) {
+export function kitShell(b, kit, { W, D, H }) {
   const g = kit.grid || 2
   const h = kit.storey || 3
   let seed = Math.round(W * 131 + D * 71) >>> 0

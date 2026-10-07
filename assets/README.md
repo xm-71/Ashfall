@@ -12,6 +12,8 @@ assets/ROLES.md             every role the world asks for (generated)
 public/packs/               the converted models the game loads (generated, committed)
 ```
 
+To adjust models visually instead of editing JSON, run `npm run workbench`. See [docs/fixing-assets.md](../docs/fixing-assets.md).
+
 ## Adding a pack
 
 1. **Check the licence.** Paid packs may only be committed to a **private** repository. CC0 packs (Kenney, Quaternius, Poly Pizza CC0) are fine anywhere.

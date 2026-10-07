@@ -4,7 +4,11 @@
 // A kit, from assets/manifest.json "kits.building":
 //   grid       panel width in metres (default 2)
 //   storey     panel height (default 3)
-//   wall, wallBase, window, door   wall panels: plain, ground floor, with a window, with a doorway
+//   wall, wallBase, window, door   wall panels: plain, ground floor, with a window, with a doorway.
+//              A panel may be { model, with: [...] } to add pieces at the
+//              panel's origin, e.g. the window frame that fills its opening;
+//              a with-item is a model id, { model, offset }, or { oneOf: [...] }
+//              to pick one (null = nothing), e.g. open, closed or no shutters.
 //   doorLeaf   [{ model, offset: [x, y, z] }] the door in the doorway, from the doorway panel's origin
 //   corner     corner posts
 //   roofs      { "WxD": model } roofs sized W (across, x) by D (deep, z) in metres
@@ -23,6 +27,7 @@ function choose(list, r) {
   if (!list || !list.length) return null
   return list[Math.floor(r() * list.length) % list.length]
 }
+const modelOf = x => (typeof x === "string" ? x : x?.model)
 
 // Pick the roof footprint that best fills the plot without spilling far over it.
 export function kitFootprint(kit, w, d) {
@@ -46,9 +51,19 @@ export function assembleBuilding(kit, { w, d, type = "house", seed = 1 }) {
   const [lo, hi] = kit.stories?.[type] || (BIG[type] ? [2, 2] : [1, 2])
   const storeys = lo + Math.floor(r() * (hi - lo + 1))
   const pieces = []
-  const put = (model, x, y, z, yaw) => {
+  const put = (piece, x, y, z, yaw) => {
+    const model = modelOf(piece)
     if (!model) return
     pieces.push({ model, matrix: new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(1, 1, 1)) })
+    // extra pieces that belong to this one (window frames, shutters)
+    for (let item of piece.with || []) {
+      if (item && item.oneOf) item = choose(item.oneOf, r)
+      if (!item) continue
+      const [ox, oy, oz] = item.offset || [0, 0, 0]
+      const c = Math.cos(yaw)
+      const sn = Math.sin(yaw)
+      put(typeof item === "string" ? item : { model: item.model }, x + ox * c + oz * sn, y + oy, z - ox * sn + oz * c, yaw)
+    }
   }
   // sides: [length, centre of the side, outward normal]
   const sides = [
