@@ -163,6 +163,8 @@ If an attack, hit or death clip is missing, the game's own timing still applies:
 To keep downloads small:
 - Models are published as `.gltf` + `.bin`, and their textures are stored once in `public/packs/textures/` under names taken from their content. A texture atlas shared by forty kit pieces downloads once.
 - A file used only for its animations (an animation library) is published without its mesh and with only the clips the manifest uses.
+- Every texture also gets a half-size copy in `public/packs/textures/lo/`. Phones (and the Low quality setting) load those, because a phone browser gives a page far less memory.
+- Models that repeat (kit pieces, props) are drawn instanced: each is stored once, however many houses use it.
 
 ## How it loads
 

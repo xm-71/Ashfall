@@ -6727,5 +6727,6 @@
       }
     ]
   },
-  "version": "8c1a0a6da963"
+  "lowTextures": true,
+  "version": "e0b5a38155d7"
 }

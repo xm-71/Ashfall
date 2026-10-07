@@ -6,16 +6,29 @@ export const PRESETS = {
   high: { name: "High", tex: 1024, tile: 512, pixelRatio: 2, shadows: true, shadowMap: 4096, terrainRes: 960, grass: 2, floraMult: 1.5, drawDist: 1.3, seg: 1.4, charShadows: true, antialias: true, post: { bloom: true, ao: true, shafts: true } },
 }
 
+// Phones and tablets: a browser tab there gets far less memory (iOS Safari
+// closes pages that pass roughly 1 GB), so they start on Low and always load
+// the half-size pack textures.
+export const isPhone = (() => {
+  try {
+    const ua = navigator.userAgent || ""
+    return /iPhone|iPad|iPod|Android|Mobile/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+  } catch {
+    return false
+  }
+})()
+
 function load() {
   try {
-    return localStorage.getItem("ashfall-quality") || "medium"
+    return localStorage.getItem("ashfall-quality") || (isPhone ? "low" : "medium")
   } catch {
-    return "medium"
+    return isPhone ? "low" : "medium"
   }
 }
 
 export let qualityName = PRESETS[load()] ? load() : "medium"
-export const Q = { ...PRESETS[qualityName], maxAniso: 4 }
+// packTex: "low" loads the half-size copies of pack textures
+export const Q = { ...PRESETS[qualityName], maxAniso: 4, packTex: isPhone || qualityName === "low" ? "low" : "full" }
 
 export function setQuality(name) {
   try {

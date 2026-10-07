@@ -636,6 +636,24 @@ async function main() {
     }
   }
   for (const s of textureBytes.values()) bytes += s
+  // half-size copies of every texture (textures/lo/), which phones load to
+  // stay inside their browser's memory limit
+  if (sharp)
+    for (const f of textureBytes.keys()) {
+      const lo = f.replace(/^textures\//, "textures/lo/")
+      keep.add(lo)
+      const out = path.join(PUBLIC, lo)
+      if (fs.existsSync(out)) continue
+      fs.mkdirSync(path.dirname(out), { recursive: true })
+      const src = path.join(PUBLIC, f)
+      try {
+        const meta = await sharp(src).metadata()
+        await sharp(src).resize(Math.max(1, Math.round((meta.width || 2) / 2)), Math.max(1, Math.round((meta.height || 2) / 2))).toFormat(meta.format === "png" ? "png" : meta.format === "jpeg" ? "jpeg" : "webp", { quality: 82 }).toFile(out)
+      } catch {
+        fs.copyFileSync(src, out)
+      }
+    }
+  index.lowTextures = !!sharp
   // remove published files the manifest no longer uses
   for (const f of walk(PUBLIC)) {
     const rel = posix(path.relative(PUBLIC, f))

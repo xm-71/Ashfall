@@ -4,7 +4,7 @@ import { texturedMaterial } from "./texgen.js"
 import { Builder, lathe, rockGeometry, taperTube } from "./geom.js"
 import { seg } from "../core/quality.js"
 import { buildAncientTower, buildKaldurRuins } from "./landmarks.js"
-import { assets } from "../assets/registry.js"
+import { assets, Instancer } from "../assets/registry.js"
 import { assembleBuilding } from "../assets/kit.js"
 
 // Shared glowing material for windows and lanterns; intensity follows the time of day.
@@ -363,6 +363,7 @@ const DARK_CORE = new THREE.MeshLambertMaterial({ color: 0x0c0907 })
 export function buildTown(town, colliders) {
   const group = new THREE.Group()
   const builder = new Builder()
+  const inst = new Instancer() // pack models, drawn instanced (see Instancer)
   const plazaR = town.radius * 0.55
   // cobbled plaza that follows the flattened ground
   const plaza = new THREE.CircleGeometry(plazaR, seg(32))
@@ -377,7 +378,7 @@ export function buildTown(town, colliders) {
     const assembled = kit && assembleBuilding(kit, { w: b.w, d: town.style === "hrothi" && big ? b.d * 1.5 : b.d, type: b.type, seed: town.id * 7919 + b.idx * 104729 + 1 })
     if (assembled) {
       // a building assembled from a modular kit, front (door) toward the plaza
-      for (const p of assembled.pieces) assets.bakeModel(builder, p.model, P.base.clone().multiply(p.matrix))
+      for (const p of assembled.pieces) inst.model(p.model, P.base.clone().multiply(p.matrix))
       // a dark core behind the walls: windows look into a dim room, not an empty shell
       const k = assembled.core
       builder.add(new THREE.BoxGeometry(k.w, k.h, k.d), DARK_CORE, { matrix: P.base.clone().multiply(new THREE.Matrix4().makeTranslation(0, k.h / 2 + 0.02, 0)), uv: "keep" })
@@ -394,7 +395,7 @@ export function buildTown(town, colliders) {
     if (entry) {
       // a pack building, sized to the plot; its front faces the plaza
       const dims = { w: b.w, d: town.style === "hrothi" && big ? b.d * 1.5 : b.d }
-      assets.bake(builder, entry, "building", dims, P.base)
+      inst.entry(entry, "building", dims, P.base)
       const size = assets.placedSize(entry, "building", dims)
       colliders.addBox(b.x, b.z, size.x * 0.96, size.z * 0.96, b.rot)
       if (b.label) {
@@ -430,7 +431,7 @@ export function buildTown(town, colliders) {
   const stall = pick("prop.stall", ctx, 102)
   const lamp = pick("prop.lamppost", ctx, 103)
   if (well) {
-    assets.bake(builder, well, "prop.well", {}, at(0, 0))
+    inst.entry(well, "prop.well", {}, at(0, 0))
     const s = assets.placedSize(well, "prop.well")
     colliders.addCircle(town.x, town.z, Math.max(s.x, s.z) / 2)
   }
@@ -438,14 +439,14 @@ export function buildTown(town, colliders) {
     const sa = 0.9
     const sx0 = Math.cos(sa) * plazaR * 0.55
     const sz0 = Math.sin(sa) * plazaR * 0.55
-    assets.bake(builder, stall, "prop.stall", {}, at(sx0, sz0, -sa))
+    inst.entry(stall, "prop.stall", {}, at(sx0, sz0, -sa))
     const s = assets.placedSize(stall, "prop.stall")
     colliders.addBox(town.x + sx0, town.z + sz0, s.x, s.z, -sa)
   }
   if (lamp)
     for (let i = 0; i < 4; i++) {
       const a = (i / 4) * Math.PI * 2 + 0.4
-      assets.bake(builder, lamp, "prop.lamppost", {}, at(Math.cos(a) * plazaR * 0.85, Math.sin(a) * plazaR * 0.85, -a))
+      inst.entry(lamp, "prop.lamppost", {}, at(Math.cos(a) * plazaR * 0.85, Math.sin(a) * plazaR * 0.85, -a))
       colliders.addCircle(town.x + Math.cos(a) * plazaR * 0.85, town.z + Math.sin(a) * plazaR * 0.85, 0.3)
     }
   // everyday clutter: a few props beside each building's front wall (never
@@ -456,7 +457,7 @@ export function buildTown(town, colliders) {
       const n = 1 + ((b.idx * 7 + town.id) % 3)
       const hw = b.w / 2
       const spots = [[-hw + 0.7, -b.d / 2 - 1.1, 0.3], [hw - 0.6, -b.d / 2 - 1.0, -0.4], [hw + 1.1, -b.d / 4, 1.6], [-hw - 1.1, b.d / 5, -1.4]]
-      dress(builder, P, b.rot, "decor.town", { style: town.style }, spots.slice(0, n), colliders, null, town.id * 31 + b.idx)
+      dress(inst, P, b.rot, "decor.town", { style: town.style }, spots.slice(0, n), colliders, null, town.id * 31 + b.idx)
     }
   if (assets.has("decor.town", { style: town.style })) {
     const P = new Placer(builder, town.x, town.y, town.z, 0)
@@ -464,7 +465,7 @@ export function buildTown(town, colliders) {
       const a = 0.4 + Math.PI / 4 + (k * Math.PI) / 2
       return [Math.cos(a) * plazaR * 0.72, Math.sin(a) * plazaR * 0.72, -a + Math.PI / 2]
     })
-    dress(builder, P, 0, "decor.town", { style: town.style }, spots, colliders, null, town.id * 17 + 5)
+    dress(inst, P, 0, "decor.town", { style: town.style }, spots, colliders, null, town.id * 17 + 5)
   }
   const camp = town.style === "ashwalker" || town.style === "hrothi"
   if (well) {
@@ -503,7 +504,7 @@ export function buildTown(town, colliders) {
     lantern(C, lx + 0.7, 2.6, lz)
   }
 
-  group.add(builder.build())
+  group.add(builder.build(), inst.build())
   const name = makeLabel(town.name, { size: 34, scale: 0.035, color: "#f0dca0" })
   name.position.set(town.x, town.y + 16, town.z)
   group.add(name)
@@ -579,7 +580,7 @@ export function placeLimb(mesh, a, b) {
 // Pack props on the ground: spots are [x, z, yaw] in the placer's frame (rot
 // is its turn); each takes a model from `role` that suits ctx, standing on
 // the terrain. Props wider than half a metre are solid.
-function dress(builder, P, rot, role, ctx, spots, colliders, heightAt, salt) {
+function dress(inst, P, rot, role, ctx, spots, colliders, heightAt, salt) {
   const v = new THREE.Vector3()
   spots.forEach(([x, z, yaw = 0], i) => {
     const e = assets.pick(role, ctx, (((salt + 1) * 0.6180339 + i * 0.7548776) % 1 + 1) % 1)
@@ -587,7 +588,7 @@ function dress(builder, P, rot, role, ctx, spots, colliders, heightAt, salt) {
     v.set(x, 0, z).applyMatrix4(P.base)
     const y = heightAt ? heightAt(v.x, v.z) : v.y
     const m = new THREE.Matrix4().compose(new THREE.Vector3(v.x, y - 0.03, v.z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rot + yaw), new THREE.Vector3(1, 1, 1))
-    assets.bake(builder, e, role, {}, m)
+    inst.entry(e, role, {}, m)
     const s = assets.placedSize(e, role)
     if (colliders && Math.max(s.x, s.z) > 0.5) colliders.addCircle(v.x, v.z, Math.max(s.x, s.z) * 0.42)
   })
@@ -680,8 +681,9 @@ export function buildEntrance(d, colliders, heightAt = null) {
     group.add(holder)
   }
   // props around the door, from the packs
-  if (!d.tower) dress(builder, P, rot, "decor.entrance", { theme: d.type }, d.type === "citadel" ? [] : ENTRANCE_SPOTS.slice(0, 3 + (d.seed % 4)), colliders, heightAt, d.seed % 1000)
-  group.add(builder.build())
+  const inst = new Instancer()
+  if (!d.tower) dress(inst, P, rot, "decor.entrance", { theme: d.type }, d.type === "citadel" ? [] : ENTRANCE_SPOTS.slice(0, 3 + (d.seed % 4)), colliders, heightAt, d.seed % 1000)
+  group.add(builder.build(), inst.build())
   colliders.addCircle(d.x + Math.sin(rot) * (d.tower ? 0.6 : 1.2), d.z + Math.cos(rot) * (d.tower ? 0.6 : 1.2), d.type === "citadel" ? 3.5 : d.tower ? 3.3 : 2.2)
   const doorPos = new THREE.Vector3(d.x - Math.sin(rot) * 3, d.y + 1.5, d.z - Math.cos(rot) * 3)
   return { group, doorPos }

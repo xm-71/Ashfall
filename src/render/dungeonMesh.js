@@ -7,7 +7,7 @@ import { GLOW } from "./buildings.js"
 import { createNoise2D } from "../core/noise.js"
 import { srgbColor } from "./textures.js"
 import { Q, seg } from "../core/quality.js"
-import { assets } from "../assets/registry.js"
+import { assets, Instancer } from "../assets/registry.js"
 
 const hash01 = (x, y, salt) => {
   const s = Math.sin(x * 127.1 + y * 311.7 + salt * 74.7) * 43758.5453
@@ -88,10 +88,10 @@ export function buildDungeonMesh(lvl) {
   // modular pieces from asset packs, where the theme has them
   const theme = { theme: lvl.type }
   const kit = { wall: assets.has("dungeon.wall", theme), floor: assets.has("dungeon.floor", theme), ceiling: assets.has("dungeon.ceiling", theme), pillar: assets.has("dungeon.pillar", theme) }
-  const PB = new Builder()
+  const PB = new Instancer() // pack pieces, drawn instanced
   const piece = (role, x, y, salt, dims, matrix) => {
     const e = assets.pick(role, theme, hash01(x, y, salt))
-    if (e) assets.bake(PB, e, role, dims, matrix)
+    if (e) PB.entry(e, role, dims, matrix)
   }
   for (let y = 0; y < lvl.h; y++) {
     for (let x = 0; x < lvl.w; x++) {
@@ -242,12 +242,12 @@ export function buildDungeonMesh(lvl) {
     const e = assets.pick(`prop.${p.type}`, theme, hash01(p.x, p.y, 5))
     if (e) {
       const [cx, cz] = center(p.x, p.y)
-      assets.bake(PB, e, `prop.${p.type}`, {}, placeAt(cx + p.ox, cellH(p.x, p.y), cz + p.oz, p.rot))
+      PB.entry(e, `prop.${p.type}`, {}, placeAt(cx + p.ox, cellH(p.x, p.y), cz + p.oz, p.rot))
     } else addProp(B, { ...p, hy: cellH(p.x, p.y) }, look, center)
   }
   void reserved
   group.add(B.build())
-  if (PB.parts.size) group.add(PB.build())
+  if (PB.sets.size) group.add(PB.build())
   return { group, height: H, look, lights: lightObjs }
 }
 

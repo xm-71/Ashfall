@@ -7,6 +7,7 @@ import * as THREE from "three"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js"
 import { ROLES, matches, creatureRoles, weaponRoles } from "./roles.js"
 import { CREATURES } from "../data/creatures.js"
+import { Q } from "../core/quality.js"
 import { WEAPON_BASES } from "../data/items.js"
 import { UNIQUES } from "../data/artifacts.js"
 
@@ -21,6 +22,8 @@ function getLoader() {
   loaderPromise ||= Promise.all([import("three/examples/jsm/loaders/GLTFLoader.js"), import("three/examples/jsm/libs/meshopt_decoder.module.js")]).then(([{ GLTFLoader }, { MeshoptDecoder }]) => {
     const loader = new GLTFLoader()
     loader.setMeshoptDecoder(MeshoptDecoder)
+    // phones and Low quality: the half-size textures the asset build publishes
+    if (Q.packTex === "low" && assets.index.lowTextures) loader.manager.setURLModifier(url => url.replace(/\/textures\/(?!lo\/)/, "/textures/lo/"))
     return loader
   })
   return loaderPromise
@@ -859,6 +862,44 @@ export class AssetRegistry {
 }
 
 export const assets = new AssetRegistry()
+
+// Many copies of pack models drawn as instanced meshes: one InstancedMesh per
+// model part (geometry + material), so a model's geometry is stored once
+// however often it repeats. Kit houses repeat the same wall panels, roofs
+// and props dozens of times per town; merging copies of them used most of a
+// phone's memory.
+export class Instancer {
+  constructor() {
+    this.sets = new Map() // part -> matrices
+  }
+  // a model placed by its own origin (kit pieces)
+  model(id, matrix) {
+    this.add(assets.parts({ model: id, front: "-z", align: "pivot" }, "kit"), matrix)
+  }
+  // a role entry, as assets.bake would place it
+  entry(entry, role, dims, matrix) {
+    this.add(assets.parts(entry, role, dims), matrix)
+  }
+  add(parts, matrix) {
+    for (const p of parts) {
+      if (!this.sets.has(p)) this.sets.set(p, [])
+      this.sets.get(p).push(matrix.clone())
+    }
+  }
+  build() {
+    const group = new THREE.Group()
+    for (const [part, list] of this.sets) {
+      const mesh = new THREE.InstancedMesh(part.geo, part.mat, list.length)
+      list.forEach((m, i) => mesh.setMatrixAt(i, m))
+      mesh.instanceMatrix.needsUpdate = true
+      mesh.castShadow = true
+      mesh.receiveShadow = true
+      mesh.computeBoundingSphere() // around all the copies, for culling
+      group.add(mesh)
+    }
+    return group
+  }
+}
 
 // ---------------------------------------------------------------- which models an area needs
 
