@@ -14,19 +14,22 @@ import { Projectile, ELEMENT_COLOR } from "./actors.js"
 import { Input } from "./input.js"
 import { Audio } from "./audio.js"
 import { ViewModel } from "../render/viewmodel.js"
-import { updatePlayer, spellEffectsOnEnemy } from "./player.js"
+import { updatePlayer, spellEffectsOnEnemy, currentWeapon } from "./player.js"
+import { buildPlayerMesh, buildPlayerArms, lookColors } from "../render/creatures.js"
+import { defaultLook } from "../data/looks.js"
 import { UI } from "../ui/ui.js"
 import { loadWorld } from "./worldLoader.js"
 import { writeSave, deleteSave, restoreRun } from "./save.js"
 import { strikeEnemy, wearArmor } from "./combat.js"
 import { Particles } from "../render/particles.js"
-import { makeArtifact } from "../logic/items.js"
+import { makeArtifact, maybeRareSword } from "../logic/items.js"
 import { equippedUnique } from "../logic/character.js"
 import { ARTIFACTS } from "../data/artifacts.js"
 import { showLoading, hideLoading } from "../ui/loading.js"
 import { Q } from "../core/quality.js"
 import { onSettingsChange } from "../core/settings.js"
 import { PostFX } from "../render/post.js"
+import { assets, overworldModels, dungeonModels, interiorModels } from "../assets/registry.js"
 import { GamepadInput } from "./gamepad.js"
 import { TouchControls } from "../ui/touch.js"
 import { settings } from "../core/settings.js"
@@ -46,7 +49,7 @@ export class Game {
     this.renderer.shadowMap.enabled = Q.shadows
     this.renderer.shadowMap.type = THREE.PCFShadowMap
     container.appendChild(this.renderer.domElement)
-    // a neutral studio environment so metals (weapons, armour, Dwemer brass) have something to reflect
+    // a neutral studio environment so metals (weapons, armour, Kaldur brass) have something to reflect
     const pmrem = new THREE.PMREMGenerator(this.renderer)
     this.envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
     this.camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.05, 2000)
@@ -100,9 +103,11 @@ export class Game {
     if (!force && this.world && this.world.seed === seed && this.overworld) return
     this.loadingWorld = true
     const token = (this.worldToken = (this.worldToken || 0) + 1)
-    onProgress(0, "Raising Vvardenfell from the sea…")
+    onProgress(0, "Raising Cindermere from the sea…")
     const { world, chunks } = await loadWorld(seed, () => onProgress(0.15, "Shaping the land…"))
     if (token !== this.worldToken) return // a newer seed was requested meanwhile
+    // pack models the overworld uses (none without asset packs)
+    await assets.load(overworldModels(), p => onProgress(0.15 + p * 0.1, "Unpacking models…"))
     const overworld = await OverworldArea.create(this, world, chunks, (p, text) => onProgress(0.25 + p * 0.65, text ? `${text}…` : "Lighting the lanterns…"))
     if (token !== this.worldToken) return
     if (this.overworld) this.overworld.scene.clear()
@@ -161,13 +166,83 @@ export class Game {
     this.ui.showHud()
   }
 
+  // ---------- the player's body (third-person view) ----------
+
+  toggleView() {
+    this.thirdPerson = !this.thirdPerson
+    this.camDist = 0.6
+    this.msg(this.thirdPerson ? "Third-person view (V to switch back)" : "First-person view", "#c9b88f")
+  }
+
+  // Build (or rebuild) the body when the look, race or weapon changes.
+  updatePlayerBody(dt, speed) {
+    if (!this.thirdPerson && !this.playerBody) return
+    const c = this.char
+    const look = (c.look ||= defaultLook())
+    const weapon = currentWeapon(c)
+    const key = JSON.stringify([look, c.race])
+    if (!this.playerBody || this.playerBodyKey !== key) {
+      if (this.playerBody) this.playerBody.group.removeFromParent()
+      this.playerBody = buildPlayerMesh(look, RACES[c.race], weapon)
+      this.playerBodyKey = key
+      this.playerBodyWeapon = weapon
+      this.playerBodyShield = undefined
+      this.playerBody.group.traverse(o => o.isMesh && (o.castShadow = true))
+    }
+    const b = this.playerBody
+    if (this.playerBodyWeapon !== weapon) {
+      b.setWeapon(weapon)
+      this.playerBodyWeapon = weapon
+    }
+    // a shield only with a one-handed weapon, as in first person
+    const shield = c.equipment.shield && !weapon?.ranged && !weapon?.twoHanded ? c.equipment.shield : null
+    if (this.playerBodyShield !== shield) {
+      b.setShield(shield)
+      this.playerBodyShield = shield
+    }
+    if (b.group.parent !== this.area.scene) this.area.scene.add(b.group)
+    const pc = this.pc
+    b.group.position.copy(pc.pos)
+    if (pc.sneaking) b.group.position.y -= 0.12
+    b.group.rotation.y = pc.yaw + Math.PI
+    // the swing follows the first-person one: up to the blow, then back
+    const vm = this.viewmodel
+    const t = 1 - (vm.swing || 0)
+    const attack = vm.swing > 0 ? (t < 0.4 ? t / 0.4 : 1 - (t - 0.4) / 0.6) : pc.charging ? Math.min(0.3, pc.chargeT) : 0
+    this.bodyT = (this.bodyT || 0) + dt
+    b.anim(this.bodyT, speed, attack, { variant: vm.swingType === "slash" ? 1 : vm.swingType === "thrust" ? 2 : 0 })
+  }
+
+  // Pull the camera back behind the player, stopping short of walls.
+  thirdPersonCamera(dt, eye) {
+    const pc = this.pc
+    const head = new THREE.Vector3(pc.pos.x, pc.pos.y + eye + 0.15, pc.pos.z)
+    const fwd = new THREE.Vector3(-Math.sin(pc.yaw) * Math.cos(pc.pitch), Math.sin(pc.pitch), -Math.cos(pc.yaw) * Math.cos(pc.pitch))
+    const right = new THREE.Vector3(Math.cos(pc.yaw), 0, -Math.sin(pc.yaw))
+    const want = 3.2
+    let dist = want
+    const p = new THREE.Vector3()
+    for (let d = 0.3; d <= want; d += 0.15) {
+      p.copy(head).addScaledVector(fwd, -d).addScaledVector(right, 0.35 * (d / want))
+      if (this.area.projectileBlocked(p) || p.y < this.area.groundHeight(p.x, p.z) + 0.25) {
+        dist = Math.max(0.3, d - 0.3)
+        break
+      }
+    }
+    // pull in at once, ease back out
+    this.camDist = dist < (this.camDist ?? dist) ? dist : (this.camDist ?? dist) + (dist - this.camDist) * Math.min(1, dt * 4)
+    const k = this.camDist
+    this.camera.position.copy(head).addScaledVector(fwd, -k).addScaledVector(right, 0.35 * (k / want))
+  }
+
   // Continue a suspended run from its save.
   async resumeRun(save) {
     this.audio.ensure()
     await this.ensureWorld(save.seed)
     restoreRun(this, save)
     for (const [k, st] of Object.entries(this.landmarks.state)) if (k[0] === "c" && st.opened) this.overworld.seabed?.userData.open(Number(k.slice(1)))
-    this.viewmodel.setSkin(RACES[this.char.race].skin)
+    this.viewmodel.setSkin(lookColors(this.char.look || defaultLook(), RACES[this.char.race]).skin)
+    this.viewmodel.setArms(buildPlayerArms(this.char.look || defaultLook(), RACES[this.char.race]))
     this.pc = this.newPlayerController(save.pc.x, save.pc.y, save.pc.z, save.pc.yaw)
     this.pc.pitch = save.pc.pitch || 0
     this.pc.sneaking = !!save.pc.sneaking
@@ -175,10 +250,10 @@ export class Game {
     if (save.area.kind === "dungeon") {
       const d = this.world.dungeons[save.area.id]
       this.returnPos = save.area.returnPos
-      this.loadDungeonLevel(d, save.area.level, false, true)
+      await this.loadDungeonLevel(d, save.area.level, false, true)
       this.pc.pos.set(save.pc.x, save.pc.y, save.pc.z)
     } else if (save.area.kind === "interior") {
-      this.enterInterior(save.area.town, save.area.building, true)
+      await this.enterInterior(save.area.town, save.area.building, true)
       this.returnPos = save.area.returnPos
       this.pc.pos.set(save.pc.x, save.pc.y, save.pc.z)
     }
@@ -193,13 +268,15 @@ export class Game {
     writeSave(this)
   }
 
-  async startRun({ name, race, cls, sign, seed }) {
+  async startRun({ name, race, cls, sign, seed, look }) {
     this.audio.ensure()
     await this.ensureWorld(seed)
     deleteSave()
     this.char = createCharacter({ name, race, cls, sign })
+    this.char.look = look || defaultLook()
     this.char.dead = false
-    this.viewmodel.setSkin(RACES[race].skin)
+    this.viewmodel.setSkin(lookColors(this.char.look, RACES[race]).skin)
+    this.viewmodel.setArms(buildPlayerArms(this.char.look, RACES[race]))
     this.time = 9 // day 0, 9am
     this.day = 0
     this.weather = "clear"
@@ -219,11 +296,11 @@ export class Game {
     this.pc = this.newPlayerController(t.x + Math.cos(a) * (t.radius * 0.45), t.y, t.z + Math.sin(a) * (t.radius * 0.45), Math.atan2(Math.cos(a), Math.sin(a)))
     this.setArea(this.overworld)
     this.beginPlay()
-    const blade = t.npcs.find(n => n.role === "blade")
-    this.addJournal(`I have arrived in ${t.name} in the ${REGIONS[t.region].name} of Vvardenfell, a free ${RACES[race].name}. ${blade ? `An Imperial named ${blade.name} of the Blades wishes to speak with me in the town square.` : ""}`)
+    const blade = t.npcs.find(n => n.role === "lantern")
+    this.addJournal(`I have arrived in ${t.name} in the ${REGIONS[t.region].name} of Cindermere, a free ${RACES[race].name}. ${blade ? `A Vessari named ${blade.name} of the Lanterns wishes to speak with me in the town square.` : ""}`)
     this.msg(`Welcome to ${t.name}, outlander. Seed: ${seed}`, "#f0d890")
     this.msg("Click to look around. WASD move · LMB attack · F cast · E activate · Tab menu", "#c9b88f")
-    if (blade) this.msg(`${blade.name} of the Blades is waiting to speak with you.`, "#c9b88f")
+    if (blade) this.msg(`${blade.name} of the Lanterns is waiting to speak with you.`, "#c9b88f")
     this.autosave()
   }
 
@@ -265,19 +342,19 @@ export class Game {
     if (this.weatherT > 0) return
     this.weatherT = 3 + Math.random() * 4
     const region = this.world.regionAt(this.pc.pos.x, this.pc.pos.z)
-    const R = { ashlands: 0.35, redMountain: 0.6, molagAmur: 0.4 }[region] || 0
+    const R = { ashlands: 0.35, hearthpeak: 0.6, cinderfall: 0.4 }[region] || 0
     const r = Math.random()
     let w = "clear"
     if (region === "frostholm") {
       // the frozen isle: snow, blizzards, and the odd clear cold day
       w = r < 0.4 ? "snow" : r < 0.55 ? "blizzard" : r < 0.72 ? "cloudy" : r < 0.8 ? "fog" : "clear"
-    } else if (r < R) w = region === "redMountain" && Math.random() < 0.3 ? "blight" : "ash"
-    else if (r < R + (["bitterCoast", "ascadian", "westGash"].includes(region) ? 0.25 : 0.08)) w = Math.random() < 0.35 ? "storm" : "rain"
+    } else if (r < R) w = region === "hearthpeak" && Math.random() < 0.3 ? "blight" : "ash"
+    else if (r < R + (["brineCoast", "verdant", "westRift"].includes(region) ? 0.25 : 0.08)) w = Math.random() < 0.35 ? "storm" : "rain"
     else if (r < R + 0.35) w = "cloudy"
     else if (r < R + 0.42) w = "fog"
     if (w !== this.weather) {
       this.weather = w
-      const txt = { ash: "An ash storm is blowing in.", blight: "A blight storm rolls off Red Mountain!", rain: "It begins to rain.", storm: "Thunder rumbles. A storm is coming.", snow: "Snow begins to fall.", blizzard: "A blizzard howls in off the sea!", fog: "Fog settles over the land.", cloudy: "Clouds gather.", clear: "The sky clears." }[w]
+      const txt = { ash: "An ash storm is blowing in.", blight: "A blight storm rolls off the Hearthpeak!", rain: "It begins to rain.", storm: "Thunder rumbles. A storm is coming.", snow: "Snow begins to fall.", blizzard: "A blizzard howls in off the sea!", fog: "Fog settles over the land.", cloudy: "Clouds gather.", clear: "The sky clears." }[w]
       if (this.area.kind === "overworld") this.msg(txt, "#b0a890")
     }
   }
@@ -293,7 +370,7 @@ export class Game {
     if (this.mode === "title" || this.mode === "chargen") this.updateTitle(dt)
     else if (this.mode === "play") {
       if (this.ui.modal === "dialogue" && this.ui.dialogueNpc) this.updateTalkCamera(dt)
-      if (!this.ui.modal && this.input.active) this.update(dt)
+      if (!this.ui.modal && this.input.active && !this.loadingArea) this.update(dt)
       else if (!this.ui.modal && !this.input.active) this.ui.showPauseHint(true)
       this.ui.updateHud()
     } else if (this.mode === "dead" || this.mode === "victory") {
@@ -303,7 +380,8 @@ export class Game {
       if (this.area.kind === "overworld") this.area.sky.update(dt, this.hourOfDay(), this.camera, this.area.fogColor(this.pc.pos.x, this.pc.pos.z), this.area.scene.fog)
       for (const e of this.area.enemies) e.update(dt)
     }
-    this.viewmodel.root.visible = this.mode === "play" && this.ui.modal !== "dialogue"
+    this.viewmodel.root.visible = this.mode === "play" && this.ui.modal !== "dialogue" && !this.thirdPerson
+    if (this.playerBody) this.playerBody.group.visible = this.thirdPerson && this.ui.modal !== "dialogue"
     this.audio.update(dt, this)
     if (this.input.active) this.ui.showPauseHint(false)
     this.input.endFrame()
@@ -376,7 +454,7 @@ export class Game {
 
   updateTitle(dt) {
     this.titleT += dt * 0.03
-    const rm = this.world.redMountain
+    const rm = this.world.hearthpeak
     const r = 330
     this.camera.position.set(rm.x + Math.cos(this.titleT) * r, 120, rm.z + Math.sin(this.titleT) * r)
     this.camera.lookAt(rm.x, 40, rm.z)
@@ -394,11 +472,12 @@ export class Game {
   update(dt) {
     const c = this.char
     this.advanceTime(dt * HOURS_PER_SECOND)
-    this.viewmodel.root.visible = true
+    this.viewmodel.root.visible = !this.thirdPerson
+    if (this.playerBody) this.playerBody.group.visible = this.thirdPerson
     if (this.area.kind === "overworld") {
       this.updateWeather(dt)
       this.area.sky.weather = this.weather
-      const rmd = Math.hypot(this.pc.pos.x - this.world.redMountain.x, this.pc.pos.z - this.world.redMountain.z)
+      const rmd = Math.hypot(this.pc.pos.x - this.world.hearthpeak.x, this.pc.pos.z - this.world.hearthpeak.z)
       const redness = Math.max(0, Math.min(1, (320 - rmd) / 170))
       if (!this.area.sky.onThunder) this.area.sky.onThunder = d => setTimeout(() => this.audio.play("thunder", { dist: d }), (d / 343) * 1000)
       const { day } = this.area.sky.update(dt, this.hourOfDay(), this.camera, this.area.fogColor(this.pc.pos.x, this.pc.pos.z), this.area.scene.fog, redness)
@@ -462,7 +541,7 @@ export class Game {
     }
     for (const l of this.world.landmarks || []) {
       if (this.landmarks.found.includes(l.id)) continue
-      if (Math.hypot(l.x - this.pc.pos.x, l.z - this.pc.pos.z) < (l.type === "ghostfence" ? 45 : 32)) {
+      if (Math.hypot(l.x - this.pc.pos.x, l.z - this.pc.pos.z) < (l.type === "wardwall" ? 45 : 32)) {
         this.landmarks.found.push(l.id)
         this.msg(`Discovered: ${l.name}`, "#f0d890")
         this.audio.sting("discover")
@@ -526,7 +605,7 @@ export class Game {
         let diff = Math.abs(toSrc - facing)
         if (diff > Math.PI) diff = Math.PI * 2 - diff
         if (diff < 1.2 && Math.random() < blockChance(getSkill(c, "block"), getAttr(c, "agility"), getAttr(c, "luck"))) {
-          this.audio.play("block", { wood: ["netch leather", "chitin", "bonemold"].includes(shield.material) })
+          this.audio.play("block", { wood: ["drifter leather", "chitin", "bonecast"].includes(shield.material) })
           this.particles.burst(this.camera.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(-Math.sin(this.pc.yaw), -0.4, -Math.cos(this.pc.yaw)).multiplyScalar(0.8)), "metal", 10)
           this.msg("Blocked!", "#c0c0c0")
           this.exercise("block", 1)
@@ -543,7 +622,7 @@ export class Game {
         this.exercise(piece.armorClass, 1)
         wearArmor(this, piece, dmg)
       } else if (slot !== "shield") this.exercise("unarmored", 1)
-      // Ebony Mail and the like burn whoever strikes you
+      // Obsidian Mail and the like burn whoever strikes you
       const shieldFx = equippedUnique(c, "fireShield")
       if (shieldFx && source && !source.dead) source.takeDamage(shieldFx.amount, { element: "fire" })
     }
@@ -583,7 +662,7 @@ export class Game {
 
   recordRun(victory) {
     const c = this.char
-    const entry = { name: c.name, race: RACES[c.race].name, cls: c.cls, level: c.level, days: Math.floor(this.time / 24) + 1, score: this.score(), victory, cause: victory ? "Destroyed the Heart of Lorkhan" : this.deathCause, seed: this.seed, date: new Date().toISOString().slice(0, 10) }
+    const entry = { name: c.name, race: RACES[c.race].name, cls: c.cls, level: c.level, days: Math.floor(this.time / 24) + 1, score: this.score(), victory, cause: victory ? "Destroyed the Heart of Aethon" : this.deathCause, seed: this.seed, date: new Date().toISOString().slice(0, 10) }
     try {
       const runs = JSON.parse(localStorage.getItem("ashfall-runs") || "[]")
       runs.unshift(entry)
@@ -714,6 +793,8 @@ export class Game {
       gold += 50 * tier + Math.round(Math.random() * 100 * tier)
       if (e.relic) loot.push(makeRelic(e.relic))
       if (e.artifact) loot.push(makeArtifact(e.artifact))
+      const rare = maybeRareSword(new RNG(Math.random() * 1e9), tier + 1, c.artifactsFound, 0.25)
+      if (rare) loot.push(rare)
       if (e.questItem) loot.push(makeQuestItem(e.questItem.name, e.questItem.questId))
     }
     // take back what stuck in the body, merging stacks
@@ -754,7 +835,7 @@ export class Game {
         if (e.relic) this.msg(`${e.name} carried ${e.relic}! Search the body.`, "#ffe080")
         if (e.artifact) this.msg(`${e.name} guarded ${ARTIFACTS[e.artifact].name}! Search the body.`, "#ffe080")
       }
-      if (e.defId === "dagoth") setTimeout(() => this.victory(), 2500)
+      if (e.defId === "emberlord") setTimeout(() => this.victory(), 2500)
     }
   }
 
@@ -763,7 +844,7 @@ export class Game {
     this.mode = "victory"
     this.input.unlock()
     this.audio.sting("victory")
-    this.addJournal(`${this.world.mainQuest.dagoth} is dead and the Heart of Lorkhan is severed. The Blight will lift from Vvardenfell.`)
+    this.addJournal(`${this.world.mainQuest.emberlord} is dead and the Heart of Aethon is severed. The Blight will lift from Cindermere.`)
     deleteSave()
     this.recordRun(true)
     this.ui.showVictory()
@@ -776,7 +857,7 @@ export class Game {
   onItemTaken(item) {
     if (item.artifact && !this.char.artifactsFound?.includes(item.artifact)) {
       ;(this.char.artifactsFound ||= []).push(item.artifact)
-      this.msg(`Legendary artifact: ${item.name}!`, "#ffe080")
+      this.msg(`${item.rare ? "Rare find" : "Legendary artifact"}: ${item.name}!`, "#ffe080")
       this.addJournal(`I found ${item.name}. ${item.lore}`)
       this.audio.sting("discover")
     }
@@ -788,14 +869,14 @@ export class Game {
         this.main.stage = 2
         const cit = this.world.dungeons[this.world.mainQuest.citadelId]
         cit.sealed = false
-        this.addJournal(`With Sunder, Keening and Wraithguard in hand, the seal on ${cit.name} in the crater of Red Mountain will open for me. ${this.world.mainQuest.dagoth} waits at the Heart.`)
-        this.msg("All three tools of Kagrenac are yours. Go to Red Mountain.", "#ffe080")
+        this.addJournal(`With Riven, Lament and Soulward in hand, the seal on ${cit.name} in the crater of the Hearthpeak will open for me. ${this.world.mainQuest.emberlord} waits at the Heart.`)
+        this.msg("All three tools of Durnagh are yours. Go to the Hearthpeak.", "#ffe080")
       }
     }
     if (item.questId === "isle") {
       this.isle.stage = 2
       this.msg("You have the Horn of the Ancestors. Return it to the village elder.", "#f0d890")
-      this.addJournal("I took the Horn of the Ancestors from the draugr lord's body.")
+      this.addJournal("I took the Horn of the Ancestors from the grimwight lord's body.")
     }
     if (item.kind === "quest") {
       const q = this.quests.find(q => q.id === item.questId)
@@ -840,19 +921,31 @@ export class Game {
     } else this.msg("The clam is empty.", "#a8a090")
   }
 
-  // Propylon chambers link to every other chamber you have found.
-  usePropylon(l) {
-    const found = (this.world.landmarks || []).filter(o => o.type === "propylon" && o.id !== l.id && this.landmarks.found.includes(o.id))
-    if (!found.length) return this.msg("The index stone is cold. You must find another Propylon chamber before this one will carry you anywhere.", "#a0c0ff")
+  // Waystone chambers link to every other chamber you have found.
+  useWaystone(l) {
+    const found = (this.world.landmarks || []).filter(o => o.type === "waystone" && o.id !== l.id && this.landmarks.found.includes(o.id))
+    if (!found.length) return this.msg("The index stone is cold. You must find another Waystone chamber before this one will carry you anywhere.", "#a0c0ff")
     this.ui.openChoice(l.name, "The index stone hums. Where will you go?", found.map(o => ({
       label: o.name,
       act: () => {
         this.pc.pos.set(o.x + 2.5, this.world.heightAt(o.x + 2.5, o.z), o.z)
         this.pc.vel.set(0, 0, 0)
         this.audio.play("spell", { element: "restore" })
-        this.msg(`The Propylon carries you to ${o.name}.`, "#a0c0ff")
+        this.msg(`The Waystone carries you to ${o.name}.`, "#a0c0ff")
       },
     })))
+  }
+
+  // Fetch pack models for the area about to be entered (play pauses meanwhile).
+  async loadPackModels(ids) {
+    this.loadingArea = true
+    showLoading("Unpacking models…", 0)
+    try {
+      await assets.load(ids, p => showLoading("Unpacking models…", p))
+    } finally {
+      hideLoading()
+      this.loadingArea = false
+    }
   }
 
   // ---------- dungeons ----------
@@ -860,16 +953,18 @@ export class Game {
   enterDungeon(d) {
     if (d.sealed) {
       const held = this.relicsHeld()
-      this.msg(`A ward of the Sixth House seals the door. You need Sunder, Keening and Wraithguard (${held.length}/3).`, "#ff9a7a")
+      this.msg(`A ward of the Ember Court seals the door. You need Riven, Lament and Soulward (${held.length}/3).`, "#ff9a7a")
       return
     }
     this.returnPos = { x: this.pc.pos.x, y: this.pc.pos.y, z: this.pc.pos.z, yaw: this.pc.yaw + Math.PI }
     this.msg(`Entering ${d.name}...`, "#c9b88f")
     d.discovered = true
-    this.loadDungeonLevel(d, 0, false)
+    return this.loadDungeonLevel(d, 0, false)
   }
 
   loadDungeonLevel(d, level, fromBelow, quiet = false) {
+    const need = assets.missing(dungeonModels(d.type).concat(d.citadel ? dungeonModels("cave") : []))
+    if (need.length) return this.loadPackModels(need).then(() => this.loadDungeonLevel(d, level, fromBelow, quiet))
     const st = (this.dungeonState[d.id] ||= { levels: {} })
     const lst = (st.levels[level] ||= { dead: new Set(), chests: {} })
     const lvl = generateDungeonLevel({ seed: d.seed, type: d.type, tier: d.tier, level, levels: d.levels, relic: d.relic, citadel: !!d.citadel })
@@ -892,6 +987,8 @@ export class Game {
   enterInterior(townId, idx, quiet = false) {
     const town = this.world.towns[townId]
     const b = town.buildings[idx]
+    const need = assets.missing(interiorModels(town.style))
+    if (need.length) return this.loadPackModels(need).then(() => this.enterInterior(townId, idx, quiet))
     if (this.area.kind === "overworld") {
       // come back out on the doorstep, facing away from the building
       const dx = b.door.x - b.x
@@ -953,7 +1050,7 @@ export class Game {
     const item = c.inventory.find(i => i.uid === effect.key)
     if (item) removeItem(c, item)
     if (effect.prev && c.inventory.includes(effect.prev)) equip(c, effect.prev)
-    this.msg("Your bound weapon returns to Oblivion.", "#a8a090")
+    this.msg("Your bound weapon returns to the Hollow.", "#a8a090")
   }
 
   // Spawn a bag of dropped items at the player's feet.
@@ -972,18 +1069,18 @@ export class Game {
 
 export function makeRelic(name) {
   let item
-  if (name === "Sunder") {
-    item = makeWeapon("dwemer", "warhammer")
+  if (name === "Riven") {
+    item = makeWeapon("kaldur", "warhammer")
     item.damage = [22, 42]
     item.enchant = { key: "shock", element: "shock", amount: 12, tag: "" }
     item.color = 0xc0a040
-  } else if (name === "Keening") {
-    item = makeWeapon("glass", "shortsword")
+  } else if (name === "Lament") {
+    item = makeWeapon("crystal", "shortsword")
     item.damage = [16, 30]
     item.enchant = { key: "absorb", absorb: true, amount: 8, tag: "" }
     item.color = 0xb0e0ff
   } else {
-    item = makeArmor("dwemer", "gauntlets")
+    item = makeArmor("kaldur", "gauntlets")
     item.ar = 30
     item.enchant = { key: "resistMagic", resist: "magic", amount: 0.5, tag: "" }
   }

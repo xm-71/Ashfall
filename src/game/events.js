@@ -6,7 +6,7 @@ import { CREATURES } from "../data/creatures.js"
 import { RNG } from "../core/rng.js"
 
 // Things that happen on the road and in towns while you travel: caravans
-// ambushed by bandits, Sixth House raids at night, and merchants and pilgrims
+// ambushed by bandits, Ember Court raids at night, and merchants and pilgrims
 // walking between towns.
 let evId = 0
 
@@ -66,7 +66,7 @@ export class WorldEvents {
     const w = g.world
     const town = [...w.towns].sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z))[0]
     const rng = new RNG(`ev:${evId}:${g.time}`)
-    const race = spec.race || rng.pick(["dunmer", "imperial", "dunmer", "redguard", "breton", "khajiit"])
+    const race = spec.race || rng.pick(["cindari", "vessari", "cindari", "qasiri", "caldrin", "rakhai"])
     const full = { id: `ev:${evId++}`, townId: town.id, name: npcName(rng, race), race, faction: null, disposition: 55, seed: rng.int(1, 1e9), x, z, ...spec, race }
     const npc = new Npc(g, this.area, full, w.heightAt(x, z))
     this.area.npcs.push(npc)
@@ -87,11 +87,11 @@ export class WorldEvents {
     this.caravanCd = 420
     const { x, z } = spot
     const merchant = this.spawnNpc({ role: "trader", title: "Caravan Merchant", building: "Caravan" }, x, z)
-    // a pack guar standing by the merchant
-    const guar = buildCreatureMesh(CREATURES.guar)
-    guar.group.position.set(x + 2, g.world.heightAt(x + 2, z), z + 1)
-    guar.anim(0, 0, 0)
-    this.area.scene.add(guar.group)
+    // a pack loper standing by the merchant
+    const loper = buildCreatureMesh(CREATURES.loper, "loper")
+    loper.group.position.set(x + 2, g.world.heightAt(x + 2, z), z + 1)
+    loper.anim(0, 0, 0)
+    this.area.scene.add(loper.group)
     const bandits = []
     for (let i = 0; i < 3; i++) {
       const a = (i / 3) * Math.PI * 2
@@ -102,17 +102,17 @@ export class WorldEvents {
       this.area.enemies.push(e)
       bandits.push(e)
     }
-    this.active.push({ type: "caravan", merchant, guar: guar.group, bandits, x, z })
+    this.active.push({ type: "caravan", merchant, loper: loper.group, bandits, x, z })
     g.msg("Shouts on the road ahead: bandits are attacking a caravan!", "#ffb080")
     g.audio.play("whiff", { pos: new THREE.Vector3(x, g.pc.pos.y + 1, z) })
   }
 
-  // ---------- Sixth House raid ----------
+  // ---------- Ember Court raid ----------
 
   startRaid(town) {
     const g = this.game
     const raiders = []
-    const pool = g.char.level >= 6 ? ["ashZombie", "ashSlave", "corprusStalker"] : ["ashZombie", "ashSlave"]
+    const pool = g.char.level >= 6 ? ["ashHusk", "ashThrall", "rotstalker"] : ["ashHusk", "ashThrall"]
     const a0 = Math.random() * Math.PI * 2
     const n = 3 + Math.floor(Math.random() * 2) + Math.floor(g.char.level / 6)
     for (let i = 0; i < n; i++) {
@@ -126,7 +126,7 @@ export class WorldEvents {
       raiders.push(e)
     }
     this.active.push({ type: "raid", town, raiders })
-    g.msg(`The Sixth House is raiding ${town.name}! Ash creatures pour out of the dark.`, "#ff7a5a")
+    g.msg(`The Ember Court is raiding ${town.name}! Ash creatures pour out of the dark.`, "#ff7a5a")
     g.audio.sting("discover")
   }
 
@@ -159,7 +159,7 @@ export class WorldEvents {
       }
       if (Math.hypot(ev.x - p.x, ev.z - p.z) > 170) {
         this.removeNpc(ev.merchant)
-        this.area.scene.remove(ev.guar)
+        this.area.scene.remove(ev.loper)
         ev.done = true
       }
     } else if (ev.type === "raid") {

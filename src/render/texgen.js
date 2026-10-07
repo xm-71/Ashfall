@@ -34,7 +34,7 @@ function buffers(painter, size, seedName) {
   return { c: toColorData(b), n: toNormalData(b, b.n) }
 }
 
-const WORLD_TEXTURES = ["grass", "ash", "rock", "sand", "snow", "road", "mud", "volcanic", "dirt", "cobble", "plaster", "wood", "planks", "shingles", "stoneBlocks", "sandstone", "tombBrick", "daedricStone", "floorTiles", "chitinShell", "mushroomCap", "mushroomStalk", "hide", "dwemerMetal", "flesh", "caveRock", "dwemerFloor", "bark", "parasolCap", "gills", "waterNormal", "plate", "fabricTrim", "fabric", "leather", "bone", "chitin"]
+const WORLD_TEXTURES = ["grass", "ash", "rock", "sand", "snow", "road", "mud", "volcanic", "dirt", "cobble", "plaster", "wood", "planks", "shingles", "stoneBlocks", "sandstone", "tombBrick", "abyssalStone", "floorTiles", "chitinShell", "mushroomCap", "mushroomStalk", "hide", "kaldurMetal", "flesh", "caveRock", "kaldurFloor", "bark", "parasolCap", "gills", "waterNormal", "plate", "fabricTrim", "fabric", "leather", "bone", "chitin"]
 
 // Generate every texture in parallel web workers before the world is built.
 export function preloadTextures(onProgress = () => {}) {
@@ -89,7 +89,7 @@ export function texture(name, size = Q.tex) {
 // Atlas for characters and creatures: one material, tiles addressed by name.
 // ---------------------------------------------------------------------------
 
-export const ATLAS_TILES = ["face", "skin", "scales", "fur", "fabric", "fabricTrim", "leather", "chainmail", "plate", "bonemold", "hair", "bone", "chitin", "spots", "membrane", "brass", "robe", "teeth", "plain", "flesh", "creatureHide", "mushroomStalk", "bark", "daedricStone"]
+export const ATLAS_TILES = ["face", "skin", "scales", "fur", "fabric", "fabricTrim", "leather", "chainmail", "plate", "bonecast", "hair", "bone", "chitin", "spots", "membrane", "brass", "robe", "teeth", "plain", "flesh", "creatureHide", "mushroomStalk", "bark", "abyssalStone"]
 const ATLAS_COLS = 6
 const ATLAS_ROWS = 4
 

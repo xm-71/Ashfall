@@ -166,7 +166,7 @@ const CRYSTAL = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x9ab8ff).m
 function chestAt(P, g, l, x, z, rotY = 0) {
   P.box(1.1, 0.55, 0.7, TM("planks", 0x8a6a4a), x, 0.28, z, { rot: [0, rotY, 0] })
   P.box(1.15, 0.2, 0.75, TM("planks", 0x6a4a2a), x, 0.63, z, { rot: [0, rotY, 0] })
-  P.box(1.16, 0.08, 0.1, TM("dwemerMetal", 0x6a6a6a, { metal: true }), x, 0.4, z, { rot: [0, rotY, 0] })
+  P.box(1.16, 0.08, 0.1, TM("kaldurMetal", 0x6a6a6a, { metal: true }), x, 0.4, z, { rot: [0, rotY, 0] })
   const c = Math.cos(l.rot)
   const s = Math.sin(l.rot)
   return V3(l.x + x * c + z * s, l.y + 0.6, l.z - x * s + z * c)
@@ -188,7 +188,7 @@ export function buildWreck(l, colliders) {
   return { group: b.build(), chest }
 }
 
-// A walled Imperial fort gone to ruin: towers at the corners, a gatehouse, a keep.
+// A walled Vessari fort gone to ruin: towers at the corners, a gatehouse, a keep.
 export function buildStronghold(l, colliders) {
   const b = new Builder()
   const P = new Placer(b, l.x, l.y, l.z, l.rot)
@@ -237,8 +237,8 @@ export function buildStronghold(l, colliders) {
   return { group: b.build(), chest, inside: at(0, 0) }
 }
 
-// A Propylon chamber: a ring of carved pillars around a glowing index stone.
-export function buildPropylon(l, colliders) {
+// A Waystone chamber: a ring of carved pillars around a glowing index stone.
+export function buildWaystone(l, colliders) {
   const b = new Builder()
   const P = new Placer(b, l.x, l.y, l.z, l.rot)
   const stone = TM("sandstone", 0xd8c8a8)
@@ -266,12 +266,12 @@ export function buildPropylon(l, colliders) {
   return { group: g, stone: V3(l.x, l.y + 2.2, l.z) }
 }
 
-// The Ghostfence: pylons circling Red Mountain joined by a shimmering ward,
-// broken only by the Ghostgate fortress.
-export function buildGhostfence(l, heightAt, colliders) {
+// The Wardwall: pylons circling the Hearthpeak joined by a shimmering ward,
+// broken only by the Wardgate fortress.
+export function buildWardwall(l, heightAt, colliders) {
   const g = new THREE.Group()
   const b = new Builder()
-  const stone = TM("daedricStone", 0x9a8a80)
+  const stone = TM("abyssalStone", 0x9a8a80)
   const circ = 2 * Math.PI * l.r
   const count = Math.round(circ / 14)
   const gap = 0.07
@@ -315,7 +315,7 @@ export function buildGhostfence(l, heightAt, colliders) {
   ward.renderOrder = 3
   g.add(ward)
   for (let i = 0; i < wallPts.length; i += 1) colliders.addCircle(wallPts[i][0], wallPts[i][1], 1.8)
-  // Ghostgate: twin towers and a gatehouse straddling the gap
+  // Wardgate: twin towers and a gatehouse straddling the gap
   const gx = l.x
   const gz = l.z
   const gy = l.y
@@ -341,8 +341,8 @@ export function buildGhostfence(l, heightAt, colliders) {
   return g
 }
 
-// Velothi tower: a stepped sandstone watchtower over a tomb entrance.
-export function buildVelothiTower(P) {
+// Ancient tower: a stepped sandstone watchtower over a tomb entrance.
+export function buildAncientTower(P) {
   const stone = TM("sandstone", 0xd8c8a8)
   const dark = TM("sandstone", 0xa89878)
   for (let i = 0; i < 4; i++) {
@@ -357,9 +357,9 @@ export function buildVelothiTower(P) {
   for (let i = 0; i < 3; i++) P.box(3 - i * 0.3, 0.2, 0.6, stone, 0, 0.1 + i * 0.2 - 0.4, -4.6 + i * 0.4)
 }
 
-// Ruined Dwemer towers, domes and pipes around a ruin's entrance.
-export function buildDwemerRuins(P, seed) {
-  const metal = TM("dwemerMetal", 0xffffff, { metal: true })
+// Ruined Kaldur towers, domes and pipes around a ruin's entrance.
+export function buildKaldurRuins(P, seed) {
+  const metal = TM("kaldurMetal", 0xffffff, { metal: true })
   const solid = []
   const r = n => ((Math.sin(seed * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1
   for (let i = 0; i < 5; i++) {

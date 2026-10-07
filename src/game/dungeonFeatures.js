@@ -22,7 +22,7 @@ export class DungeonFeatures {
     this.gateMesh = null
     this.msgT = 0
     const wallMat = texturedMaterial(look.wall, { color: new THREE.Color(look.wallTint).multiplyScalar(0.92).getHex() })
-    const metal = texturedMaterial("dwemerMetal", { color: 0x6a6a6a, metal: true })
+    const metal = texturedMaterial("kaldurMetal", { color: 0x6a6a6a, metal: true })
     // pressure plates: a slightly raised stone square, easy to miss
     ;(lvl.traps || []).forEach((t, i) => {
       const c = area.cellCenter(t.x, t.y)

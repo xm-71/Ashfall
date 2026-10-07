@@ -8,13 +8,13 @@ import { getSpell } from "../data/spells.js"
 import { BIRTHSIGNS, RACES } from "../data/stats.js"
 import { Projectile, ELEMENT_COLOR } from "./actors.js"
 import { RNG } from "../core/rng.js"
-import { randomLoot } from "../logic/items.js"
+import { randomLoot, maybeRareSword } from "../logic/items.js"
 import { DUNGEON_THEMES } from "../logic/dungeongen.js"
 import { attackDamage, attackTypeFor, weaponConditionMult, ammoTypeOf, isBroken } from "../logic/items.js"
 import { strikeEnemy, wearWeapon, coatWeapon, useRepairTool } from "./combat.js"
 
-const REGION_SURFACE = { ashlands: "ash", redMountain: "ash", molagAmur: "ash", bitterCoast: "mud", azurasCoast: "gravel", westGash: "grass", ascadian: "grass", grazelands: "grass" }
-const DUNGEON_SURFACE = { cave: "gravel", tomb: "stone", dwemer: "metal", daedric: "stone", citadel: "flesh" }
+const REGION_SURFACE = { ashlands: "ash", hearthpeak: "ash", cinderfall: "ash", brineCoast: "mud", vesperCoast: "gravel", westRift: "grass", verdant: "grass", mosslands: "grass" }
+const DUNGEON_SURFACE = { cave: "gravel", tomb: "stone", kaldur: "metal", abyssal: "stone", citadel: "flesh" }
 
 // What the player is standing on, for footstep sounds.
 export function surfaceUnder(game) {
@@ -22,7 +22,7 @@ export function surfaceUnder(game) {
   const area = game.area
   if (pc.swimming || pc.wading) return "water"
   if (area.kind === "dungeon") return DUNGEON_SURFACE[area.dungeon.type] || "stone"
-  if (area.kind === "interior") return area.town.style === "imperial" || area.layout.kind === "temple" ? "stone" : area.town.style === "ashlander" ? "grass" : "wood"
+  if (area.kind === "interior") return area.town.style === "vessari" || area.layout.kind === "temple" ? "stone" : area.town.style === "ashwalker" ? "grass" : "wood"
   if (pc.pos.y < SEA_LEVEL + 0.15) return "water"
   const w = game.world
   if (pc.pos.y > w.heightAt(pc.pos.x, pc.pos.z) + 0.4) return "wood" // docks, stairs and floors
@@ -66,6 +66,7 @@ export function updatePlayer(game, dt) {
   if (inp.actionPressed("character")) return game.ui.openMenu("character")
   if (inp.actionPressed("rest")) return tryRest(game)
   if (inp.actionPressed("quaff")) quickPotion(game)
+  if (inp.actionPressed("view")) game.toggleView()
   if (inp.wheel || inp.wasPressed("BracketRight") || inp.wasPressed("BracketLeft")) cycleSpell(game, inp.wheel || (inp.wasPressed("BracketLeft") ? -1 : 1))
   for (let i = 1; i <= 9; i++) if (inp.wasPressed(`Digit${i}`) || inp.vPressed.has(`slot${i}`)) useQuickslot(game, i - 1)
 
@@ -188,6 +189,8 @@ export function updatePlayer(game, dt) {
   const eye = pc.sneaking ? 1.15 : 1.62
   game.camera.position.set(pc.pos.x, pc.pos.y + eye, pc.pos.z)
   game.camera.rotation.set(pc.pitch, pc.yaw, 0)
+  if (game.thirdPerson) game.thirdPersonCamera(dt, eye)
+  game.updatePlayerBody(dt, moving && pc.onGround ? (sprint ? 1 : 0.5) : 0)
   game.viewmodel.build(currentWeapon(c), c.equipment.shield, c.equipment.cuirass, c.equipment.gauntlets)
   game.viewmodel.update(dt, moving && pc.onGround, sprint)
 
@@ -197,7 +200,7 @@ export function updatePlayer(game, dt) {
   updateInteraction(game)
 }
 
-// Holding your breath under water; Argonians breathe water.
+// Holding your breath under water; Saurek breathe water.
 function updateBreath(game, dt) {
   const c = game.char
   const pc = game.pc
@@ -264,7 +267,7 @@ function updateAttack(game, dt) {
       if (w.ranged) fireRanged(game, w, charge)
       else if (w.thrown) throwWeapon(game, w, charge)
       else {
-        // the direction you move picks the attack, as in Morrowind
+        // the direction you move picks the attack, as in Cindermere
         const fwd = (inp.action("forward") || inp.down("ArrowUp") ? 1 : 0) - (inp.action("back") || inp.down("ArrowDown") ? 1 : 0)
         const strafe = (inp.action("right") || inp.down("ArrowRight") ? 1 : 0) - (inp.action("left") || inp.down("ArrowLeft") ? 1 : 0)
         const type = attackTypeFor(fwd, strafe)
@@ -344,7 +347,7 @@ function aimRay(game, charge, skill) {
   const cam = game.camera.getWorldPosition(new THREE.Vector3())
   const dir = game.camera.getWorldDirection(new THREE.Vector3())
   const pos = cam.clone().addScaledVector(dir, 0.6)
-  // Marksman accuracy is rolled on release, like Morrowind.
+  // Marksman accuracy is rolled on release, like Cindermere.
   const hit = Math.random() < hitChance(attackStats(game, skill), 0)
   if (!hit) {
     dir.x += (Math.random() - 0.5) * 0.12
@@ -698,8 +701,11 @@ function activate(game, it) {
         const rng = new RNG(ch.def.seed)
         const tag = DUNGEON_THEMES[game.area.dungeon.type].lootTag
         ch.state.items = randomLoot(rng, Math.min(7, ch.def.tier), tag)
+        const rare = maybeRareSword(rng, ch.def.tier, c.artifactsFound, 0.035)
+        if (rare) ch.state.items.push(rare)
         ch.state.gold = rng.int(5, 30) * ch.def.tier
         ch.mesh.userData.lid.rotation.x = -1.2
+        ch.mesh.userData.open?.()
         game.audio.play("door")
       }
       return game.ui.openContainer("Chest", { get loot() { return ch.state.items }, set loot(v) { ch.state.items = v }, get gold() { return ch.state.gold }, set gold(v) { ch.state.gold = v } })

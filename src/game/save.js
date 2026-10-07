@@ -5,7 +5,7 @@ import { reserveQuestIds } from "../logic/quests.js"
 // Roguelike-style suspend save: one slot, written continuously while you play
 // and deleted when the run ends, so a death can't be undone by reloading.
 export const SAVE_KEY = "ashfall-run"
-export const SAVE_VERSION = 2 // 2: the larger world with the frozen isle
+export const SAVE_VERSION = 3 // 2: the larger world with the frozen isle; 3: the new world names and ids
 
 export function readSave() {
   try {

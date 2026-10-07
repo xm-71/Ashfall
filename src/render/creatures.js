@@ -1,8 +1,25 @@
 import * as THREE from "three"
 import { characterAtlas, atlasUV } from "./texgen.js"
 import { Builder, lathe, taperTube } from "./geom.js"
-import { npcWeapon, buildShield } from "./items.js"
+import { npcWeapon, buildShield, buildWeapon } from "./items.js"
+import { HAIR_COLORS, SKIN_SHADES } from "../data/looks.js"
 import { Q, seg } from "../core/quality.js"
+import { assets } from "../assets/registry.js"
+
+// Pack skins are painted for a fair-skinned human; other races are tinted
+// relative to that (Vessari skin = no change).
+const SKIN_REF = new THREE.Color(0xdcb08f)
+function skinTint(hex) {
+  const c = new THREE.Color(hex)
+  return new THREE.Color(Math.min(1.25, c.r / SKIN_REF.r), Math.min(1.25, c.g / SKIN_REF.g), Math.min(1.25, c.b / SKIN_REF.b)).getHex()
+}
+
+// A rigged pack model in place of the built body, with the same interface.
+function packBody(entry, role, dims, weapon, ctx = {}) {
+  const c = assets.character(entry, role, dims, ctx)
+  if (weapon) assets.attachToHand(c, npcWeapon(weapon.base, weapon.material, weapon.color), entry)
+  return { group: c.group, anim: c.anim, head: c.rig.head, rig: c.rig }
+}
 
 // ---------------------------------------------------------------------------
 // Characters and creatures share one atlas material; colour comes from vertex
@@ -81,7 +98,7 @@ function pivot(parent, x, y, z) {
 // Humanoid
 // ---------------------------------------------------------------------------
 // opts: skin, cloth, cloth2, pants, boots, hair, hairStyle, eye, race, female,
-//       robe, armor ("bonemold"|"chain"|"daedric"|"plate"|"chitin"), helm,
+//       robe, armor ("bonecast"|"chain"|"abyssal"|"plate"|"chitin"), helm,
 //       weapon (base name) | null, weaponColor, shield, thin, bulk, bigHead,
 //       tentacles, mask, horns, tail, skull, ghost, float, wheel, wings
 function humanoid(o) {
@@ -91,8 +108,8 @@ function humanoid(o) {
   const thin = o.thin ? 0.55 : 1
   const bulk = o.bulk || 1
   const fem = o.female ? 1 : 0
-  const skinTile = o.race === "argonian" ? "scales" : o.race === "khajiit" ? "fur" : o.skull ? "bone" : "skin"
-  const torsoTile = o.armor === "chain" ? "chainmail" : o.armor === "plate" || o.armor === "daedric" ? "plate" : o.armor === "bonemold" ? "bonemold" : o.armor === "brass" ? "brass" : o.robe ? "robe" : "fabricTrim"
+  const skinTile = o.race === "saurek" ? "scales" : o.race === "rakhai" ? "fur" : o.skull ? "bone" : "skin"
+  const torsoTile = o.armor === "chain" ? "chainmail" : o.armor === "plate" || o.armor === "abyssal" ? "plate" : o.armor === "bonecast" ? "bonecast" : o.armor === "brass" ? "brass" : o.robe ? "robe" : "fabricTrim"
 
   // ---- torso ----
   const torso = pivot(hips, 0, 0, 0)
@@ -115,7 +132,7 @@ function humanoid(o) {
       for (const sx of [-1, 1]) {
         const g = sphere(0.1, 10, 8)
         T.add(g, ptile, o.armorColor ?? o.cloth, { pos: [sx * 0.2 * tw, 0.52, 0], scale: [1.2, 0.7, 1.1] })
-        if (o.armor === "daedric" || o.armor === "bonemold") T.add(new THREE.ConeGeometry(0.03, 0.12, 4), ptile, o.armorColor ?? o.cloth, { pos: [sx * 0.24 * tw, 0.6, 0], rot: [0, 0, -sx * 0.6] })
+        if (o.armor === "abyssal" || o.armor === "bonecast") T.add(new THREE.ConeGeometry(0.03, 0.12, 4), ptile, o.armorColor ?? o.cloth, { pos: [sx * 0.24 * tw, 0.6, 0], rot: [0, 0, -sx * 0.6] })
       }
       T.add(lathe([[0.16, 0.22], [0.19, 0.4], [0.17, 0.5], [0.1, 0.56]], seg(12)), ptile, o.armorColor ?? o.cloth, { scale: [tw * 1.12, 1, 0.8 * bulk] })
     }
@@ -156,17 +173,17 @@ function humanoid(o) {
   const hs = (o.bigHead ? 1.45 : 1) * (o.skull ? 0.95 : 1)
   H.add(cyl(0.045, 0.05, 0.1), skinTile, o.skin, { pos: [0, 0.03, 0] })
   const headY = 0.14 * hs
-  const faceTile = o.race === "argonian" ? "scales" : o.race === "khajiit" ? "fur" : o.skull ? "bone" : "face"
+  const faceTile = o.race === "saurek" ? "scales" : o.race === "rakhai" ? "fur" : o.skull ? "bone" : "face"
   // face shape: nose, jaw, brow, chin and markings vary from person to person
   const F = { nose: 1, jaw: 1, brow: 1, chin: 1, ...(o.face || {}) }
   H.add(sphere(0.1, 14, 12), faceTile, o.skin, { pos: [0, headY, 0], scale: [0.95 * hs * F.jaw, 1.12 * hs, 1.02 * hs] })
   const eyeY = headY + 0.018 * hs
   const eyeZ = 0.088 * hs
   const eyeCol = o.eye ?? 0x1a1208
-  if (o.race === "argonian") {
+  if (o.race === "saurek") {
     H.add(sphere(0.08, 10, 8), "scales", o.skin, { pos: [0, headY - 0.03, 0.08], scale: [0.8, 0.65, 1.3] })
     for (let i = 0; i < 4; i++) H.add(new THREE.ConeGeometry(0.02, 0.12, 4), "scales", shade(o.skin, 0.75), { pos: [(i - 1.5) * 0.04, headY + 0.1, -0.06], rot: [-0.9, 0, (i - 1.5) * 0.3] })
-  } else if (o.race === "khajiit") {
+  } else if (o.race === "rakhai") {
     H.add(sphere(0.05, 8, 6), "fur", shade(o.skin, 1.1), { pos: [0, headY - 0.04, 0.085], scale: [1.1, 0.8, 0.9] })
     H.add(sphere(0.012, 6, 4), "skin", 0x2a1a1a, { pos: [0, headY - 0.02, 0.13] })
     for (const sx of [-1, 1]) H.add(new THREE.ConeGeometry(0.035, 0.08, 4), "fur", o.skin, { pos: [sx * 0.06, headY + 0.1, -0.01], rot: [0, 0, -sx * 0.25] })
@@ -175,13 +192,13 @@ function humanoid(o) {
     // chin and cheekbones
     H.add(sphere(0.032, 8, 6), faceTile, o.skin, { pos: [0, headY - 0.085 * hs, 0.06 * hs], scale: [1.3 * F.chin * F.jaw, 0.8, 0.9] })
     if (F.cheeks) for (const sx of [-1, 1]) H.add(sphere(0.025, 6, 5), faceTile, o.skin, { pos: [sx * 0.05 * hs, headY - 0.01, 0.07 * hs], scale: [1, 0.7, 0.8] })
-    // war paint and tattoos (Dunmer and Ashlanders especially), and scars
+    // war paint and tattoos (Cindari and Ashwalkers especially), and scars
     if (F.tattoo) for (const sx of [-1, 1]) for (let k = 0; k < 2; k++) H.add(new THREE.BoxGeometry(0.006, 0.05, 0.004), "plain", F.tattoo, { pos: [sx * (0.03 + k * 0.014) * hs, headY - 0.028, 0.089 * hs - k * 0.004], rot: [0, 0, sx * 0.15] })
     if (F.scar) H.add(new THREE.BoxGeometry(0.005, 0.06, 0.004), "plain", shade(o.skin, 0.6), { pos: [F.scar * 0.034 * hs, eyeY + 0.005, 0.092 * hs], rot: [0, 0, F.scar * 0.35] })
     if (F.mustache && hcol(o) !== undefined) H.add(new THREE.BoxGeometry(0.06, 0.012, 0.012), "hair", hcol(o), { pos: [0, headY - 0.042 * hs, 0.093 * hs], scale: [1, 1, 1] })
     if (o.elf) for (const sx of [-1, 1]) H.add(new THREE.ConeGeometry(0.018, 0.1, 4), "skin", o.skin, { pos: [sx * 0.095 * hs, headY + 0.03, -0.01], rot: [0, 0, -sx * 1.1] })
     else for (const sx of [-1, 1]) H.add(sphere(0.022, 6, 5), "skin", o.skin, { pos: [sx * 0.093 * hs, headY, -0.005], scale: [0.5, 1, 0.8] })
-    if (o.race === "orc") {
+    if (o.race === "tuskar") {
       for (const sx of [-1, 1]) H.add(new THREE.ConeGeometry(0.008, 0.035, 4), "bone", 0xe8e0c8, { pos: [sx * 0.025, headY - 0.06, 0.085] })
       H.add(new THREE.BoxGeometry(0.15, 0.022, 0.03), "skin", shade(o.skin, 0.8), { pos: [0, eyeY + 0.03, 0.078] })
     }
@@ -205,9 +222,9 @@ function humanoid(o) {
     if (o.beard) H.add(sphere(0.07, 10, 8), "hair", hc, { pos: [0, headY - 0.08, 0.05], scale: [0.95, 1.1, 0.8] })
   }
   if (o.helm) {
-    H.add(sphere(0.12, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.62), o.helmTile || "bonemold", o.helm, { pos: [0, headY + 0.01, 0], scale: [1.02 * hs, 1.05, 1.08] })
-    H.add(new THREE.TorusGeometry(0.12, 0.014, 4, seg(14)), o.helmTile || "bonemold", shade(o.helm, 0.8), { pos: [0, headY - 0.01, 0], rot: [Math.PI / 2, 0, 0], scale: [1.1, 1.15, 1] })
-    if (o.helmCrest) H.add(new THREE.BoxGeometry(0.02, 0.08, 0.2), o.helmTile || "bonemold", shade(o.helm, 0.85), { pos: [0, headY + 0.13, 0] })
+    H.add(sphere(0.12, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.62), o.helmTile || "bonecast", o.helm, { pos: [0, headY + 0.01, 0], scale: [1.02 * hs, 1.05, 1.08] })
+    H.add(new THREE.TorusGeometry(0.12, 0.014, 4, seg(14)), o.helmTile || "bonecast", shade(o.helm, 0.8), { pos: [0, headY - 0.01, 0], rot: [Math.PI / 2, 0, 0], scale: [1.1, 1.15, 1] })
+    if (o.helmCrest) H.add(new THREE.BoxGeometry(0.02, 0.08, 0.2), o.helmTile || "bonecast", shade(o.helm, 0.85), { pos: [0, headY + 0.13, 0] })
   }
   if (o.skull || o.glowEyes) {
     for (const sx of [-1, 1]) H.glow(sphere(0.014, 6, 4), o.glowEyes ?? 0xff6a20, [sx * 0.034 * hs, eyeY, eyeZ])
@@ -230,7 +247,7 @@ function humanoid(o) {
       head.add(m)
       return m
     })
-    if (o.race !== "argonian" && o.race !== "khajiit") {
+    if (o.race !== "saurek" && o.race !== "rakhai") {
       const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.007, 0.01), faceMat(0x3a1814))
       mouth.position.set(0, headY - 0.056 * hs, 0.093 * hs)
       head.add(mouth)
@@ -495,7 +512,7 @@ function quadruped(def, o) {
 }
 
 function biped(def, o) {
-  // guar, clannfear, daedroth
+  // loper, gnashclaw, rotmaw
   const root = new THREE.Group()
   const c = def.color
   const tile = o.tile || "scales"
@@ -621,7 +638,7 @@ function spider(def, o = {}) {
   const B = new Seg()
   B.add(sphere(1, 14, 10), tile, c, { pos: [0, 0, -0.2], scale: [0.5, 0.4, 0.62] })
   B.add(sphere(1, 12, 8), tile, shade(c, 0.85), { pos: [0, 0.05, 0.45], scale: [0.3, 0.25, 0.3] })
-  if (o.dwemer) {
+  if (o.kaldur) {
     B.add(new THREE.TorusGeometry(0.4, 0.05, 5, seg(14)), "brass", shade(c, 0.7), { pos: [0, 0, -0.2], rot: [Math.PI / 2, 0, 0] })
     B.add(cyl(0.05, 0.05, 0.6), "brass", c, { pos: [0, 0.35, -0.5], rot: [-0.8, 0, 0] })
     B.add(new THREE.ConeGeometry(0.06, 0.3, 4), "plate", 0xc0c0c0, { pos: [0, 0.6, -0.75], rot: [-0.8, 0, 0] })
@@ -681,7 +698,7 @@ function worm(def) {
 }
 
 function flier(def) {
-  // cliff racer: long beak, dorsal sail, whip tail with a fin, membranous wings
+  // skyscreamer: long beak, dorsal sail, whip tail with a fin, membranous wings
   const root = new THREE.Group()
   const body = pivot(root, 0, 0, 0)
   const c = def.color
@@ -730,7 +747,7 @@ function flier(def) {
   }
 }
 
-function netch(def) {
+function drifter(def) {
   const root = new THREE.Group()
   const c = def.color
   const body = pivot(root, 0, 0, 0)
@@ -797,7 +814,17 @@ function sphereBot(def) {
 
 // ---------------------------------------------------------------------------
 
-export function buildCreatureMesh(def) {
+export function buildCreatureMesh(def, id) {
+  if (id) {
+    // a pack model for this creature; humanoid foes can borrow a person model
+    const e = assets.pick(`creature.${id}`, {}, Math.random())
+    if (e) return packBody(e, `creature.${id}`, { h: 1.6 * (def.scale || 1) }, def.weapon, { tints: { body: def.tint } })
+    if (def.body === "humanoid" && assets.has("npc", { role: id })) {
+      const p = assets.pick("npc", { role: id }, Math.random())
+      const weapon = def.caster ? { base: "club", material: "iron" } : { base: def.name === "Bandit" ? "war axe" : "shortsword", material: "iron" }
+      return packBody(p, "npc", { h: 1.8 }, weapon)
+    }
+  }
   let built
   const c = def.color
   switch (def.body) {
@@ -807,43 +834,43 @@ export function buildCreatureMesh(def) {
     case "hound":
       built = quadruped(def, { legLen: 1.0, legR: 0.06, bodyW: 0.32, bodyH: 0.34, bodyL: 0.85, headW: 0.22, headL: 0.4, headY: 0.35, tail: 0.6, snout: true, tile: "spots", eye: 0xffd040 })
       break
-    case "kagouti":
+    case "tuskback":
       built = quadruped(def, { legLen: 0.6, legR: 0.12, bodyW: 0.62, bodyH: 0.55, bodyL: 0.95, headW: 0.45, headL: 0.45, headY: 0.1, tusks: true, tail: 0.4, snout: true, tile: "creatureHide", spines: true })
       break
-    case "alit":
+    case "snapjaw":
       built = quadruped(def, { legLen: 0.55, legR: 0.11, bodyW: 0.6, bodyH: 0.6, bodyL: 0.75, headW: 0.58, headL: 0.4, headY: 0.1, mouth: true, tail: 0.8, tile: "scales" })
       break
-    case "guar":
+    case "loper":
       built = biped(def, { tile: "scales" })
       break
-    case "clannfear":
-      built = biped(def, { tile: "scales", frill: def.name === "Clannfear", beak: def.name === "Clannfear", plates: true, eye: 0xff4020 })
+    case "gnashclaw":
+      built = biped(def, { tile: "scales", frill: def.name === "Gnashclaw", beak: def.name === "Gnashclaw", plates: true, eye: 0xff4020 })
       break
     case "crab":
       built = crab(def)
       break
     case "spider":
-      built = spider(def, def.construct ? { tile: "brass", dwemer: true, eye: 0xffb020 } : { tile: "chitin" })
+      built = spider(def, def.construct ? { tile: "brass", kaldur: true, eye: 0xffb020 } : { tile: "chitin" })
       break
     case "worm":
       built = worm(def)
       break
     case "flier":
       built =
-        def.name === "Winged Twilight"
+        def.name === "Duskwing"
           ? humanoid({ skin: 0x5a7a9a, cloth: 0x2a3a5a, female: true, wings: true, wingColor: 0x3a5a8a, claws: true, digitigrade: true, horns: true, glowEyes: 0x80c0ff, sleeves: false, hair: 0x1a1a2a, hairStyle: "long" })
           : flier(def)
       break
-    case "netch":
-      built = netch(def)
+    case "drifter":
+      built = drifter(def)
       break
     case "sphere":
       built = sphereBot(def)
       break
-    case "riekling":
-      built = humanoid({ bigHead: true, skin: c, cloth: 0x5a4a3a, pants: 0x3a2e24, hair: 0xe0e0e8, hairStyle: "crest", elf: true, weapon: "spear", weaponMaterial: "chitin", weaponColor: 0x8a8070, sleeves: false, eye: 0x101820 })
+    case "frostling":
+      built = humanoid({ bigHead: true, skin: c, cloth: 0x5a4a3a, pants: 0x3a2e24, hair: 0xe0e0e8, hairStyle: "crest", elf: true, weapon: def.caster ? null : def.weapon?.base || "spear", weaponMaterial: def.weapon?.material || "chitin", weaponColor: 0x8a8070, sleeves: false, eye: 0x101820 })
       break
-    case "draugr":
+    case "grimwight":
       built = humanoid({ skull: true, thin: true, skin: c, cloth: 0x3a3e44, armor: "chain", armorColor: 0x5a5e66, helm: 0x4a4e56, helmTile: "plate", helmCrest: def.level > 8, weapon: def.level > 8 ? "battle axe" : "war axe", weaponMaterial: "iron", weaponColor: 0x6a6e73, shield: def.level > 8 ? null : "iron", glowEyes: 0x70c0ff })
       break
     case "skeleton":
@@ -852,42 +879,42 @@ export function buildCreatureMesh(def) {
     case "ghost":
       built = humanoid({ ghost: true, float: true, skull: true, skin: c, cloth: c, robe: true, glowEyes: 0xa0f0ff, claws: true })
       break
-    case "scamp":
+    case "cinderling":
       built = humanoid({ bigHead: true, skin: c, cloth: c, pants: shade(c, 0.7), horns: true, elf: true, hunch: 0.35, tail: true, claws: true, sleeves: false, digitigrade: true, boots: c, eye: 0xffc020, armor: null })
       break
     case "ash":
-      built = humanoid({ bigHead: true, skin: c, cloth: 0x3a2a24, cloth2: 0x2a1e1a, robe: def.name !== "Corprus Stalker", glowEyes: 0xff3010, tentacles: def.name === "Ash Ghoul", hunch: def.name === "Corprus Stalker" ? 0.4 : 0.15, claws: true, sleeves: false })
+      built = humanoid({ bigHead: true, skin: c, cloth: 0x3a2a24, cloth2: 0x2a1e1a, robe: def.name !== "Rotstalker", glowEyes: 0xff3010, tentacles: def.name === "Ash Ghoul", hunch: def.name === "Rotstalker" ? 0.4 : 0.15, claws: true, sleeves: false })
       break
     case "sleeper":
       built = humanoid({ bigHead: true, tentacles: true, skin: c, cloth: 0x3a1a14, cloth2: 0x2a1410, robe: true, glowEyes: 0xff3010, bulk: 1.2, claws: true })
       break
-    case "dagoth":
-      built = humanoid({ mask: true, skin: 0x6a4a3a, cloth: 0x6a1a10, cloth2: 0x4a120a, robe: true, weapon: "claymore", weaponMaterial: "daedric", weaponColor: 0x6a1a10, bulk: 1.15, hair: 0x100808 })
+    case "emberlord":
+      built = humanoid({ mask: true, skin: 0x6a4a3a, cloth: 0x6a1a10, cloth2: 0x4a120a, robe: true, weapon: "claymore", weaponMaterial: "abyssal", weaponColor: 0x6a1a10, bulk: 1.15, hair: 0x100808 })
       break
-    case "centurion":
-      built = humanoid({ bulk: 1.6, skin: c, cloth: c, armor: "brass", armorColor: c, wheel: true, weapon: "halberd", weaponMaterial: "dwemer", weaponColor: 0xb08a3e, glowEyes: 0xffc040, skull: false, sleeves: false, helm: c, helmTile: "brass" })
+    case "colossus":
+      built = humanoid({ bulk: 1.6, skin: c, cloth: c, armor: "brass", armorColor: c, wheel: true, weapon: "halberd", weaponMaterial: "kaldur", weaponColor: 0xb08a3e, glowEyes: 0xffc040, skull: false, sleeves: false, helm: c, helmTile: "brass" })
       break
     case "humanoid":
     default: {
-      const daedra = def.daedra
+      const hollowborn = def.hollowborn
       built = humanoid({
-        skin: daedra ? 0x7a2a22 : 0xb08a6a,
-        cloth: daedra ? 0x2a0a0a : c,
-        pants: daedra ? 0x1a0808 : shade(c, 0.7),
-        hair: daedra ? undefined : 0x2a1a10,
+        skin: hollowborn ? 0x7a2a22 : 0xb08a6a,
+        cloth: hollowborn ? 0x2a0a0a : c,
+        pants: hollowborn ? 0x1a0808 : shade(c, 0.7),
+        hair: hollowborn ? undefined : 0x2a1a10,
         hairStyle: "short",
-        horns: daedra,
+        horns: hollowborn,
         robe: !!def.caster,
         hood: !!def.caster,
-        armor: daedra ? "daedric" : def.name === "Smuggler" ? "chain" : "leather" === "x" ? null : null,
-        armorColor: daedra ? 0x3a0a0a : undefined,
-        helm: daedra ? 0x2a0808 : undefined,
+        armor: hollowborn ? "abyssal" : def.name === "Smuggler" ? "chain" : "leather" === "x" ? null : null,
+        armorColor: hollowborn ? 0x3a0a0a : undefined,
+        helm: hollowborn ? 0x2a0808 : undefined,
         helmTile: "plate",
-        helmCrest: daedra,
-        weapon: def.caster ? "club" : daedra ? "katana" : def.name === "Bandit" ? "war axe" : "shortsword",
-        weaponMaterial: daedra ? "daedric" : "iron",
-        weaponColor: daedra ? 0x4a1010 : 0x8a8a8a,
-        eye: daedra ? 0xff4010 : undefined,
+        helmCrest: hollowborn,
+        weapon: def.caster ? "club" : hollowborn ? "katana" : def.name === "Bandit" ? "war axe" : "shortsword",
+        weaponMaterial: hollowborn ? "abyssal" : "iron",
+        weaponColor: hollowborn ? 0x4a1010 : 0x8a8a8a,
+        eye: hollowborn ? 0xff4010 : undefined,
         gloves: true,
       })
     }
@@ -913,7 +940,7 @@ const ROLE_CLOTH = {
   blade: [0x2a2a3a, 0x1a1a24],
 }
 
-const EYE = { dunmer: 0xd02010, altmer: 0xc8a020, khajiit: 0xd0c020, argonian: 0xd07020, bosmer: 0x4a3010, orc: 0x3a1a0a }
+const EYE = { cindari: 0xd02010, aurelin: 0xc8a020, rakhai: 0xd0c020, saurek: 0xd07020, wyldren: 0x4a3010, tuskar: 0x3a1a0a }
 
 export function buildNpcMesh(npc, race, factionColor) {
   const rnd = (() => {
@@ -926,28 +953,37 @@ export function buildNpcMesh(npc, race, factionColor) {
   if (factionColor && npc.role === "guildmaster") cloth = new THREE.Color(factionColor).getHex()
   if (npc.role === "commoner") cloth = new THREE.Color().setHSL(rnd() * 0.15 + 0.03, 0.25 + rnd() * 0.3, 0.25 + rnd() * 0.2).getHex()
   const raceKey = race.name.toLowerCase()
+  if (assets.has("npc")) {
+    const ctx = { race: raceKey, sex: female ? "female" : "male", role: npc.role }
+    const e = assets.pick("npc", ctx, rnd()) || assets.pick("npc", { sex: ctx.sex, role: npc.role }, rnd()) || assets.pick("npc", { sex: ctx.sex }, rnd())
+    if (e) {
+      const h = 1.8 * (raceKey === "aurelin" ? 1.06 : raceKey === "wyldren" ? 0.92 : raceKey === "tuskar" || raceKey === "hrothi" ? 1.03 : 1)
+      const weapon = npc.role === "guard" ? { base: "spear", material: "steel" } : npc.role === "smith" ? { base: "warhammer", material: "steel" } : null
+      return packBody(e, "npc", { h }, weapon, { seed: npc.seed, tints: { skin: skinTint(race.skin), hair: race.hair } })
+    }
+  }
   const styles = female ? ["long", "tail", "long", "short"] : ["short", "crest", "bald", "short", "tail"]
-  const robe = npc.role === "priest" || npc.faction === "magesGuild" || npc.faction === "telvanni"
+  const robe = npc.role === "priest" || npc.faction === "magesGuild" || npc.faction === "sorvenn"
   const guard = npc.role === "guard"
   const built = humanoid({
     race: raceKey,
     female,
-    elf: ["dunmer", "altmer", "bosmer"].includes(raceKey),
+    elf: ["cindari", "aurelin", "wyldren"].includes(raceKey),
     skin: race.skin,
     hair: race.hair,
     hairStyle: styles[Math.floor(rnd() * styles.length)],
-    beard: !female && (raceKey === "nord" ? rnd() < 0.7 : ["imperial", "breton", "redguard", "orc", "dunmer"].includes(raceKey) && rnd() < 0.2),
+    beard: !female && (raceKey === "hrothi" ? rnd() < 0.7 : ["vessari", "caldrin", "qasiri", "tuskar", "cindari"].includes(raceKey) && rnd() < 0.2),
     face: {
       nose: 0.75 + rnd() * 0.6,
       noseLong: 0.85 + rnd() * 0.4,
-      jaw: (female ? 0.92 : 1) + (rnd() - 0.5) * 0.14 + (raceKey === "orc" || raceKey === "nord" ? 0.06 : 0),
+      jaw: (female ? 0.92 : 1) + (rnd() - 0.5) * 0.14 + (raceKey === "tuskar" || raceKey === "hrothi" ? 0.06 : 0),
       chin: 0.8 + rnd() * 0.45,
       brow: 0.7 + rnd() * 0.9,
       browTilt: (rnd() - 0.5) * 0.35,
       cheeks: rnd() < 0.4,
-      tattoo: (raceKey === "dunmer" && rnd() < 0.35) || npc.role === "ashlander" ? (rnd() < 0.5 ? 0x2a1a3a : 0x8a1a10) : 0,
+      tattoo: (raceKey === "cindari" && rnd() < 0.35) || npc.role === "ashwalker" ? (rnd() < 0.5 ? 0x2a1a3a : 0x8a1a10) : 0,
       scar: rnd() < 0.12 ? (rnd() < 0.5 ? -1 : 1) : 0,
-      mustache: !female && !["argonian", "khajiit", "altmer", "bosmer"].includes(raceKey) && rnd() < 0.18,
+      mustache: !female && !["saurek", "rakhai", "aurelin", "wyldren"].includes(raceKey) && rnd() < 0.18,
     },
     eye: EYE[raceKey],
     cloth,
@@ -955,9 +991,9 @@ export function buildNpcMesh(npc, race, factionColor) {
     pants,
     robe,
     skirt: !robe && female && rnd() < 0.6,
-    tail: raceKey === "khajiit" || raceKey === "argonian",
-    digitigrade: raceKey === "khajiit",
-    armor: guard ? "bonemold" : npc.role === "blade" ? "chain" : npc.faction === "fightersGuild" || npc.faction === "legion" || npc.faction === "redoran" ? "chain" : null,
+    tail: raceKey === "rakhai" || raceKey === "saurek",
+    digitigrade: raceKey === "rakhai",
+    armor: guard ? "bonecast" : npc.role === "lantern" ? "chain" : npc.faction === "fightersGuild" || npc.faction === "legion" || npc.faction === "durath" ? "chain" : null,
     armorColor: guard ? 0xc8a878 : undefined,
     helm: guard ? 0xc8a878 : undefined,
     helmCrest: guard,
@@ -966,12 +1002,12 @@ export function buildNpcMesh(npc, race, factionColor) {
     weaponColor: 0xa8adb3,
     shield: guard && rnd() < 0.5 ? "iron" : null,
     gloves: guard || npc.role === "smith",
-    bulk: raceKey === "orc" || raceKey === "nord" ? 1.12 : raceKey === "bosmer" ? 0.9 : 1,
+    bulk: raceKey === "tuskar" || raceKey === "hrothi" ? 1.12 : raceKey === "wyldren" ? 0.9 : 1,
   })
   const holder = new THREE.Group()
   holder.add(built.root)
-  if (raceKey === "altmer") holder.scale.setScalar(1.06)
-  if (raceKey === "bosmer") holder.scale.setScalar(0.92)
+  if (raceKey === "aurelin") holder.scale.setScalar(1.06)
+  if (raceKey === "wyldren") holder.scale.setScalar(0.92)
   return { group: holder, anim: built.anim, head: built.head, rig: built.rig }
 }
 
@@ -999,6 +1035,12 @@ export class LodSwitch {
 
   // Returns true when the animated model is showing (so the caller animates it).
   update(distance) {
+    // pack characters: animate up close, hold still further out, and stop
+    // drawing far away (they are detailed models)
+    if (this.holder.userData.pack) {
+      this.holder.visible = distance < this.dist * 4
+      return distance < this.dist * 2.5
+    }
     const far = distance > this.dist
     if (far && !this.lod) {
       this.anim(0, 0, 0) // bake a neutral pose
@@ -1012,4 +1054,123 @@ export class LodSwitch {
     }
     return !far
   }
+}
+
+// ---------------------------------------------------------------------------
+// The player's own body (third-person view and the character-creation preview)
+// ---------------------------------------------------------------------------
+
+// The pack entry for a player of this sex: the `player` role, else a person.
+function playerEntry(sex) {
+  return assets.pick("player", { sex }, 0) || assets.pick("npc", { sex, role: "commoner" }, 0) || assets.pick("npc", { sex }, 0)
+}
+
+// What character creation can offer: per parts slot, the models listed (in
+// order, without repeats), e.g. { outfit: [...], hair: [..., null], beard: [...] }.
+export function lookOptions(sex) {
+  const e = playerEntry(sex)
+  if (!e?.parts) return {}
+  const out = {}
+  for (const [slot, list] of Object.entries(e.parts)) out[slot] = [...new Set(list)]
+  return out
+}
+
+// Colours for a look: the race's own unless the player picked others.
+export function lookColors(look, race) {
+  const shade = SKIN_SHADES[look.skin || 0]?.k ?? 1
+  const skin = new THREE.Color(race.skin).multiplyScalar(shade).getHex()
+  return { skin, hair: HAIR_COLORS[look.hairColor || 0]?.color ?? race.hair }
+}
+
+// look: { sex, outfit, hair, beard, hairColor, skin } (see data/looks.js).
+// weapon: the equipped weapon item or null. Returns the usual
+// { group, anim, head, rig } plus setWeapon(item) and setShield(item).
+export function buildPlayerMesh(look, race, weapon = null) {
+  const raceKey = race.name.toLowerCase()
+  const female = look.sex === "female"
+  const { skin, hair } = lookColors(look, race)
+  const h = 1.8 * (raceKey === "aurelin" ? 1.06 : raceKey === "wyldren" ? 0.92 : raceKey === "tuskar" || raceKey === "hrothi" ? 1.03 : 1)
+  const e = playerEntry(look.sex)
+  if (e) {
+    const parts = {}
+    const opts = lookOptions(look.sex)
+    for (const slot of Object.keys(opts)) {
+      // undefined = the first choice; an id the packs no longer have = the first
+      const v = look[slot]
+      parts[slot] = v === null ? null : opts[slot].includes(v) ? v : opts[slot][0] ?? null
+    }
+    const c = assets.character(e, "player", { h }, { parts, tints: { skin: skinTint(skin), hair } })
+    let held = null
+    const setWeapon = item => {
+      if (held) held.parent?.parent?.remove(held.parent)
+      held = null
+      if (!item || item.ranged) return
+      held = buildWeapon(item)
+      assets.attachToHand(c, held, e)
+    }
+    setWeapon(weapon)
+    let shieldObj = null
+    const setShield = item => {
+      if (shieldObj) shieldObj.parent?.parent?.remove(shieldObj.parent)
+      shieldObj = null
+      if (!item) return
+      shieldObj = buildShield(item)
+      assets.attachToHand(c, shieldObj, e, "shield", "l")
+    }
+    return { group: c.group, anim: c.anim, head: c.rig.head, rig: c.rig, setWeapon, setShield, char: c }
+  }
+  // no packs: the game's own body, rebuilt when the weapon changes
+  const holder = new THREE.Group()
+  let built = null
+  let weaponItem = weapon
+  let shieldItem = null
+  const build = () => {
+    const item = weaponItem
+    if (built) holder.remove(built.root)
+    built = humanoid({
+      race: raceKey,
+      female,
+      elf: ["cindari", "aurelin", "wyldren"].includes(raceKey),
+      skin,
+      hair,
+      hairStyle: look.hair === null ? "bald" : female ? "long" : "short",
+      beard: !female && !!look.beard,
+      eye: EYE[raceKey],
+      cloth: look.outfit && /ranger/i.test(look.outfit) ? 0x3a4a2a : 0x7a6040,
+      pants: 0x4a3a2a,
+      tail: raceKey === "rakhai" || raceKey === "saurek",
+      digitigrade: raceKey === "rakhai",
+      weapon: item && !item.ranged ? item.base : null,
+      weaponMaterial: item?.material,
+      weaponColor: item?.color,
+      shield: shieldItem?.material || null,
+      shieldColor: shieldItem?.color,
+      bulk: raceKey === "tuskar" || raceKey === "hrothi" ? 1.12 : raceKey === "wyldren" ? 0.9 : 1,
+    })
+    holder.add(built.root)
+    holder.scale.setScalar(h / 1.8)
+  }
+  build()
+  return {
+    group: holder,
+    anim: (...a) => built.anim(...a),
+    get head() {
+      return built.head
+    },
+    get rig() {
+      return built.rig
+    },
+    setWeapon: item => ((weaponItem = item), build()),
+    setShield: item => ((shieldItem = item), build()),
+  }
+}
+
+// First-person forearms and hands cut from the player's own pack body, so
+// the arms you see match the character you made. null without packs.
+export function buildPlayerArms(look, race) {
+  const body = buildPlayerMesh(look, race, null)
+  if (!body.char) return null
+  const right = assets.limb(body.char, "r")
+  const left = assets.limb(body.char, "l")
+  return right && left ? { right, left } : null
 }

@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { texture } from "./texgen.js"
 import { lathe, taperTube } from "./geom.js"
 import { seg } from "../core/quality.js"
+import { assets } from "../assets/registry.js"
 
 const cache = new Map()
 function metalMat(material, color) {
@@ -9,11 +10,11 @@ function metalMat(material, color) {
   if (cache.has(key)) return cache.get(key)
   const t = texture("plate")
   const opts = { color, map: t.map, normalMap: t.normalMap, metalness: 0.8, roughness: 0.35, side: THREE.DoubleSide }
-  if (material === "glass") Object.assign(opts, { metalness: 0.1, roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x2a8a50, emissiveIntensity: 0.9 })
-  if (material === "ebony") Object.assign(opts, { metalness: 0.5, roughness: 0.2 })
-  if (material === "daedric") Object.assign(opts, { emissive: 0x9a1010, emissiveIntensity: 1.3, roughness: 0.5 })
-  if (material === "chitin" || material === "bonemold" || material === "netch leather") Object.assign(opts, { metalness: 0.05, roughness: 0.6 })
-  if (material === "dwemer") Object.assign(opts, { map: texture("dwemerMetal").map, normalMap: texture("dwemerMetal").normalMap, color: 0xffffff })
+  if (material === "crystal") Object.assign(opts, { metalness: 0.1, roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x2a8a50, emissiveIntensity: 0.9 })
+  if (material === "obsidian") Object.assign(opts, { metalness: 0.5, roughness: 0.2 })
+  if (material === "abyssal") Object.assign(opts, { emissive: 0x9a1010, emissiveIntensity: 1.3, roughness: 0.5 })
+  if (material === "chitin" || material === "bonecast" || material === "drifter leather") Object.assign(opts, { metalness: 0.05, roughness: 0.6 })
+  if (material === "kaldur") Object.assign(opts, { map: texture("kaldurMetal").map, normalMap: texture("kaldurMetal").normalMap, color: 0xffffff })
   const m = new THREE.MeshStandardMaterial(opts)
   cache.set(key, m)
   return m
@@ -85,14 +86,38 @@ function mesh(g, m, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) {
   return o
 }
 
+// How far each weapon reaches above the hand (the generated models' size).
+// Pack weapons are scaled to it, so a pack sword is as long as the game's.
+const REACH = {
+  dagger: 0.44, tanto: 0.5, wakizashi: 0.65, shortsword: 0.68, longsword: 0.96, broadsword: 0.9, saber: 0.9, scimitar: 0.82,
+  katana: 0.95, "dai-katana": 1.22, claymore: 1.3, club: 0.66, "spiked club": 0.67, mace: 0.63, staff: 1.5, warhammer: 1.04,
+  "war axe": 0.75, "battle axe": 1.15, spear: 2.0, "long spear": 2.55, halberd: 2.0,
+}
+
+// A pack model for this item, if the manifest has one: artifact.<id> for
+// artifacts and rare swords, else weapon.<base> filtered by material. The
+// same item always gets the same model.
+function packWeapon(item) {
+  if (!assets.enabled) return null
+  const role = item.artifact && assets.has(`artifact.${item.artifact}`) ? `artifact.${item.artifact}` : `weapon.${item.base}`
+  if (role.startsWith("weapon.") && item.artifact) return null // artifacts keep their own look
+  const entry = assets.pick(role, { material: item.material || "iron" }, (((item.uid || 0) * 0.6180339) % 1 + 1) % 1)
+  if (!entry) return null
+  const obj = assets.object(entry, role, { h: REACH[item.base] })
+  obj.traverse(o => o.isMesh && (o.castShadow = true))
+  return obj
+}
+
 // Weapon model with the grip at the origin and the business end along +Y.
 export function buildWeapon(item) {
+  const packed = packWeapon(item)
+  if (packed) return packed
   const g = new THREE.Group()
   const base = item.base
   const material = item.material || "iron"
   const color = item.color ?? 0x9a9a9a
   const metal = metalMat(material, color)
-  const accent = material === "daedric" ? metalMat("daedric", 0x2a0a0a) : material === "ebony" ? goldMat() : metalMat("iron", 0x6a5a40)
+  const accent = material === "abyssal" ? metalMat("abyssal", 0x2a0a0a) : material === "obsidian" ? goldMat() : metalMat("iron", 0x6a5a40)
   const blades = { dagger: [0.34, 0.05, "leaf"], tanto: [0.4, 0.045, "tanto"], wakizashi: [0.55, 0.04, "katana"], shortsword: [0.58, 0.055, "straight"], longsword: [0.86, 0.055, "straight"], broadsword: [0.8, 0.075, "straight"], saber: [0.8, 0.045, "katana"], scimitar: [0.72, 0.05, "scimitar"], katana: [0.85, 0.04, "katana"], "dai-katana": [1.12, 0.045, "katana"], claymore: [1.2, 0.085, "straight"] }
   const curved = base === "katana" || base === "wakizashi" || base === "dai-katana"
   if (blades[base]) {
@@ -101,7 +126,7 @@ export function buildWeapon(item) {
     // fuller groove hint
     if (kind === "straight" && len > 0.5) g.add(mesh(new THREE.BoxGeometry(width * 0.18, len * 0.6, 0.016), metalMat("iron", 0x444444), 0, 0.1 + len * 0.35, 0))
     const guardW = curved ? 0.07 : width * 3.2
-    if (material === "daedric") {
+    if (material === "abyssal") {
       const gs = new THREE.Shape()
       gs.moveTo(-guardW, 0.03)
       gs.lineTo(-guardW * 0.3, -0.01)
@@ -204,7 +229,7 @@ export function buildWeapon(item) {
     str.name = "string"
     g.add(str)
     g.add(mesh(new THREE.BoxGeometry(0.02, 0.05, 0.02), metal, 0, 0.0, -0.045))
-    if (material === "dwemer") for (const y of [0.05, 0.22]) g.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.02, seg(10)), metal, 0.04, y, 0, 0, 0, Math.PI / 2))
+    if (material === "kaldur") for (const y of [0.05, 0.22]) g.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.02, seg(10)), metal, 0.04, y, 0, 0, 0, Math.PI / 2))
     return g
   }
   if (base === "club" || base === "mace" || base === "warhammer") {
@@ -264,10 +289,12 @@ export function buildWeapon(item) {
 }
 
 export function buildShield(item) {
+  const entry = assets.enabled && assets.pick("shield", { material: item.material || "iron" }, (((item.uid || 0) * 0.6180339) % 1 + 1) % 1)
+  if (entry) return assets.object(entry, "shield", {})
   const g = new THREE.Group()
   const m = item.material || "iron"
   const mat = metalMat(m, item.color ?? 0x888888)
-  const heavy = ["steel", "dwemer", "ebony", "daedric"].includes(m)
+  const heavy = ["steel", "kaldur", "obsidian", "abyssal"].includes(m)
   if (heavy) {
     const s = new THREE.Shape()
     s.moveTo(-0.25, 0.3)

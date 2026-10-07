@@ -1,5 +1,5 @@
 import { WEAPON_BASES, WEAPON_MATERIALS, ARMOR_SLOTS, ARMOR_MATERIALS, POTIONS, POTION_QUALITY, MISC_ITEMS, ENCHANTS, JEWELRY, AMMO, AMMO_ENCHANTS, POISONS, REPAIR_TOOLS } from "../data/items.js"
-import { ARTIFACTS } from "../data/artifacts.js"
+import { UNIQUES, RARE_SWORDS, RARE_IDS } from "../data/artifacts.js"
 import { SKILLS } from "../data/stats.js"
 
 let uid = 1
@@ -27,7 +27,7 @@ export function makeWeapon(material, base, enchant = null, qty = 1) {
     reach: b.reach,
     twoHanded: !!b.twoHanded,
     ranged: !!b.ranged,
-    silver: !!m.silver || material === "daedric" || material === "ebony" || material === "glass",
+    silver: !!m.silver || material === "abyssal" || material === "obsidian" || material === "crystal",
     weight: Math.round(b.weight * (m.weightMult || 1) * 10) / 10,
     value: Math.round(b.value * m.value),
     color: m.color,
@@ -107,7 +107,7 @@ export function makeMisc(name, qty = 1) {
   }
 }
 
-const AMMO_MATERIAL_MULT = { iron: 1, chitin: 1, steel: 1.3, silver: 1.5, orcish: 1.7, dwemer: 1.8, adamantium: 1.9, glass: 2, ebony: 2.5, daedric: 3 }
+const AMMO_MATERIAL_MULT = { iron: 1, chitin: 1, steel: 1.3, silver: 1.5, tuskar: 1.7, kaldur: 1.8, starmetal: 1.9, crystal: 2, obsidian: 2.5, abyssal: 3 }
 
 // Arrows or bolts; an enchant key ("fire", "frost", ...) makes them magical.
 export function makeAmmo(type, qty, material = "iron", enchantKey = null) {
@@ -151,9 +151,10 @@ export function makeRepairTool(quality = 1) {
   return { uid: nextUid(), kind: "repair", name: t.name, quality: t.quality, uses: t.uses, maxUses: t.uses, weight: quality === 4 ? 3 : 2, value: t.value }
 }
 
-// A legendary artifact, built from its base item with the overrides applied.
+// A legendary artifact or rare unique sword, built from its base item with
+// the overrides applied.
 export function makeArtifact(id) {
-  const a = ARTIFACTS[id]
+  const a = UNIQUES[id]
   const item = a.kind === "weapon" ? makeWeapon(a.material, a.base) : makeArmor(a.material, a.slot)
   item.name = a.name
   item.artifact = id
@@ -173,9 +174,22 @@ export function makeArtifact(id) {
     item.maxCond = Math.round(maxCondition(item) * 1.5)
     item.cond = item.maxCond
   }
+  if (a.rare) {
+    item.rare = true
+    item.value = 600 + (item.tier || 1) * 350
+    return item
+  }
   item.value = 4000 + (item.tier || 5) * 800
   item.tier = Math.max(item.tier || 5, 6)
   return item
+}
+
+// Now and then a rare unique sword: `chance` per call, only blades whose
+// minTier the loot tier reaches, never one the player already found.
+export function maybeRareSword(rng, tier, found = [], chance = 0.04) {
+  if (!rng.chance(chance)) return null
+  const options = RARE_IDS.filter(id => RARE_SWORDS[id].minTier <= tier && !found.includes(id))
+  return options.length ? makeArtifact(rng.pick(options)) : null
 }
 
 function pick(o, keys) {
@@ -293,7 +307,7 @@ export function makeJewelry(rng, tier) {
     slot,
     armorClass: null,
     ar: 0,
-    name: `${rng.pick(["Silver", "Gold", "Ebony", "Glass", "Bone", "Dwemer"])} ${rng.pick(j.names)}`,
+    name: `${rng.pick(["Silver", "Gold", "Obsidian", "Crystal", "Bone", "Kaldur"])} ${rng.pick(j.names)}`,
     weight: 0.2,
     value: j.value * tier,
     color: 0xd8b040,
@@ -369,7 +383,7 @@ export function randomWeapon(rng, tier, enchantChance = 0) {
 
 // Arrows or bolts, sometimes enchanted at higher tiers.
 export function randomAmmo(rng, tier) {
-  const material = rng.pick(["iron", "steel", "silver", "orcish", "dwemer", "glass", "ebony", "daedric"].filter((m, i) => i <= tier + 1))
+  const material = rng.pick(["iron", "steel", "silver", "tuskar", "kaldur", "crystal", "obsidian", "abyssal"].filter((m, i) => i <= tier + 1))
   const ench = tier >= 2 && rng.chance(0.15 + tier * 0.05) ? rng.pick(Object.keys(AMMO_ENCHANTS)) : null
   const n = ench ? rng.int(4, 12) : rng.int(8, 25)
   return rng.chance(0.6) ? makeArrows(n, material, ench) : makeBolts(n, material, ench)
@@ -430,7 +444,7 @@ export function randomLoot(rng, tier, tag = "any", count = null) {
 
 export function describeItem(item) {
   const lines = []
-  if (item.artifact) lines.push("Legendary artifact")
+  if (item.artifact) lines.push(item.rare ? "Rare unique weapon" : "Legendary artifact")
   if (item.kind === "weapon") {
     lines.push(`${SKILLS[item.skill].name}${item.thrown ? " (thrown)" : item.crossbow ? " (crossbow, bolts)" : item.ranged ? " (bow, arrows)" : item.twoHanded ? " (two-handed)" : ""}`)
     if (item.ranged || item.thrown) lines.push(`Damage ${item.damage[0]}–${item.damage[1]}  Speed ${item.speed}`)

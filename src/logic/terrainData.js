@@ -5,25 +5,25 @@ import { createNoise2D } from "../core/noise.js"
 // chunk, computed without three.js so it can run in a worker.
 // Splat channels: A = grass, ash, rock, sand   B = mud, volcanic, dirt, lava(emissive)
 const REGION_SPLAT = {
-  ascadian: [0.75, 0, 0.05, 0, 0.05, 0, 0.15],
-  grazelands: [0.7, 0, 0.05, 0.1, 0, 0, 0.15],
-  bitterCoast: [0.35, 0, 0.05, 0, 0.5, 0, 0.1],
-  westGash: [0.45, 0, 0.3, 0, 0, 0, 0.25],
+  verdant: [0.75, 0, 0.05, 0, 0.05, 0, 0.15],
+  mosslands: [0.7, 0, 0.05, 0.1, 0, 0, 0.15],
+  brineCoast: [0.35, 0, 0.05, 0, 0.5, 0, 0.1],
+  westRift: [0.45, 0, 0.3, 0, 0, 0, 0.25],
   ashlands: [0, 0.8, 0.15, 0, 0, 0.05, 0],
-  redMountain: [0, 0.5, 0.2, 0, 0, 0.3, 0],
-  azurasCoast: [0.3, 0, 0.45, 0.15, 0, 0, 0.1],
-  molagAmur: [0, 0.3, 0.1, 0, 0, 0.6, 0],
+  hearthpeak: [0, 0.5, 0.2, 0, 0, 0.3, 0],
+  vesperCoast: [0.3, 0, 0.45, 0.15, 0, 0, 0.1],
+  cinderfall: [0, 0.3, 0.1, 0, 0, 0.6, 0],
   frostholm: [0, 0, 0.18, 0, 0, 0, 0.04, 0.78],
 }
 const REGION_TINT = {
-  ascadian: [1.0, 1.06, 0.92],
-  grazelands: [1.22, 1.1, 0.62],
-  bitterCoast: [0.86, 0.94, 0.82],
-  westGash: [0.95, 1.0, 0.88],
+  verdant: [1.0, 1.06, 0.92],
+  mosslands: [1.22, 1.1, 0.62],
+  brineCoast: [0.86, 0.94, 0.82],
+  westRift: [0.95, 1.0, 0.88],
   ashlands: [1, 0.97, 0.94],
-  redMountain: [1.08, 0.92, 0.86],
-  azurasCoast: [1, 1, 1.02],
-  molagAmur: [1.05, 0.9, 0.86],
+  hearthpeak: [1.08, 0.92, 0.86],
+  vesperCoast: [1, 1, 1.02],
+  cinderfall: [1.05, 0.9, 0.86],
   frostholm: [1, 1, 1.02],
 }
 
@@ -100,7 +100,7 @@ export function computeTerrainChunks(world, R) {
           if (h < 1.8) {
             const s = Math.min(1, (1.8 - h) / 1.2)
             for (let q = 0; q < 8; q++) w[q] *= 1 - s
-            w[world.regionAt(x, z) === "bitterCoast" ? 4 : 3] += s
+            w[world.regionAt(x, z) === "brineCoast" ? 4 : 3] += s
           }
           let lava = 0
           if (world.lavaAt(x, z) && slope < 0.35) {

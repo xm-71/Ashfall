@@ -10,14 +10,14 @@ import { generateQuest, canPromote } from "../logic/quests.js"
 import { randomPotion, randomMisc, randomWeapon, randomArmor, makeLockpick, makeArrows, makeBolts, makeQuestItem, makeWeapon, makeRepairTool, randomAmmo, randomPoison, repairCost, hasCondition, makeArtifact } from "../logic/items.js"
 import { DUNGEON_THEMES } from "../logic/dungeongen.js"
 
-const GREAT_HOUSES = ["redoran", "hlaalu", "telvanni"]
+const GREAT_HOUSES = ["durath", "merovan", "sorvenn"]
 
 export function disposition(game, npc) {
   const c = game.char
   let d = npc.disposition + (game.dispositionMod.get(npc.id) || 0) + (getAttr(c, "personality") - 40) / 2
   if (npc.faction && c.factions[npc.faction]) d += 10 + c.factions[npc.faction].rank * 2
   if (npc.race === c.race) d += 5
-  if (npc.race === "dunmer" && c.race !== "dunmer") d -= 5
+  if (npc.race === "cindari" && c.race !== "cindari") d -= 5
   return Math.max(0, Math.min(100, Math.round(d)))
 }
 
@@ -33,10 +33,10 @@ export function greeting(game, npc) {
   const race = RACES[c.race].name
   const rng = new RNG(`${npc.seed}:${Math.floor(game.time)}`)
   if (npc.role === "elder" && !(game.isle?.stage > 0)) return `A southerner, on our isle? The ancestors send strange visitors. Sit by the fire, ${c.name}.`
-  if (npc.role === "pilgrim") return rng.pick([`Blessings of the Three upon you, ${c.name}. I walk to the shrines of the saints.`, "Walk with me a while, if you like. The road is long and the Ashlands are cruel.", "Almsivi keep you. Have you seen the shrine near here?"])
+  if (npc.role === "pilgrim") return rng.pick([`Blessings of the Three upon you, ${c.name}. I walk to the shrines of the saints.`, "Walk with me a while, if you like. The road is long and the Ashlands are cruel.", "Triune keep you. Have you seen the shrine near here?"])
   if (npc.title === "Caravan Merchant") return "You came just in time. Those bandits meant to take everything."
-  if (npc.role === "blade" && game.main.stage === 0) return `You're ${c.name}? Good. I was told to expect you. Sit — we have much to discuss about your future, and the dreams that trouble this island.`
-  if (d < 30) return rng.pick([`What do you want, ${c.race === "dunmer" ? "sera" : "n'wah"}?`, `Hmph. An outlander. Make it quick.`, `S'wit. What?`])
+  if (npc.role === "lantern" && game.main.stage === 0) return `You're ${c.name}? Good. I was told to expect you. Sit — we have much to discuss about your future, and the dreams that trouble this island.`
+  if (d < 30) return rng.pick([`What do you want, ${c.race === "cindari" ? "kinsman" : "ashling"}?`, `Hmph. An outlander. Make it quick.`, `Pah. What?`])
   if (d < 55) return rng.pick([`Yes, ${race}?`, `Greetings, outlander. What do you need?`, `Something I can help you with?`, `Mm. Speak.`])
   return rng.pick([`Well met, friend ${c.name}!`, `Ah, ${c.name}. Always good to see you.`, `Welcome, welcome. How can I help?`])
 }
@@ -51,10 +51,10 @@ export function topics(game, npc) {
     else if (st === 1 && !c.inventory.some(i => i.questId === "isle")) list.push({ id: "isle:progress", label: "The barrow" })
     else if (st <= 2 && c.inventory.some(i => i.questId === "isle")) list.push({ id: "isle:finish", label: "The Horn of the Ancestors" })
   }
-  if (npc.role === "blade") {
-    if (game.main.stage === 0) list.push({ id: "main:start", label: "Dreams of the Sixth House" })
-    else if (game.main.stage === 1) list.push({ id: "main:tools", label: "Kagrenac's Tools" })
-    else list.push({ id: "main:mountain", label: "Red Mountain" })
+  if (npc.role === "lantern") {
+    if (game.main.stage === 0) list.push({ id: "main:start", label: "Dreams of the Ember Court" })
+    else if (game.main.stage === 1) list.push({ id: "main:tools", label: "Durnagh's Tools" })
+    else list.push({ id: "main:mountain", label: "The Hearthpeak" })
   }
   for (const q of game.quests) {
     if (q.giver === npc.id && q.status === "ready") list.push({ id: `turnin:${q.id}`, label: `Report: ${q.title}` })
@@ -72,7 +72,7 @@ export function topics(game, npc) {
   list.push({ id: "rumors", label: "Latest rumors" })
   list.push({ id: "advice", label: "Little advice" })
   list.push({ id: "town", label: town.name })
-  list.push({ id: "sixth", label: "Sixth House" })
+  list.push({ id: "emberCourt", label: "Ember Court" })
   return list
 }
 
@@ -134,37 +134,37 @@ export function handleTopic(game, npc, id) {
       const flavor = {
         cave: "Smugglers and worse have been seen going in and out",
         tomb: "The family's dead don't rest easy there, they say",
-        dwemer: "Old Dwemer ruins — full of clanking machines and treasure",
-        daedric: "Worshippers of the Daedra gather there. Stay clear, if you're smart",
+        kaldur: "Old Kaldur ruins — full of clanking machines and treasure",
+        abyssal: "Worshippers of the Hollowborn gather there. Stay clear, if you're smart",
       }[t.type]
       return `Have you heard of ${t.name}? It's ${far} ${compass(t.x - town.x, t.z - town.z)} of here, in the ${REGIONS[t.region].name}. ${flavor}. (Marked on your map.)`
     }
     return rng.pick([
-      "They say the Blight is spreading from Red Mountain. Ash storms more often every season.",
-      "Cliff racers. Someone should do something about the cliff racers.",
-      "The Sixth House cultists have been seen near the Ghostfence. Madmen, all of them.",
-      "A silt strider driver told me the Grazelands tribes are restless.",
-      "The Mages Guild pays well for Dwemer artifacts, if you can find any.",
-      "Heard a Telvanni wizard turned his apprentice into a scrib. Just for talking back.",
+      "They say the Blight is spreading from the Hearthpeak. Ash storms more often every season.",
+      "Skyscreamers. Someone really should do something about the skyscreamers.",
+      "The Ember Court cultists have been seen near the Wardwall. Madmen, all of them.",
+      "A longstrider driver told me the Mosslands tribes are restless.",
+      "The Mages Guild pays well for Kaldur artifacts, if you can find any.",
+      "Heard a Sorvenn wizard turned his apprentice into a mite. Just for talking back.",
     ])
   }
   if (id === "advice") {
     return rng.pick([
       "Hit something enough times and you'll get better at hitting things. That's how skill works around here.",
-      "Rest when you're hurt — but not in the wilds unless you like waking up to a nix-hound.",
+      "Rest when you're hurt — but not in the wilds unless you like waking up to an ash hound.",
       "Get a lockpick. You'd be amazed what people leave in chests.",
       "Spells fail when you're tired. Keep your fatigue up.",
-      "The silt striders can carry you between towns for a few drakes.",
-      "If you get lost in a tomb, Almsivi Intervention will take you to the nearest Temple.",
+      "The longstriders can carry you between towns for a few crowns.",
+      "If you get lost in a tomb, Triune Recall will take you to the nearest Temple.",
       "Sneak up on something and strike — a blow from the shadows hits three times as hard.",
-      "Dwemer machines don't care about poison, and ghosts shrug off plain steel.",
+      "Kaldur machines don't care about poison, and ghosts shrug off plain steel.",
     ])
   }
   if (id === "town") {
-    return `${town.name} is ${{ imperial: "an Imperial town", redoran: "a Redoran settlement", hlaalu: "a Hlaalu town", telvanni: "a Telvanni village", ashlander: "an Ashlander camp" }[town.style]} in the ${REGIONS[town.region].name}. ${town.hasTemple ? "The Temple here tends to the sick." : ""}`
+    return `${town.name} is ${{ vessari: "a Vessari town", durath: "a Durath settlement", merovan: "a Merovan town", sorvenn: "a Sorvenn village", ashwalker: "an Ashwalker camp" }[town.style]} in the ${REGIONS[town.region].name}. ${town.hasTemple ? "The Temple here tends to the sick." : ""}`
   }
-  if (id === "sixth") {
-    return "The Sixth House. House Dagoth, betrayers of Nerevar. Their lord sleeps under Red Mountain and sends ash and nightmares to the rest of us. Only fools go looking for his Citadel."
+  if (id === "emberCourt") {
+    return "The Ember Court. A noble house once, until they drank from the Heart under the mountain. Their lord sleeps beneath the Hearthpeak and sends ash, rot and nightmares to the rest of us. Only fools go looking for his Citadel."
   }
 
   // ---------- main quest ----------
@@ -176,16 +176,16 @@ export function handleTopic(game, npc, id) {
       dd.discovered = true
       return `${r.name} lies in ${dd.name}`
     })
-    game.quests.push({ id: "main", type: "main", title: "The Tools of Kagrenac", desc: `Recover Sunder, Keening and Wraithguard, then descend into ${world.dungeons[mq.citadelId].name} and destroy ${mq.dagoth}.`, status: "active", giverName: npc.name, giverTown: town.name })
-    game.addJournal(`${npc.name} of the Blades told me of ${mq.dagoth}, who draws power from the Heart of Lorkhan beneath Red Mountain. To reach him I need Kagrenac's tools: ${places.join("; ")}.`)
-    return `You've had the dreams too, haven't you? ${mq.dagoth} stirs beneath Red Mountain, feeding on the Heart of Lorkhan. The Citadel is sealed by a ward only Kagrenac's tools can break. Our agents traced them: ${places.join("; ")}. They're marked on your map. Get stronger first — those places are guarded by terrible things.`
+    game.quests.push({ id: "main", type: "main", title: "The Tools of Durnagh", desc: `Recover Riven, Lament and Soulward, then descend into ${world.dungeons[mq.citadelId].name} and destroy ${mq.emberlord}.`, status: "active", giverName: npc.name, giverTown: town.name })
+    game.addJournal(`${npc.name} of the Lanterns told me of ${mq.emberlord}, who draws power from the Heart of Aethon beneath the Hearthpeak. To reach him I need Durnagh's tools: ${places.join("; ")}.`)
+    return `You've had the dreams too, haven't you? ${mq.emberlord} stirs beneath the Hearthpeak, feeding on the Heart of Aethon. The Citadel is sealed by a ward only Durnagh's tools can break. Our agents traced them: ${places.join("; ")}. They're marked on your map. Get stronger first — those places are guarded by terrible things.`
   }
   if (id === "main:tools") {
     const held = game.relicsHeld()
     const parts = world.mainQuest.relics.map(r => `${r.name}: ${held.includes(r.name) ? "recovered" : world.dungeons[r.dungeonId].name}`)
     return `How goes the hunt? ${parts.join(". ")}.`
   }
-  if (id === "main:mountain") return `You have all three tools. The ward on the Citadel in Red Mountain's crater will yield to you. End this, ${c.name}.`
+  if (id === "main:mountain") return `You have all three tools. The ward on the Citadel in the Hearthpeak's crater will yield to you. End this, ${c.name}.`
 
   // ---------- factions ----------
   if (id === "join") {
@@ -217,7 +217,7 @@ export function handleTopic(game, npc, id) {
     c.gold += gift
     game.addJournal(`I was promoted to ${F.ranks[res.rank]} of the ${F.name}.`)
     game.audio.play("levelup")
-    return `You've earned it. You are now ${F.ranks[res.rank]} of the ${F.name}. Take these ${gift} drakes.`
+    return `You've earned it. You are now ${F.ranks[res.rank]} of the ${F.name}. Take these ${gift} crowns.`
   }
   if (id.startsWith("turnin:")) {
     const q = game.quests.find(x => x.id === id.slice(7))
@@ -252,12 +252,12 @@ function completeQuest(game, q, npc) {
   }
   game.addJournal(`Completed: ${q.title}. ${npc.name} paid me ${q.reward.gold} gold.`)
   game.audio.play("gold")
-  return `Well done. Here are ${q.reward.gold} drakes as promised.${extra}`
+  return `Well done. Here are ${q.reward.gold} crowns as promised.${extra}`
 }
 
 // ---------- barter ----------
 
-// The frozen isle's story: the village elder asks you to quiet a draugr lord
+// The frozen isle's story: the village elder asks you to quiet a grimwight lord
 // and bring back the Horn of the Ancestors he was buried with.
 function isleTopic(game, npc, id) {
   const w = game.world
@@ -266,22 +266,22 @@ function isleTopic(game, npc, id) {
   if (id === "isle:start") {
     isle.stage = 1
     barrow.discovered = true
-    game.addJournal(`${npc.name}, elder of the village on the frozen isle, told me the dead of ${barrow.name} have woken. A draugr lord walks there with the Horn of the Ancestors. If I bring the Horn back, the village will honour me.`)
-    return `You came across the strait? Then you are stronger than you look. Listen: the dead in ${barrow.name} have woken. Their lord was buried with the Horn of the Ancestors, and while he holds it the draugr will not rest. Put him down and bring me the Horn. (${barrow.name} is marked on your map.)`
+    game.addJournal(`${npc.name}, elder of the village on the frozen isle, told me the dead of ${barrow.name} have woken. A grimwight lord walks there with the Horn of the Ancestors. If I bring the Horn back, the village will honour me.`)
+    return `You came across the strait? Then you are stronger than you look. Listen: the dead in ${barrow.name} have woken. Their lord was buried with the Horn of the Ancestors, and while he holds it the grimwight will not rest. Put him down and bring me the Horn. (${barrow.name} is marked on your map.)`
   }
-  if (id === "isle:progress") return `The draugr lord still walks in ${barrow.name}. Kill him, and bring back the Horn.`
+  if (id === "isle:progress") return `The grimwight lord still walks in ${barrow.name}. Kill him, and bring back the Horn.`
   if (id === "isle:finish") {
     const horn = game.char.inventory.find(i => i.questId === "isle")
     if (horn) removeItem(game.char, horn)
     isle.stage = 3
-    const reward = makeArtifact("stalhrim")
+    const reward = makeArtifact("rimeBlade")
     addItem(game.char, reward)
     game.onItemTaken?.(reward)
     game.char.gold += 300
     for (const n of w.towns.find(t => t.isle)?.npcs || []) game.dispositionMod.set(n.id, (game.dispositionMod.get(n.id) || 0) + 15)
-    game.addJournal(`I returned the Horn of the Ancestors to ${npc.name}. The village gave me a blade of enchanted stalhrim ice and named me a friend of the isle.`)
+    game.addJournal(`I returned the Horn of the Ancestors to ${npc.name}. The village gave me a blade of enchanted rimeBlade ice and named me a friend of the isle.`)
     game.audio.sting("levelup")
-    return `The Horn... and the barrow is quiet. The ancestors will sleep now. Take this blade — stalhrim, ice that never melts, forged for such a day. You are a friend of this village, now and always. (+300 gold)`
+    return `The Horn... and the barrow is quiet. The ancestors will sleep now. Take this blade — rimeBlade, ice that never melts, forged for such a day. You are a friend of this village, now and always. (+300 gold)`
   }
   return ""
 }
@@ -299,7 +299,7 @@ export function merchantStock(game, npc) {
     for (let i = 0; i < 6; i++) items.push(randomArmor(rng, tier, 0.1))
     items.push(makeArrows(40), makeArrows(20, "steel"), makeBolts(30), makeBolts(15, "steel"))
     items.push(makeWeapon(rng.pick(["iron", "steel"]), rng.pick(["dart", "throwing knife", "throwing star"]), null, rng.int(10, 25)))
-    if (tier >= 2) items.push(makeWeapon(tier >= 4 ? "dwemer" : "steel", "crossbow"))
+    if (tier >= 2) items.push(makeWeapon(tier >= 4 ? "kaldur" : "steel", "crossbow"))
     items.push(makeRepairTool(1), makeRepairTool(1), makeRepairTool(Math.min(4, 1 + Math.floor(tier / 2))))
     if (tier >= 3) items.push(randomAmmo(rng, tier))
   } else {
@@ -380,7 +380,7 @@ export function spellsForSale(game, npc) {
   let schools = ["destruction", "alteration", "illusion", "conjuration", "mysticism", "restoration"]
   if (npc.role === "priest" || npc.faction === "temple") schools = ["restoration", "mysticism", "alteration"]
   return Object.entries(SPELLS)
-    .filter(([id, s]) => schools.includes(s.school) && !c.spells.includes(id) && id !== "starCurse")
+    .filter(([id, s]) => schools.includes(s.school) && !c.spells.includes(id) && id !== "addersCurse")
     .map(([id, s]) => ({ id, ...s, price: Math.round(spellPrice(id) * (npc.faction && c.factions[npc.faction] ? 0.8 : 1)) }))
 }
 
@@ -430,10 +430,10 @@ export function heal(game, npc) {
   return price ? `You are healed for ${price} gold.` : "The Temple heals its own freely."
 }
 
-// mode: "travel" (silt strider), "boat" (between harbours) or "guide"
+// mode: "travel" (longstrider), "boat" (between harbours) or "guide"
 // (Mages Guild teleport, instant).
 export const TRAVEL_MODES = {
-  travel: { title: "Silt Strider destinations", ok: t => !t.isle, per: 12, speed: 60, base: 10, arrive: "aboard the silt strider" },
+  travel: { title: "Longstrider destinations", ok: t => !t.isle, per: 12, speed: 60, base: 10, arrive: "aboard the longstrider" },
   boat: { title: "Ports of call", ok: t => !!t.dock, per: 10, speed: 75, base: 12, arrive: "at sea" },
   guide: { title: "Guild Guide destinations", ok: t => t.buildings.some(b => b.label === "Mages Guild"), per: 0, speed: 0, base: 20, arrive: "" },
 }

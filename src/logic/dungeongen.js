@@ -9,10 +9,10 @@ export const FLOOR = 1
 export const DUNGEON_THEMES = {
   cave: { name: "Cave", habitat: "cave", lootTag: "cave" },
   tomb: { name: "Ancestral Tomb", habitat: "tomb", lootTag: "tomb" },
-  dwemer: { name: "Dwemer Ruin", habitat: "dwemer", lootTag: "dwemer" },
-  daedric: { name: "Daedric Shrine", habitat: "daedric", lootTag: "daedric" },
+  kaldur: { name: "Kaldur Ruin", habitat: "kaldur", lootTag: "kaldur" },
+  abyssal: { name: "Abyssal Shrine", habitat: "abyssal", lootTag: "abyssal" },
   citadel: { name: "Citadel", habitat: "citadel", lootTag: "citadel" },
-  barrow: { name: "Nord Barrow", habitat: "barrow", lootTag: "tomb" },
+  barrow: { name: "Hrothi Barrow", habitat: "barrow", lootTag: "tomb" },
 }
 
 function carveRoom(grid, w, r) {
@@ -157,8 +157,8 @@ function randomFloorIn(rng, grid, w, r) {
 const PROPS = {
   cave: ["crate", "barrel", "stalagmite", "bones", "sack"],
   tomb: ["urn", "urn", "bones", "candles", "coffin"],
-  dwemer: ["pipe", "gear", "pipe", "crate", "lamp"],
-  daedric: ["statue", "brazier", "bones", "altar"],
+  kaldur: ["pipe", "gear", "pipe", "crate", "lamp"],
+  abyssal: ["statue", "brazier", "bones", "altar"],
   citadel: ["fleshpillar", "brazier", "bones", "altar"],
   barrow: ["urn", "coffin", "bones", "candles", "statue"],
 }
@@ -173,8 +173,8 @@ export function generateDungeonLevel({ seed, type, tier, level, levels, bossLeve
     w = h = 42
     const opts = {
       tomb: { minRooms: 7, maxRooms: 11, minSize: 3, maxSize: 6, corridor: 1 },
-      dwemer: { minRooms: 6, maxRooms: 9, minSize: 5, maxSize: 9, corridor: 2 },
-      daedric: { minRooms: 5, maxRooms: 8, minSize: 5, maxSize: 10, corridor: 2 },
+      kaldur: { minRooms: 6, maxRooms: 9, minSize: 5, maxSize: 9, corridor: 2 },
+      abyssal: { minRooms: 5, maxRooms: 8, minSize: 5, maxSize: 10, corridor: 2 },
       citadel: { minRooms: 6, maxRooms: 9, minSize: 5, maxSize: 10, corridor: 2 },
       barrow: { minRooms: 6, maxRooms: 9, minSize: 4, maxSize: 7, corridor: 1 },
     }[type]
@@ -221,7 +221,7 @@ export function generateDungeonLevel({ seed, type, tier, level, levels, bossLeve
   }
   if (isBottom && bossLevel) {
     const strongest = [...pool].sort((a, b) => b.level - a.level)[0]
-    spawns.push({ ...goal, creature: citadel ? "dagoth" : strongest.id, boss: true, relic })
+    spawns.push({ ...goal, creature: citadel ? "emberlord" : strongest.id, boss: true, relic })
   }
 
   const chests = []

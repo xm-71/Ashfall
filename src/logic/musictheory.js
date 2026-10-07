@@ -19,21 +19,21 @@ const N = { C: 36, Db: 37, D: 38, Eb: 39, E: 40, F: 41, Gb: 42, G: 43, Ab: 44, A
 // and which extra colours play. Layers are faded in and out by the engine.
 export const PRESETS = {
   title: { root: N.D, mode: "dorian", bpm: 64, density: 0.7, lead: "horn", colors: ["strings"] },
-  ascadian: { root: N.F, mode: "lydian", bpm: 70, density: 0.6, lead: "flute", colors: ["pluck"] },
-  grazelands: { root: N.G, mode: "mixolydian", bpm: 72, density: 0.55, lead: "flute", colors: ["pluck"] },
-  bitterCoast: { root: N.E, mode: "aeolian", bpm: 60, density: 0.4, lead: "strings", colors: [] },
-  westGash: { root: N.D, mode: "dorian", bpm: 66, density: 0.5, lead: "horn", colors: ["strings"] },
-  azurasCoast: { root: N.A, mode: "mixolydian", bpm: 66, density: 0.45, lead: "flute", colors: ["bells"] },
+  verdant: { root: N.F, mode: "lydian", bpm: 70, density: 0.6, lead: "flute", colors: ["pluck"] },
+  mosslands: { root: N.G, mode: "mixolydian", bpm: 72, density: 0.55, lead: "flute", colors: ["pluck"] },
+  brineCoast: { root: N.E, mode: "aeolian", bpm: 60, density: 0.4, lead: "strings", colors: [] },
+  westRift: { root: N.D, mode: "dorian", bpm: 66, density: 0.5, lead: "horn", colors: ["strings"] },
+  vesperCoast: { root: N.A, mode: "mixolydian", bpm: 66, density: 0.45, lead: "flute", colors: ["bells"] },
   ashlands: { root: N.E, mode: "phrygian", bpm: 58, density: 0.3, lead: "horn", colors: ["drone"] },
-  molagAmur: { root: N.Db, mode: "phrygian", bpm: 56, density: 0.25, lead: "horn", colors: ["drone", "frame"] },
-  redMountain: { root: N.D, mode: "harmonicMinor", bpm: 54, density: 0.25, lead: "choir", colors: ["drone"] },
+  cinderfall: { root: N.Db, mode: "phrygian", bpm: 56, density: 0.25, lead: "horn", colors: ["drone", "frame"] },
+  hearthpeak: { root: N.D, mode: "harmonicMinor", bpm: 54, density: 0.25, lead: "choir", colors: ["drone"] },
   town: { root: N.G, mode: "dorian", bpm: 84, density: 0.6, lead: "flute", colors: ["pluck", "frame"] },
   cave: { root: N.C, mode: "aeolian", bpm: 52, density: 0.2, lead: "strings", colors: ["drone"] },
   tomb: { root: N.D, mode: "phrygian", bpm: 50, density: 0.2, lead: "choir", colors: ["drone"] },
   barrow: { root: N.E, mode: "aeolian", bpm: 50, density: 0.22, lead: "horn", colors: ["drone", "frame"] },
   frostholm: { root: N.E, mode: "dorian", bpm: 60, density: 0.4, lead: "horn", colors: ["drone", "strings"] },
-  dwemer: { root: N.Bb, mode: "dorian", bpm: 56, density: 0.3, lead: "bells", colors: ["drone"] },
-  daedric: { root: N.Db, mode: "harmonicMinor", bpm: 54, density: 0.25, lead: "choir", colors: ["drone", "frame"] },
+  kaldur: { root: N.Bb, mode: "dorian", bpm: 56, density: 0.3, lead: "bells", colors: ["drone"] },
+  abyssal: { root: N.Db, mode: "harmonicMinor", bpm: 54, density: 0.25, lead: "choir", colors: ["drone", "frame"] },
   citadel: { root: N.D, mode: "phrygian", bpm: 60, density: 0.25, lead: "choir", colors: ["drone", "heart"] },
 }
 
@@ -76,12 +76,12 @@ export const MAIN_THEME = [
 export const THEME_HEAD = MAIN_THEME.slice(0, 4)
 
 // Pick the preset and layer levels for the current situation.
-export function pickMood({ mode = "play", area = "overworld", region = "ascadian", theme = "cave", inTown = false, night = false, combat = 0, boss = false }) {
+export function pickMood({ mode = "play", area = "overworld", region = "verdant", theme = "cave", inTown = false, night = false, combat = 0, boss = false }) {
   let key
   if (mode === "title") key = "title"
   else if (area === "dungeon") key = theme in PRESETS ? theme : "cave"
   else if (inTown) key = "town"
-  else key = region in PRESETS ? region : "ascadian"
+  else key = region in PRESETS ? region : "verdant"
   const p = PRESETS[key]
   const calm = 1 - Math.min(1, combat)
   const layers = {
@@ -90,7 +90,7 @@ export function pickMood({ mode = "play", area = "overworld", region = "ascadian
     color: 0.7 * calm + 0.2,
     bass: area === "dungeon" ? 0.5 : 0.25 + combat * 0.6,
     drums: Math.min(1, combat * 1.2) + (boss ? 0.2 : 0),
-    choir: boss ? 0.8 : key === "tomb" || key === "citadel" || key === "redMountain" ? 0.3 : 0,
+    choir: boss ? 0.8 : key === "tomb" || key === "citadel" || key === "hearthpeak" ? 0.3 : 0,
   }
   const bpm = Math.round(p.bpm * (1 + combat * 0.55 + (boss ? 0.15 : 0)) * (night && !combat ? 0.9 : 1))
   return { key, preset: p, layers, bpm, night }

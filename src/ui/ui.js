@@ -15,6 +15,9 @@ import { questTargets, nearbyPlaces } from "../game/markers.js"
 import { CELL as DCELL } from "../logic/dungeongen.js"
 import { PRESETS, qualityName, setQuality } from "../core/quality.js"
 import * as D from "../game/dialogue.js"
+import { LookPreview } from "./lookPreview.js"
+import { lookOptions, lookColors } from "../render/creatures.js"
+import { HAIR_COLORS, SKIN_SHADES, defaultLook, partLabel } from "../data/looks.js"
 import { usePotion, eatItem, doRest, coatWeapon, useRepairTool, maxBreath } from "../game/player.js"
 
 // A thin condition bar under worn weapons and armour.
@@ -121,7 +124,7 @@ export class UI {
     this.screen.classList.remove("hidden")
     this.screen.innerHTML = `
       <div class="title-wrap">
-        <div class="logo"><div class="logo-sub">A procedural roguelike of Vvardenfell</div><h1>ASHFALL</h1><div class="logo-sub">Every run a new island · one life · permadeath</div></div>
+        <div class="logo"><div class="logo-sub">A procedural roguelike of Cindermere</div><h1>ASHFALL</h1><div class="logo-sub">Every run a new island · one life · permadeath</div></div>
         <div class="panel title-panel">
           <label>World seed</label>
           <div class="row"><input id="seed" value="${esc(this.game.seed)}" spellcheck="false"><button data-act="reroll" title="Random seed">⟳</button></div>
@@ -131,7 +134,7 @@ export class UI {
           ${installPrompt ? `<button data-act="install" title="Add Ashfall to your device and play offline">Install for offline play</button>` : ""}
           ${sv ? `<div class="dim small-note center">Starting a new run ends your saved run.</div>` : ""}
           <details><summary>How to play</summary>
-            <p>Create a character, then survive a freshly generated Vvardenfell. Talk to the Blades contact in your starting town to learn the main quest: recover Kagrenac's three tools from the strongholds that hold them, then descend into the Citadel under Red Mountain and slay the Dagoth lord. Death is permanent.</p>
+            <p>Create a character, then survive a freshly generated Cindermere. Talk to the Lanterns contact in your starting town to learn the main quest: recover Durnagh's three tools from the strongholds that hold them, then descend into the Citadel under the Hearthpeak and slay the Vael lord. Death is permanent.</p>
             <p>Skills improve as you use them. Every ten increases in major or minor skills lets you level up when you rest. Join guilds and Great Houses, take their duties, and rise through the ranks.</p>
             <table class="keys">
               <tr><td>WASD / mouse</td><td>move / look</td></tr>
@@ -190,7 +193,37 @@ export class UI {
 
   showChargen(seed) {
     this.game.mode = "chargen"
-    const state = { name: "", race: "dunmer", cls: "warrior", sign: "warrior" }
+    const state = { name: "", race: "cindari", cls: "warrior", sign: "anvil" }
+    const look = defaultLook()
+    let preview = null
+    try {
+      preview = new LookPreview()
+    } catch {
+      /* no second WebGL context: choices still work, without the preview */
+    }
+    const closePreview = () => preview?.dispose()
+    const hex = n => `#${n.toString(16).padStart(6, "0")}`
+    const appearance = () => {
+      const opts = lookOptions(look.sex)
+      const race = RACES[state.race]
+      const choice = (slot, list) => {
+        const cur = look[slot] === undefined ? list[0] : look[slot]
+        return `<div class="cg-look-row"><label>${slot === "outfit" ? "Outfit" : slot === "hair" ? "Hair" : slot === "beard" ? "Beard" : esc(slot)}</label><div class="opts">${list.map((id, k) => `<button class="opt ${cur === id ? "sel" : ""}" data-act="part" data-arg="${slot}:${k}">${esc(partLabel(id))}</button>`).join("")}</div></div>`
+      }
+      const swatches = (key, list, colorOf) =>
+        `<div class="opts">${list.map((v, k) => `<button class="swatch ${(look[key] || 0) === k ? "sel" : ""}" title="${esc(v.name)}" data-act="${key}" data-arg="${k}" style="background:${hex(colorOf(k))}"></button>`).join("")}</div>`
+      return `<div class="cg-look">
+        <div class="cg-look-preview" id="cg-look-view">${preview ? "" : `<p class="desc">No 3D preview on this device.</p>`}</div>
+        <div class="cg-look-opts">
+          <h3>Appearance</h3>
+          <div class="cg-look-row"><label>Body</label><div class="opts">${["male", "female"].map(s => `<button class="opt ${look.sex === s ? "sel" : ""}" data-act="sex" data-arg="${s}">${s === "male" ? "Male" : "Female"}</button>`).join("")}</div></div>
+          ${Object.entries(opts).filter(([, list]) => list.length > 1).map(([slot, list]) => choice(slot, list)).join("")}
+          <div class="cg-look-row"><label>Hair colour</label>${swatches("hairColor", HAIR_COLORS, k => lookColors({ ...look, hairColor: k }, race).hair)}</div>
+          <div class="cg-look-row"><label>Skin</label>${swatches("skin", SKIN_SHADES, k => lookColors({ ...look, skin: k }, race).skin)}</div>
+          <p class="desc">The first swatch of each is your race's own. Drag the figure to turn it. In the game, V switches between first- and third-person view.</p>
+        </div>
+      </div>`
+    }
     const render = () => {
       const c = createCharacter({ name: state.name || "Outlander", ...state })
       const C = CLASSES[state.cls]
@@ -201,7 +234,7 @@ export class UI {
       this.screen.innerHTML = `
         <div class="chargen panel">
           <h2>Who are you, outlander?</h2>
-          <div class="row"><label>Name</label><input id="cname" maxlength="24" value="${esc(state.name)}" placeholder="Nerevar"></div>
+          <div class="row"><label>Name</label><input id="cname" maxlength="24" value="${esc(state.name)}" placeholder="Varenn"></div>
           <div class="cg-cols">
             <div><h3>Race</h3><div class="opts">${list(RACES, "race")}</div><p class="desc">${esc(RACES[state.race].desc)}</p></div>
             <div><h3>Class</h3><div class="opts">${list(CLASSES, "cls")}</div><p class="desc">Specialization: ${C.spec}. Favored: ${C.attrs.map(a => ATTR_LABEL[a]).join(", ")}.<br>Major: ${C.major.map(s => SKILLS[s].name).join(", ")}.<br>Minor: ${C.minor.map(s => SKILLS[s].name).join(", ")}.</p></div>
@@ -214,18 +247,36 @@ export class UI {
               <h3>Starting spells</h3><p class="desc">${[...c.spells, ...c.powers].map(s => getSpell(s).name).join(", ") || "none"}</p>
             </div>
           </div>
+          ${appearance()}
           <div class="row end"><span class="dim">Seed: ${esc(seed)}</span><button data-act="back">Back</button><button class="big" data-act="go">Begin</button></div>
         </div>`
+      if (preview) {
+        this.screen.querySelector("#cg-look-view").appendChild(preview.canvas)
+        preview.show(look, RACES[state.race], c.equipment.weapon)
+      }
       const nameInput = this.screen.querySelector("#cname")
       nameInput.addEventListener("input", () => (state.name = nameInput.value))
       bind(this.screen, {
         race: v => ((state.race = v), render()),
         cls: v => ((state.cls = v), render()),
         sign: v => ((state.sign = v), render()),
-        back: () => this.showTitle(),
+        sex: v => {
+          // parts are per body: start the new one from its first choices
+          Object.assign(look, defaultLook(v === "female"), { hairColor: look.hairColor, skin: look.skin })
+          render()
+        },
+        part: v => {
+          const [slot, k] = v.split(":")
+          look[slot] = lookOptions(look.sex)[slot][Number(k)]
+          render()
+        },
+        hairColor: v => ((look.hairColor = Number(v)), render()),
+        skin: v => ((look.skin = Number(v)), render()),
+        back: () => (closePreview(), this.showTitle()),
         go: async () => {
+          closePreview()
           this.game.input.lock()
-          await this.game.startRun({ name: state.name.trim() || "Outlander", race: state.race, cls: state.cls, sign: state.sign, seed })
+          await this.game.startRun({ name: state.name.trim() || "Outlander", race: state.race, cls: state.cls, sign: state.sign, seed, look: { ...look } })
         },
       })
     }
@@ -252,7 +303,7 @@ export class UI {
     const c = g.char
     this.screen.classList.remove("hidden")
     this.screen.innerHTML = `<div class="end panel"><h1 class="gold">The Heart is Severed</h1>
-      <p>With Sunder and Keening, ${esc(c.name)} cut ${esc(g.world.mainQuest.dagoth)} from the Heart of Lorkhan. The ash storms quiet over Vvardenfell. Nerevar is returned.</p>
+      <p>With Riven and Lament, ${esc(c.name)} cut ${esc(g.world.mainQuest.emberlord)} from the Heart of Aethon. The ash storms quiet over Cindermere. The Returned has come home.</p>
       ${this.statsTable()}
       <div class="row end"><button class="big" data-act="again">New Run</button></div></div>`
     bind(this.screen, { again: () => location.reload() })
@@ -532,13 +583,13 @@ export class UI {
         ctx.fillText(d.name, px + 6, py + 4)
       }
     }
-    const icon = { wreck: "#b0a080", stronghold: "#d0c0a0", propylon: "#9ab8ff", ghostfence: "#60ffb0" }
+    const icon = { wreck: "#b0a080", stronghold: "#d0c0a0", waystone: "#9ab8ff", wardwall: "#60ffb0" }
     for (const l of world.landmarks || []) {
       if (!g.landmarks?.found.includes(l.id)) continue
       const [x, y] = this.toMap(l.x, l.z, S)
       const px = x * scale + ox
       const py = y * scale + oy
-      if (l.type === "ghostfence") {
+      if (l.type === "wardwall") {
         const [cx, cy] = this.toMap(l.cx, l.cz, S)
         ctx.strokeStyle = "rgba(96,255,176,0.55)"
         ctx.beginPath()
@@ -738,7 +789,7 @@ export class UI {
     body.innerHTML = `<div class="inv">
       <div class="inv-list">
         <div class="filters">${Object.keys(kinds).map(k => `<button class="${k === filter ? "sel" : ""}" data-act="filter" data-arg="${k}">${k}</button>`).join("")}</div>
-        <div class="list">${items.map((i, idx) => `<div class="item ${isEquipped(c, i) ? "eq" : ""} ${i === sel ? "sel" : ""} ${isBroken(i) ? "broken" : ""}" data-act="select" data-arg="${c.inventory.indexOf(i)}"><span>${esc(i.name)}${i.qty > 1 ? ` (${i.qty})` : ""}${condBar(i)}</span><span class="dim">${i.relic ? "relic" : i.artifact ? "artifact" : i.value}</span></div>`).join("") || `<div class="dim">Nothing here.</div>`}</div>
+        <div class="list">${items.map((i, idx) => `<div class="item ${isEquipped(c, i) ? "eq" : ""} ${i === sel ? "sel" : ""} ${isBroken(i) ? "broken" : ""}" data-act="select" data-arg="${c.inventory.indexOf(i)}"><span>${esc(i.name)}${i.qty > 1 ? ` (${i.qty})` : ""}${condBar(i)}</span><span class="dim">${i.relic ? "relic" : i.artifact ? (i.rare ? "rare" : "artifact") : i.value}</span></div>`).join("") || `<div class="dim">Nothing here.</div>`}</div>
       </div>
       <div class="inv-side">
         <div class="kv"><span>Gold</span><b>${c.gold}</b></div>
@@ -823,7 +874,7 @@ export class UI {
       return `<div class="item ${c.selectedSpell === id ? "sel" : ""}" data-act="pick" data-arg="${id}"><span>${esc(s.name)}</span><span class="dim">${s.power ? (c.powersUsed[id] ? "used today" : "power") : `${SKILLS[s.school].name} · ${s.cost} MP · ${chance}%`}</span></div>`
     }
     body.innerHTML = `<div class="magic"><h3>Powers</h3><div class="list">${c.powers.map(row).join("") || `<div class="dim">none</div>`}</div>
-      <h3>Spells</h3><div class="list">${c.spells.map(row).join("") || `<div class="dim">none — buy spells from the Mages Guild, the Temple or Telvanni.</div>`}</div>
+      <h3>Spells</h3><div class="list">${c.spells.map(row).join("") || `<div class="dim">none — buy spells from the Mages Guild, the Temple or Sorvenn.</div>`}</div>
       ${c.selectedSpell ? `<h3>${esc(getSpell(c.selectedSpell).name)}</h3>${this.slotPicker({ type: "spell", id: c.selectedSpell })}` : ""}
       <p class="dim">Click to select, then assign it to a quick-slot. Cast with F or right mouse; the mouse wheel also cycles spells.</p></div>`
     bind(body, {
@@ -987,7 +1038,7 @@ export class UI {
     const disp = D.disposition(g, spec)
     const topics = D.topics(g, spec)
     const services = D.services(g, spec)
-    const title = spec.role === "guildmaster" && spec.faction ? `${FACTIONS[spec.faction].name}` : spec.role === "blade" ? "Blades" : spec.role
+    const title = spec.role === "guildmaster" && spec.faction ? `${FACTIONS[spec.faction].name}` : spec.role === "lantern" ? "Lanterns" : spec.role
     this.win.innerHTML = `<div class="panel dialogue">
       <div class="dlg-head"><h2>${esc(spec.name)}</h2><span class="dim">${RACES[spec.race].name} · ${esc(title)}</span><span class="disp">Disposition <b>${disp}</b></span><button class="close" data-act="close">✕</button></div>
       <div class="dlg-body">
@@ -1127,7 +1178,7 @@ export class UI {
 
   // ---------------- containers ----------------
 
-  // A short list of choices (propylon destinations, and the like).
+  // A short list of choices (waystone destinations, and the like).
   openChoice(title, text, options) {
     this.openModal("choice")
     this.win.innerHTML = `<div class="panel container"><div class="dlg-head"><h2>${esc(title)}</h2><button class="close" data-act="close">✕</button></div>

@@ -14,7 +14,7 @@ export class Audio {
     this.music = new Music(this.e)
     this.ambience = new Ambience(this.e)
     this.envT = 0
-    this.env = { kind: "overworld", region: "ascadian", weather: "clear", night: false, inTown: false, coast: 0, lava: false, theme: "cave", title: true }
+    this.env = { kind: "overworld", region: "verdant", weather: "clear", night: false, inTown: false, coast: 0, lava: false, theme: "cave", title: true }
     this.combat = 0
   }
 

@@ -4,6 +4,7 @@ import { texture, cardTexture } from "./texgen.js"
 import { normalize, worldUV, lathe, rockGeometry, taperTube, mergeGeometries } from "./geom.js"
 import { Q, seg } from "../core/quality.js"
 import { RNG } from "../core/rng.js"
+import { assets } from "../assets/registry.js"
 
 export const floraTime = { value: 0 }
 
@@ -46,7 +47,7 @@ function M(key) {
     case "fern": m = sway(new THREE.MeshLambertMaterial({ map: cardTexture("fern"), alphaTest: 0.45, side: THREE.DoubleSide }), 0.05); break
     case "grass": m = sway(new THREE.MeshLambertMaterial({ map: cardTexture("grass"), alphaTest: 0.4, side: THREE.DoubleSide }), 0.09); break
     case "snowneedles": m = sway(new THREE.MeshLambertMaterial({ map: cardTexture("needles"), alphaTest: 0.45, side: THREE.DoubleSide, color: 0xc8d8d0 }), 0.008); break
-    case "trama": m = new THREE.MeshLambertMaterial({ map: t("bark").map, color: 0x7a3a34 }); break
+    case "thornroot": m = new THREE.MeshLambertMaterial({ map: t("bark").map, color: 0x7a3a34 }); break
   }
   mats[key] = m
   return m
@@ -203,14 +204,14 @@ function grassTuft() {
   return [{ geo: merge(starCards(1.1, 0.55, 3)), mat: M("grass") }]
 }
 
-function trama(rng) {
+function thornroot(rng) {
   const parts = []
   for (let i = 0; i < 7; i++) {
     const a = rng.range(0, Math.PI * 2)
     const r = rng.range(0.4, 1.1)
     parts.push(taperTube([V3(0, 0, 0), V3(Math.cos(a) * r * 0.4, rng.range(0.6, 1.2), Math.sin(a) * r * 0.4), V3(Math.cos(a) * r, rng.range(1.2, 2), Math.sin(a) * r)], 0.07, 0.01, 4, 5))
   }
-  return [{ geo: merge(parts), mat: M("trama") }]
+  return [{ geo: merge(parts), mat: M("thornroot") }]
 }
 
 function rock(rng, big) {
@@ -220,7 +221,7 @@ function rock(rng, big) {
   return [{ geo: worldUV(normalize(g), big ? 3 : 1.5), mat: M("rock"), tint: true }]
 }
 
-const BUILDERS = { parasol, gashTree, pine, swampTree, deadTree, shrub, grass: grassTuft, trama, rock: r => rock(r, false), boulder: r => rock(r, true) }
+const BUILDERS = { parasol, gashTree, pine, swampTree, deadTree, shrub, grass: grassTuft, thornroot, rock: r => rock(r, false), boulder: r => rock(r, true) }
 const TINTED = { leaves: true, needles: true, fern: true, grass: true, rock: true }
 const TRUNK_RADIUS = { parasol: 0.7, gashTree: 0.4, pine: 0.4, swampTree: 0.55, deadTree: 0.4, boulder: 2.3 }
 const VARIANTS = 3
@@ -240,15 +241,41 @@ export function buildFlora(world, colliders) {
       const y = world.heightAt(x, z)
       if (y < 0.8) continue
       const region = world.regionAt(x, z)
-      const type = region === "ashlands" || region === "molagAmur" || region === "redMountain" ? "rock" : rng.pick(["shrub", "grass", "rock"])
+      const type = region === "ashlands" || region === "cinderfall" || region === "hearthpeak" ? "rock" : rng.pick(["shrub", "grass", "rock"])
       extra.push({ type, x, z, y, scale: rng.range(0.6, 1.1), rot: rng.range(0, 6.28) })
     }
     list = list.concat(extra)
   }
+  // ground cover from the packs (pebbles, flowers, mushrooms) among the plants
+  if (assets.has("decor.wild")) {
+    const wild = []
+    const chance = 0.35 * Math.min(1.5, Q.floraMult)
+    for (const f of world.flora) {
+      if (!rng.chance(chance)) continue
+      const x = f.x + rng.range(-4, 4)
+      const z = f.z + rng.range(-4, 4)
+      const y = world.heightAt(x, z)
+      if (y < 0.8) continue
+      wild.push({ type: "wild", x, z, y, scale: rng.range(0.7, 1.2), rot: rng.range(0, 6.28) })
+    }
+    list = list.concat(wild)
+  }
   const byKey = new Map()
+  const packEntry = new Map() // key -> pack entry, for flora a pack provides
   for (const f of list) {
-    const v = Math.floor(f.scale * 997 + f.rot * 131) % VARIANTS
-    const key = `${f.type}:${v}`
+    const role = f.type === "wild" ? "decor.wild" : `flora.${f.type}`
+    let key
+    if (assets.has(role)) {
+      // a pack model, chosen per plant from those allowed in its region
+      const all = assets.entries(role)
+      const e = assets.pick(role, { region: world.regionAt(f.x, f.z) }, ((f.scale * 997 + f.rot * 131) % 1 + 1) % 1)
+      if (e) {
+        key = `${f.type}:pack${all.indexOf(e)}`
+        packEntry.set(key, e)
+      }
+    }
+    if (!key && f.type === "wild") continue // nothing suits this region
+    if (!key) key = `${f.type}:${Math.floor(f.scale * 997 + f.rot * 131) % VARIANTS}`
     if (!byKey.has(key)) byKey.set(key, [])
     byKey.get(key).push(f)
   }
@@ -263,10 +290,13 @@ export function buildFlora(world, colliders) {
   for (const [key, items] of byKey) {
     const [type, v] = key.split(":")
     const seed = `${type}:${v}:${world.seed}`
-    const high = BUILDERS[type](new RNG(seed))
+    const entry = packEntry.get(key)
+    const role = type === "wild" ? "decor.wild" : `flora.${type}`
+    const high = entry ? assets.parts(entry, role) : BUILDERS[type](new RNG(seed))
     // the far model: same shape and seed, built with far fewer segments
     let low = null
-    if (!SMALL[type]) {
+    if (entry) low = entry.lod === false || SMALL[type] ? null : assets.lodParts(entry, role) || high
+    else if (!SMALL[type]) {
       const saved = Q.seg
       Q.seg = Math.min(saved, 0.4)
       low = BUILDERS[type](new RNG(seed))
@@ -302,8 +332,19 @@ export function buildFlora(world, colliders) {
         group.add(inst)
         return inst
       })
-    sets.push({ type, items, matrices, colors, near: makeInst(high, true), far: low ? makeInst(low, false) : [] })
-    if (TRUNK_RADIUS[type]) for (const f of items) if (trunkItems.has(f)) colliders.addCircle(f.x, f.z, TRUNK_RADIUS[type] * f.scale)
+    // pack models are detailed: switch to their simplified version sooner
+    sets.push({ type, items, matrices, colors, near: makeInst(high, true), far: low ? makeInst(low, false) : [], nearDist: entry && low ? 45 : NEAR_DIST })
+    // solid trunks and boulders: a pack model's measured trunk (an entry's
+    // `collider` sets the radius), else the generated tree's own
+    const measured = entry && !SMALL[type] && TRUNK_RADIUS[type] ? assets.trunk(entry, role) : null
+    const trunk = entry ? entry.collider ?? measured?.r ?? TRUNK_RADIUS[type] : TRUNK_RADIUS[type]
+    if (trunk)
+      for (const f of items) {
+        if (!trunkItems.has(f)) continue
+        const ox = measured ? (measured.x * Math.cos(f.rot) + measured.z * Math.sin(f.rot)) * f.scale : 0
+        const oz = measured ? (-measured.x * Math.sin(f.rot) + measured.z * Math.cos(f.rot)) * f.scale : 0
+        colliders.addCircle(f.x + ox, f.z + oz, trunk * f.scale)
+      }
   }
 
   // Re-sort instances into near (full detail, shadows) and far (light, no shadows)
@@ -328,10 +369,11 @@ export function buildFlora(world, colliders) {
     if (!force && Math.hypot(px - last.x, pz - last.z) < 12) return
     last.x = px
     last.z = pz
-    const near2 = (NEAR_DIST * Q.drawDist) ** 2
+    const nearDefault2 = (NEAR_DIST * Q.drawDist) ** 2
     const small2 = (SMALL_DIST * Q.drawDist) ** 2
     const far2 = (FAR_DIST * Q.drawDist) ** 2
     for (const set of sets) {
+      const near2 = set.nearDist === NEAR_DIST ? nearDefault2 : (set.nearDist * Q.drawDist) ** 2
       const nearIdx = []
       const farIdx = []
       const small = !!SMALL[set.type]
@@ -365,12 +407,12 @@ export function buildFlora(world, colliders) {
 const NEAR_DIST = 80
 const SMALL_DIST = 60
 const FAR_DIST = 520
-const SMALL = { shrub: true, grass: true, trama: true }
+const SMALL = { shrub: true, grass: true, thornroot: true, wild: true }
 
 // ---------------------------------------------------------------------------
 // Dense grass carpet that follows the player (render-only).
 // ---------------------------------------------------------------------------
-const GRASS_REGIONS = { ascadian: 1, grazelands: 1.3, westGash: 0.6, bitterCoast: 0.7, azurasCoast: 0.35 }
+const GRASS_REGIONS = { verdant: 1, mosslands: 1.3, westRift: 0.6, brineCoast: 0.7, vesperCoast: 0.35 }
 
 export class GrassField {
   constructor(world, towns) {
@@ -430,8 +472,8 @@ export class GrassField {
         m.compose(p, q, s)
         this.mesh.setMatrixAt(n, m)
         const reg = w.regionAt(x, z)
-        if (reg === "grazelands") col.setRGB(1.25, 1.1, 0.6)
-        else if (reg === "bitterCoast") col.setRGB(0.8, 0.9, 0.75)
+        if (reg === "mosslands") col.setRGB(1.25, 1.1, 0.6)
+        else if (reg === "brineCoast") col.setRGB(0.8, 0.9, 0.75)
         else col.setRGB(0.95 + r3 * 0.2, 1, 0.9)
         this.mesh.setColorAt(n, col)
         n++

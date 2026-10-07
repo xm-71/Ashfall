@@ -7,13 +7,20 @@ import { GLOW } from "./buildings.js"
 import { createNoise2D } from "../core/noise.js"
 import { srgbColor } from "./textures.js"
 import { Q, seg } from "../core/quality.js"
+import { assets } from "../assets/registry.js"
+
+const hash01 = (x, y, salt) => {
+  const s = Math.sin(x * 127.1 + y * 311.7 + salt * 74.7) * 43758.5453
+  return s - Math.floor(s)
+}
+const placeAt = (x, y, z, yaw = 0) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw), new THREE.Vector3(1, 1, 1))
 
 export const THEME_LOOK = {
   cave: { floor: "caveRock", wall: "caveRock", ceil: "caveRock", floorTint: 0x8a7a68, wallTint: 0xb0a090, ceilTint: 0x6a5e50, height: 5, light: 0xffa050, fog: 0x0c0906, ambient: 0x3a3026, wall3: [0x6a, 0x5e, 0x50], organic: true },
   barrow: { floor: "floorTiles", wall: "tombBrick", ceil: "caveRock", floorTint: 0x9aa4b0, wallTint: 0x9aa8b8, ceilTint: 0x6a7a8a, height: 4.2, light: 0x9ac8ff, fog: 0x06090e, ambient: 0x283444, wall3: [0x6a, 0x74, 0x80], trim: "sandstone", beams: "planks" },
   tomb: { floor: "floorTiles", wall: "tombBrick", ceil: "tombBrick", floorTint: 0xb0a898, wallTint: 0xd0c4b0, ceilTint: 0x8a8070, height: 3.8, light: 0xc0d0ff, fog: 0x08080c, ambient: 0x2e3038, wall3: [0x8a, 0x7e, 0x68], trim: "sandstone", beams: "planks" },
-  dwemer: { floor: "dwemerFloor", wall: "dwemerMetal", ceil: "dwemerMetal", floorTint: 0xffffff, wallTint: 0xffffff, ceilTint: 0x9a8a70, height: 6, light: 0xffd080, fog: 0x0e0a06, ambient: 0x3a3020, wall3: [0xa0, 0x80, 0x40], trim: "dwemerMetal", pipes: true },
-  daedric: { floor: "daedricStone", wall: "daedricStone", ceil: "daedricStone", floorTint: 0xb0a0a0, wallTint: 0xffffff, ceilTint: 0x6a5a5a, height: 7, light: 0xff5a30, fog: 0x0c0404, ambient: 0x3a2020, wall3: [0x5a, 0x3a, 0x30], trim: "daedricStone", ribs: true },
+  kaldur: { floor: "kaldurFloor", wall: "kaldurMetal", ceil: "kaldurMetal", floorTint: 0xffffff, wallTint: 0xffffff, ceilTint: 0x9a8a70, height: 6, light: 0xffd080, fog: 0x0e0a06, ambient: 0x3a3020, wall3: [0xa0, 0x80, 0x40], trim: "kaldurMetal", pipes: true },
+  abyssal: { floor: "abyssalStone", wall: "abyssalStone", ceil: "abyssalStone", floorTint: 0xb0a0a0, wallTint: 0xffffff, ceilTint: 0x6a5a5a, height: 7, light: 0xff5a30, fog: 0x0c0404, ambient: 0x3a2020, wall3: [0x5a, 0x3a, 0x30], trim: "abyssalStone", ribs: true },
   citadel: { floor: "flesh", wall: "flesh", ceil: "flesh", floorTint: 0x9a7a70, wallTint: 0xffffff, ceilTint: 0x7a5a50, height: 7, light: 0xff4020, fog: 0x100404, ambient: 0x3a1a14, wall3: [0x6a, 0x30, 0x28], organic: true },
 }
 
@@ -78,6 +85,14 @@ export function buildDungeonMesh(lvl) {
   const cw = lvl.w + 1
   const ch = (x, y) => (CH ? CH[y * cw + x] : 0)
   const WB = -1.8 // wall bottom
+  // modular pieces from asset packs, where the theme has them
+  const theme = { theme: lvl.type }
+  const kit = { wall: assets.has("dungeon.wall", theme), floor: assets.has("dungeon.floor", theme), ceiling: assets.has("dungeon.ceiling", theme), pillar: assets.has("dungeon.pillar", theme) }
+  const PB = new Builder()
+  const piece = (role, x, y, salt, dims, matrix) => {
+    const e = assets.pick(role, theme, hash01(x, y, salt))
+    if (e) assets.bake(PB, e, role, dims, matrix)
+  }
   for (let y = 0; y < lvl.h; y++) {
     for (let x = 0; x < lvl.w; x++) {
       if (!isFloor(x, y)) continue
@@ -86,14 +101,34 @@ export function buildDungeonMesh(lvl) {
       const z0 = y * CELL
       const z1 = z0 + CELL
       const fuv = (px, py, pz) => [px / 4, pz / 4]
-      quad("floor", [x0, ch(x, y), z0], [x0, ch(x, y + 1), z1], [x1, ch(x + 1, y + 1), z1], [x1, ch(x + 1, y), z0], fuv)
-      quad("ceil", [x0, H, z0], [x1, H, z0], [x1, H, z1], [x0, H, z1], fuv)
+      const c00 = ch(x, y)
+      const flat = Math.abs(ch(x + 1, y) - c00) + Math.abs(ch(x, y + 1) - c00) + Math.abs(ch(x + 1, y + 1) - c00) < 0.02
+      if (kit.floor && flat) piece("dungeon.floor", x, y, 1, { w: CELL, d: CELL }, placeAt(x0 + CELL / 2, c00, z0 + CELL / 2, Math.floor(hash01(x, y, 9) * 4) * (Math.PI / 2)))
+      else quad("floor", [x0, ch(x, y), z0], [x0, ch(x, y + 1), z1], [x1, ch(x + 1, y + 1), z1], [x1, ch(x + 1, y), z0], fuv)
+      if (kit.ceiling) piece("dungeon.ceiling", x, y, 2, { w: CELL, d: CELL }, placeAt(x0 + CELL / 2, H, z0 + CELL / 2))
+      else quad("ceil", [x0, H, z0], [x1, H, z0], [x1, H, z1], [x0, H, z1], fuv)
       const wx = (px, py) => [px / 4, py / 4]
       const wz = (px, py, pz) => [pz / 4, py / 4]
-      if (!isFloor(x, y - 1)) quad("wall", [x0, WB, z0], [x1, WB, z0], [x1, H, z0], [x0, H, z0], wx)
-      if (!isFloor(x, y + 1)) quad("wall", [x1, WB, z1], [x0, WB, z1], [x0, H, z1], [x1, H, z1], wx)
-      if (!isFloor(x - 1, y)) quad("wall", [x0, WB, z1], [x0, WB, z0], [x0, H, z0], [x0, H, z1], wz)
-      if (!isFloor(x + 1, y)) quad("wall", [x1, WB, z0], [x1, WB, z1], [x1, H, z1], [x1, H, z0], wz)
+      if (kit.wall) {
+        // a wall piece on each solid side, facing into the room, standing on the lower corner
+        for (const [dx, dy, ex, ez, ca, cb] of [[0, -1, x0 + CELL / 2, z0, [x, y], [x + 1, y]], [0, 1, x0 + CELL / 2, z1, [x, y + 1], [x + 1, y + 1]], [-1, 0, x0, z0 + CELL / 2, [x, y], [x, y + 1]], [1, 0, x1, z0 + CELL / 2, [x + 1, y], [x + 1, y + 1]]]) {
+          if (isFloor(x + dx, y + dy)) continue
+          const base = Math.min(ch(...ca), ch(...cb)) - 0.05
+          piece("dungeon.wall", x * 2 + dx, y * 2 + dy, 3, { w: CELL, h: H - base }, placeAt(ex, base, ez, Math.atan2(dx, dy)))
+        }
+      } else {
+        if (!isFloor(x, y - 1)) quad("wall", [x0, WB, z0], [x1, WB, z0], [x1, H, z0], [x0, H, z0], wx)
+        if (!isFloor(x, y + 1)) quad("wall", [x1, WB, z1], [x0, WB, z1], [x0, H, z1], [x1, H, z1], wx)
+        if (!isFloor(x - 1, y)) quad("wall", [x0, WB, z1], [x0, WB, z0], [x0, H, z0], [x0, H, z1], wz)
+        if (!isFloor(x + 1, y)) quad("wall", [x1, WB, z0], [x1, WB, z1], [x1, H, z1], [x1, H, z0], wz)
+      }
+      if (kit.pillar)
+        for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+          if (isFloor(x + dx, y) || isFloor(x, y + dy)) continue
+          const vx = x + (dx > 0 ? 1 : 0)
+          const vy = y + (dy > 0 ? 1 : 0)
+          piece("dungeon.pillar", vx, vy, 4, { h: H - ch(vx, vy) }, placeAt(vx * CELL, ch(vx, vy), vy * CELL))
+        }
     }
   }
 
@@ -101,6 +136,7 @@ export function buildDungeonMesh(lvl) {
   const materials = { floor: surfaceMat(look.floor, look.floorTint), wall: surfaceMat(look.wall, look.wallTint), ceil: surfaceMat(look.ceil, look.ceilTint) }
   for (const kind of ["floor", "wall", "ceil"]) {
     const verts = buckets[kind]
+    if (!verts.length) continue
     const pos = new Float32Array(verts.length * 3)
     const uv = new Float32Array(verts.length * 2)
     const col = new Float32Array(verts.length * 3)
@@ -126,7 +162,7 @@ export function buildDungeonMesh(lvl) {
 
   // architectural detail, props and lights merged per level
   const B = new Builder()
-  const trim = look.trim ? texturedMaterial(look.trim, { color: 0xb0a8a0, metal: look.trim === "dwemerMetal" }) : null
+  const trim = look.trim ? texturedMaterial(look.trim, { color: 0xb0a8a0, metal: look.trim === "kaldurMetal" }) : null
   const center = (x, y) => [x * CELL + CELL / 2, y * CELL + CELL / 2]
   if (!organic) {
     for (let y = 0; y < lvl.h; y++)
@@ -135,7 +171,7 @@ export function buildDungeonMesh(lvl) {
         const [cx, cz] = center(x, y)
         // baseboards and cornices on each wall face
         for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
-          if (isFloor(x + dx, y + dy)) continue
+          if (isFloor(x + dx, y + dy) || kit.wall) continue
           const along = dx === 0
           const px = cx + dx * (CELL / 2 - 0.12)
           const pz = cz + dy * (CELL / 2 - 0.12)
@@ -144,7 +180,7 @@ export function buildDungeonMesh(lvl) {
         }
         // pillars where two walls meet at an inside corner
         for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
-          if (!isFloor(x + dx, y) && !isFloor(x, y + dy)) {
+          if (!kit.pillar && !isFloor(x + dx, y) && !isFloor(x, y + dy)) {
             B.add(new THREE.CylinderGeometry(0.32, 0.38, H + 1.8, seg(10)), trim, { pos: [cx + dx * (CELL / 2 - 0.3), (H - 1.8) / 2, cz + dy * (CELL / 2 - 0.3)], uv: 1.5 })
           }
         }
@@ -202,9 +238,16 @@ export function buildDungeonMesh(lvl) {
 
   const reserved = new Set()
   const cellH = (x, y) => (lvl.heights ? lvl.heights[y * lvl.w + x] : 0)
-  for (const p of lvl.props) addProp(B, { ...p, hy: cellH(p.x, p.y) }, look, center)
+  for (const p of lvl.props) {
+    const e = assets.pick(`prop.${p.type}`, theme, hash01(p.x, p.y, 5))
+    if (e) {
+      const [cx, cz] = center(p.x, p.y)
+      assets.bake(PB, e, `prop.${p.type}`, {}, placeAt(cx + p.ox, cellH(p.x, p.y), cz + p.oz, p.rot))
+    } else addProp(B, { ...p, hy: cellH(p.x, p.y) }, look, center)
+  }
   void reserved
   group.add(B.build())
+  if (PB.parts.size) group.add(PB.build())
   return { group, height: H, look, lights: lightObjs }
 }
 
@@ -261,25 +304,25 @@ function addProp(B, p, look, center) {
       B.add(new THREE.BoxGeometry(1.05, 0.12, 2.3), TM("wood", 0x6a5040), { pos: at(0, 0.66, 0), rot: [0, r + 0.08, 0], uv: 1 })
       break
     case "pipe":
-      B.add(new THREE.CylinderGeometry(0.3, 0.3, look.height, seg(12)), TM("dwemerMetal", 0xffffff, { metal: true }), { pos: at(0, look.height / 2, 0), uv: 1 })
-      for (const y of [0.4, look.height - 0.6]) B.add(new THREE.TorusGeometry(0.34, 0.07, 5, seg(14)), TM("dwemerMetal", 0xa08050, { metal: true }), { pos: at(0, y, 0), rot: [Math.PI / 2, 0, 0], uv: 1 })
+      B.add(new THREE.CylinderGeometry(0.3, 0.3, look.height, seg(12)), TM("kaldurMetal", 0xffffff, { metal: true }), { pos: at(0, look.height / 2, 0), uv: 1 })
+      for (const y of [0.4, look.height - 0.6]) B.add(new THREE.TorusGeometry(0.34, 0.07, 5, seg(14)), TM("kaldurMetal", 0xa08050, { metal: true }), { pos: at(0, y, 0), rot: [Math.PI / 2, 0, 0], uv: 1 })
       break
     case "gear": {
-      const m = TM("dwemerMetal", 0xffffff, { metal: true })
+      const m = TM("kaldurMetal", 0xffffff, { metal: true })
       B.add(new THREE.CylinderGeometry(0.6, 0.6, 0.12, seg(16)), m, { pos: at(0, 0.08, 0), uv: 1 })
       for (let i = 0; i < 12; i++) B.add(new THREE.BoxGeometry(0.16, 0.12, 0.2), m, { pos: at(Math.cos((i / 12) * Math.PI * 2) * 0.68, 0.08, Math.sin((i / 12) * Math.PI * 2) * 0.68), rot: [0, -(i / 12) * Math.PI * 2, 0], uv: 1 })
       break
     }
     case "lamp":
-      B.add(new THREE.CylinderGeometry(0.05, 0.12, 1.7, 8), TM("dwemerMetal", 0xffffff, { metal: true }), { pos: at(0, 0.85, 0), uv: 1 })
+      B.add(new THREE.CylinderGeometry(0.05, 0.12, 1.7, 8), TM("kaldurMetal", 0xffffff, { metal: true }), { pos: at(0, 0.85, 0), uv: 1 })
       B.add(new THREE.SphereGeometry(0.22, seg(10), 8), GLOW, { pos: at(0, 1.85, 0) })
-      B.add(new THREE.TorusGeometry(0.24, 0.04, 4, seg(12)), TM("dwemerMetal", 0xffffff, { metal: true }), { pos: at(0, 1.85, 0), uv: 1 })
+      B.add(new THREE.TorusGeometry(0.24, 0.04, 4, seg(12)), TM("kaldurMetal", 0xffffff, { metal: true }), { pos: at(0, 1.85, 0), uv: 1 })
       break
     case "stalagmite":
       B.add(rockGeometry(p.x * 13 + p.y, 1, 0.5, 0.3), TM(look.wall, look.wallTint), { pos: at(0, 0, 0), scale: [1, 3.2, 1], uv: 1 })
       break
     case "statue": {
-      const m = TM("daedricStone", 0x9a8a8a)
+      const m = TM("abyssalStone", 0x9a8a8a)
       B.add(new THREE.BoxGeometry(1, 0.6, 1), m, { pos: at(0, 0.3, 0), rot: [0, r, 0], uv: 1 })
       B.add(lathe([[0.3, 0], [0.42, 0.4], [0.28, 1.2], [0.36, 1.8], [0.2, 2.1], [0.01, 2.15]], seg(10)), m, { pos: at(0, 0.6, 0), uv: 1 })
       B.add(new THREE.SphereGeometry(0.28, seg(10), 8), m, { pos: at(0, 3, 0), uv: 1 })
@@ -291,8 +334,8 @@ function addProp(B, p, look, center) {
       B.add(new THREE.ConeGeometry(0.35, 0.8, 7), GLOW, { pos: at(0, 1.45, 0) })
       break
     case "altar":
-      B.add(new THREE.BoxGeometry(2.2, 1, 1.1), TM("daedricStone"), { pos: at(0, 0.5, 0), rot: [0, r, 0], uv: 1 })
-      B.add(new THREE.BoxGeometry(2.4, 0.15, 1.3), TM("daedricStone", 0x8a7070), { pos: at(0, 1.05, 0), rot: [0, r, 0], uv: 1 })
+      B.add(new THREE.BoxGeometry(2.2, 1, 1.1), TM("abyssalStone"), { pos: at(0, 0.5, 0), rot: [0, r, 0], uv: 1 })
+      B.add(new THREE.BoxGeometry(2.4, 0.15, 1.3), TM("abyssalStone", 0x8a7070), { pos: at(0, 1.05, 0), rot: [0, r, 0], uv: 1 })
       for (const s of [-0.8, 0.8]) B.add(new THREE.ConeGeometry(0.04, 0.1, 5), GLOW, { pos: at(s, 1.2, 0) })
       break
     case "fleshpillar":
@@ -303,7 +346,28 @@ function addProp(B, p, look, center) {
   }
 }
 
-export function buildChestMesh(open = false) {
+export function buildChestMesh(open = false, salt = 0) {
+  const closedE = assets.pick("prop.chest", {}, hash01(salt, 0, 6))
+  if (closedE) {
+    // pack chest: an open model if the pack has one, else the closed one stays
+    const g = new THREE.Group()
+    const closed = assets.object(closedE, "prop.chest")
+    const openE = assets.pick("prop.chestOpen", {}, hash01(salt, 0, 7))
+    const opened = openE ? assets.object(openE, "prop.chestOpen") : null
+    g.add(closed)
+    if (opened) g.add(opened)
+    g.userData.lid = new THREE.Object3D()
+    // a rigged chest shows itself closed, then plays its opening clip's end
+    closed.userData.pose?.("close", 0.999)
+    g.userData.open = () => {
+      if (!opened) return closed.userData.pose?.("open", 0.999)
+      closed.visible = false
+      opened.visible = true
+    }
+    if (opened) opened.visible = false
+    if (open) g.userData.open()
+    return g
+  }
   const g = new THREE.Group()
   const wood = texturedMaterial("planks", { color: 0x9a7050 })
   const iron = texturedMaterial("plate", { color: 0x4a4038, metal: true })

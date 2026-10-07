@@ -460,7 +460,7 @@ P.stoneBlocks = (S, seed, opts = {}) => {
 
 P.sandstone = (S, seed) => P.stoneBlocks(S, seed, { rows: 4, cols: 2, pal: [hex(0x8a7454), hex(0xb8a07a), hex(0xd2bc94)] })
 P.tombBrick = (S, seed) => P.stoneBlocks(S, seed, { rows: 8, cols: 4, pal: [hex(0x4e4a40), hex(0x726a5c), hex(0x8e8472)] })
-P.daedricStone = (S, seed) => {
+P.abyssalStone = (S, seed) => {
   const b = P.stoneBlocks(S, seed, { rows: 3, cols: 2, pal: [hex(0x241814), hex(0x3e2a24), hex(0x563a30)] })
   // carved glyph bands
   for (let y = 0; y < S; y++)
@@ -555,7 +555,7 @@ P.hide = (S, seed) => {
   return b
 }
 
-P.dwemerMetal = (S, seed) => {
+P.kaldurMetal = (S, seed) => {
   const b = newBuf(S)
   const bl = blocks(S, 3, 3, seed, { jitterWidth: 0, offset: 0 })
   const n1 = fbmTile(S, 6, 5, seed + 1)
@@ -615,8 +615,8 @@ P.caveRock = (S, seed) => {
   return b
 }
 
-P.dwemerFloor = (S, seed) => {
-  const b = P.dwemerMetal(S, seed)
+P.kaldurFloor = (S, seed) => {
+  const b = P.kaldurMetal(S, seed)
   for (let y = 0; y < S; y++)
     for (let x = 0; x < S; x++) {
       const p = y * S + x
@@ -851,7 +851,7 @@ P.plate = (S, seed) => {
   return b
 }
 
-P.bonemold = (S, seed) => {
+P.bonecast = (S, seed) => {
   const b = newBuf(S)
   const n1 = fbmTile(S, 5, 5, seed)
   for (let y = 0; y < S; y++)
@@ -930,7 +930,7 @@ P.membrane = (S, seed) => {
 }
 
 P.brass = (S, seed) => {
-  const b = P.dwemerMetal(S, seed)
+  const b = P.kaldurMetal(S, seed)
   // neutralise so vertex colour carries the hue
   for (let p = 0; p < S * S; p++) {
     const v = (b.c[p * 3] + b.c[p * 3 + 1] + b.c[p * 3 + 2]) / 3 / 0.55
