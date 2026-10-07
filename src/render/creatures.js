@@ -3,6 +3,14 @@ import { characterAtlas, atlasUV } from "./texgen.js"
 import { Builder, lathe, taperTube } from "./geom.js"
 import { npcWeapon, buildShield } from "./items.js"
 import { Q, seg } from "../core/quality.js"
+import { assets } from "../assets/registry.js"
+
+// A rigged pack model in place of the built body, with the same interface.
+function packBody(entry, role, dims, weapon) {
+  const c = assets.character(entry, role, dims)
+  if (weapon) assets.attachToHand(c, npcWeapon(weapon.base, weapon.material, weapon.color), entry)
+  return { group: c.group, anim: c.anim, head: c.rig.head, rig: c.rig }
+}
 
 // ---------------------------------------------------------------------------
 // Characters and creatures share one atlas material; colour comes from vertex
@@ -797,7 +805,17 @@ function sphereBot(def) {
 
 // ---------------------------------------------------------------------------
 
-export function buildCreatureMesh(def) {
+export function buildCreatureMesh(def, id) {
+  if (id) {
+    // a pack model for this creature; humanoid foes can borrow a person model
+    const e = assets.pick(`creature.${id}`, {}, Math.random())
+    if (e) return packBody(e, `creature.${id}`, { h: 1.6 * (def.scale || 1) })
+    if (def.body === "humanoid" && assets.has("npc", { role: id })) {
+      const p = assets.pick("npc", { role: id }, Math.random())
+      const weapon = def.caster ? { base: "club", material: "iron" } : { base: def.name === "Bandit" ? "war axe" : "shortsword", material: "iron" }
+      return packBody(p, "npc", { h: 1.8 }, weapon)
+    }
+  }
   let built
   const c = def.color
   switch (def.body) {
@@ -926,6 +944,15 @@ export function buildNpcMesh(npc, race, factionColor) {
   if (factionColor && npc.role === "guildmaster") cloth = new THREE.Color(factionColor).getHex()
   if (npc.role === "commoner") cloth = new THREE.Color().setHSL(rnd() * 0.15 + 0.03, 0.25 + rnd() * 0.3, 0.25 + rnd() * 0.2).getHex()
   const raceKey = race.name.toLowerCase()
+  if (assets.has("npc")) {
+    const ctx = { race: raceKey, sex: female ? "female" : "male", role: npc.role }
+    const e = assets.pick("npc", ctx, rnd()) || assets.pick("npc", { sex: ctx.sex, role: npc.role }, rnd()) || assets.pick("npc", { sex: ctx.sex }, rnd())
+    if (e) {
+      const h = 1.8 * (raceKey === "altmer" ? 1.06 : raceKey === "bosmer" ? 0.92 : raceKey === "orc" || raceKey === "nord" ? 1.03 : 1)
+      const weapon = npc.role === "guard" ? { base: "spear", material: "steel" } : npc.role === "smith" ? { base: "warhammer", material: "steel" } : null
+      return packBody(e, "npc", { h }, weapon)
+    }
+  }
   const styles = female ? ["long", "tail", "long", "short"] : ["short", "crest", "bald", "short", "tail"]
   const robe = npc.role === "priest" || npc.faction === "magesGuild" || npc.faction === "telvanni"
   const guard = npc.role === "guard"
@@ -999,6 +1026,8 @@ export class LodSwitch {
 
   // Returns true when the animated model is showing (so the caller animates it).
   update(distance) {
+    // pack characters stay as they are; far away they just stop animating
+    if (this.holder.userData.pack) return distance < this.dist * 2.5
     const far = distance > this.dist
     if (far && !this.lod) {
       this.anim(0, 0, 0) // bake a neutral pose

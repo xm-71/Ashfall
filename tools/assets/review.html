@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Asset review</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; background: #16120e; color: #e8dcc0; font: 13px/1.35 system-ui, sans-serif; }
+      header { position: relative; z-index: 2; padding: 10px 14px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid #3a3024; }
+      header b { font-size: 15px; }
+      select, button { background: #2a221a; color: inherit; border: 1px solid #5a4a36; padding: 3px 8px; }
+      #grid { position: relative; display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 6px; padding: 8px; }
+      .tile { position: relative; aspect-ratio: 1; border: 1px solid #3a3024; background: #201a14; overflow: hidden; }
+      .tile .label { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding: 4px 6px; background: rgba(10, 8, 6, 0.78); font-size: 11px; }
+      .tile .label .id { font-weight: 600; word-break: break-all; }
+      .tile .label .roles { color: #9fd08a; }
+      .tile .label .warn { color: #ffb070; }
+      canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    </style>
+    <script type="importmap">
+      { "imports": { "three": "/node_modules/three/build/three.module.js", "three/addons/": "/node_modules/three/examples/jsm/" } }
+    </script>
+  </head>
+  <body>
+    <header>
+      <b>Asset review</b>
+      <label>Pack <select id="pack"></select></label>
+      <label>Page <select id="page"></select></label>
+      <span id="count"></span>
+      <span style="opacity: 0.7">Grid floor squares are 1 m. Models face the camera with their front (+Z).</span>
+    </header>
+    <div id="grid"></div>
+    <canvas id="gl"></canvas>
+    <script type="module">
+      import * as THREE from "three"
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
+      import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
+
+      const params = new URLSearchParams(location.search)
+      const PER = Number(params.get("per") || 24)
+      const COLS = Number(params.get("cols") || 6)
+      document.documentElement.style.setProperty("--cols", COLS)
+      const catalog = await (await fetch("/assets/catalog.json", { cache: "no-cache" })).json()
+      const ids = Object.keys(catalog.models).sort()
+      const packs = [...new Set(ids.map(id => id.split("/")[0]))]
+      const packSel = document.getElementById("pack")
+      const pageSel = document.getElementById("page")
+      packSel.innerHTML = packs.map(p => `<option>${p}</option>`).join("")
+      packSel.value = params.get("pack") || packs[0]
+      const list = () => ids.filter(id => id.startsWith(packSel.value + "/"))
+      const fillPages = () => {
+        const n = Math.max(1, Math.ceil(list().length / PER))
+        pageSel.innerHTML = Array.from({ length: n }, (_, i) => `<option value="${i}">${i + 1} of ${n}</option>`).join("")
+        pageSel.value = Math.min(n - 1, Number(params.get("page") || 0))
+      }
+      fillPages()
+
+      const canvas = document.getElementById("gl")
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true })
+      renderer.setPixelRatio(Math.min(2, devicePixelRatio))
+      renderer.setScissorTest(true)
+      const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
+      const scenes = []
+
+      async function show() {
+        const grid = document.getElementById("grid")
+        const page = Number(pageSel.value)
+        const slice = list().slice(page * PER, page * PER + PER)
+        document.getElementById("count").textContent = `${list().length} models`
+        grid.innerHTML = ""
+        scenes.length = 0
+        for (const id of slice) {
+          const m = catalog.models[id]
+          const tile = document.createElement("div")
+          tile.className = "tile"
+          const short = id.split("/").slice(1).join("/")
+          const warn = []
+          if (m.size[1] > 60 || Math.max(...m.size) > 120) warn.push("very large: check units")
+          if (Math.max(...m.size) < 0.05) warn.push("very small: check units")
+          if (m.tris > 60000) warn.push(`${m.tris} tris`)
+          tile.innerHTML = `<div class="label"><div class="id">${short}</div><div>${m.size.map(v => v.toFixed(2)).join(" × ")} m · ${m.tris} tris${m.skinned ? ` · rig ${m.joints}` : ""}${m.clips.length ? ` · ${m.clips.length} clips` : ""}</div>${m.suggested.length ? `<div class="roles">${m.suggested.join(", ")}</div>` : ""}${warn.length ? `<div class="warn">${warn.join("; ")}</div>` : ""}</div>`
+          grid.appendChild(tile)
+          const scene = new THREE.Scene()
+          scene.background = new THREE.Color(0x2a231c)
+          scene.add(new THREE.HemisphereLight(0xfff4e0, 0x403020, 1.6))
+          const sun = new THREE.DirectionalLight(0xffffff, 1.8)
+          sun.position.set(3, 6, 4)
+          scene.add(sun)
+          const size = Math.max(...m.size, 0.1)
+          const g = new THREE.GridHelper(Math.ceil(size * 1.6) + 1, Math.ceil(size * 1.6) + 1, 0x6a5a44, 0x3a3226)
+          scene.add(g)
+          const cam = new THREE.PerspectiveCamera(30, 1, size / 100, size * 50)
+          const cx = (m.min[0] + m.max[0]) / 2
+          const cy = (m.min[1] + m.max[1]) / 2
+          const cz = (m.min[2] + m.max[2]) / 2
+          const dist = (size / 2 / Math.tan((15 * Math.PI) / 180)) * 1.75
+          cam.position.set(cx + dist * 0.55, cy + dist * 0.45, cz + dist * 0.7)
+          cam.lookAt(cx, cy, cz)
+          g.position.set(cx, m.min[1], cz)
+          scenes.push({ tile, scene, cam })
+          loader.load(`/assets/.cache/models/${id}.glb`, gltf => {
+            scene.add(gltf.scene)
+            if (gltf.animations.length && m.skinned) {
+              // show the first frame of the idle (or first) clip rather than a T-pose
+              const clip = gltf.animations.find(c => /idle/i.test(c.name)) || gltf.animations[0]
+              const mixer = new THREE.AnimationMixer(gltf.scene)
+              mixer.clipAction(clip).play()
+              mixer.update(0.01)
+            }
+            gltf.scene.traverse(o => o.isMesh && (o.frustumCulled = false))
+            tile.dataset.loaded = "1"
+            draw()
+          }, undefined, () => {
+            tile.dataset.loaded = "1"
+            tile.querySelector(".label").insertAdjacentHTML("beforeend", `<div class="warn">failed to load</div>`)
+          })
+        }
+        draw()
+      }
+
+      function draw() {
+        renderer.setSize(innerWidth, innerHeight, false)
+        renderer.setScissor(0, 0, innerWidth, innerHeight)
+        renderer.clear()
+        for (const { tile, scene, cam } of scenes) {
+          const r = tile.getBoundingClientRect()
+          if (r.bottom < 0 || r.top > innerHeight) continue
+          const y = innerHeight - r.bottom
+          renderer.setViewport(r.left, y, r.width, r.height)
+          renderer.setScissor(r.left, y, r.width, r.height)
+          renderer.render(scene, cam)
+        }
+      }
+      addEventListener("resize", draw)
+      addEventListener("scroll", draw)
+      packSel.onchange = () => (fillPages(), show())
+      pageSel.onchange = show
+      await show()
+      window.reviewReady = () => scenes.every(s => s.tile.dataset.loaded)
+    </script>
+  </body>
+</html>

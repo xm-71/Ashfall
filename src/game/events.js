@@ -88,7 +88,7 @@ export class WorldEvents {
     const { x, z } = spot
     const merchant = this.spawnNpc({ role: "trader", title: "Caravan Merchant", building: "Caravan" }, x, z)
     // a pack guar standing by the merchant
-    const guar = buildCreatureMesh(CREATURES.guar)
+    const guar = buildCreatureMesh(CREATURES.guar, "guar")
     guar.group.position.set(x + 2, g.world.heightAt(x + 2, z), z + 1)
     guar.anim(0, 0, 0)
     this.area.scene.add(guar.group)

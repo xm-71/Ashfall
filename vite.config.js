@@ -22,6 +22,8 @@ function precacheList() {
         }
       }
       walk(outDir)
+      // pack models are cached as areas load them, not all up front
+      for (let i = files.length - 1; i >= 0; i--) if (files[i].startsWith("packs/") && files[i] !== "packs/index.json") files.splice(i, 1)
       const sw = join(outDir, "sw.js")
       const version = files.filter(f => f.startsWith("assets/")).sort().join("|")
       let hash = 0

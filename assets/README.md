@@ -1,0 +1,122 @@
+# Asset packs
+
+Ashfall builds all of its art in code, but any part of the world can be
+replaced with models from asset packs (Synty, Kenney, Quaternius and the like).
+Anything a pack doesn't cover keeps the generated art, so packs can be added
+one at a time.
+
+```
+assets/packs/<pack>/...     the packs, as downloaded (FBX, glTF or GLB, plus textures)
+assets/manifest.json        which models fill which roles
+assets/ROLES.md             every role the world asks for (generated)
+public/packs/               the converted models the game loads (generated, committed)
+```
+
+## Adding a pack
+
+1. **Check the licence.** Paid packs may only be committed to a **private** repository. CC0 packs (Kenney, Quaternius, Poly Pizza CC0) are fine anywhere.
+2. **Copy the pack** into `assets/packs/<pack-name>/`, keeping its folders.
+   - Include the FBX or glTF models and the textures.
+   - Leave out engine-specific files (`.unitypackage`, `.prefab`, `.mat`, `.uasset`). They're ignored anyway.
+   - For Synty, use the "Source Files" download.
+   - Keep each file under 100 MB, which GitHub refuses above.
+   - Avoid Git LFS: the cloud environment can't fetch LFS files.
+3. **Run `npm run assets`.** This:
+   - converts every model to an optimised, metre-scaled GLB (FBX through FBX2glTF, bundled with npm);
+   - repairs Synty-style texture links;
+   - writes `assets/catalog.json`, which lists each model's size, triangle count, rig and animation clips, plus a guess at its role;
+   - writes `assets/manifest.suggested.json`, with every model listed under the role its name suggests.
+4. **Look at the models** with `npm run assets:review`. It prints a local URL showing every model in a labelled grid with a 1 m floor grid. Add `-- --shots` to save the grids as images in `assets/review/` instead (needs Playwright).
+5. **Assign models to roles** in `assets/manifest.json` (see below), then run `npm run assets` again. Only the models the manifest uses are copied to `public/packs/`. Commit `assets/packs`, `assets/manifest.json` and `public/packs`.
+
+## The manifest
+
+```jsonc
+{
+  "packs": {
+    "fantasy-town": {
+      "license": "Synty Store, single seat",
+      "scale": 0.01,                 // optional; centimetre packs are detected automatically
+      "rotate": [-90, 0, 0],         // optional axis fix in degrees (for Z-up exports)
+      "textures": {                  // optional; material name (glob) -> image in the pack
+        "*": "Textures/PolygonFantasyKingdom_Texture_01_A.png"
+      },
+      "ignore": ["Source/Old/**"],   // optional
+      "maxTexture": 1024             // optional; textures are resized and turned into WebP
+    }
+  },
+  "animations": {
+    "humanoid": {                    // a set of clips: "<model id>#<clip name>"
+      "idle": "fantasy-anims/Models/Idle#Idle",
+      "walk": "fantasy-anims/Models/Walk#Walk",
+      "run": "fantasy-anims/Models/Run#Run",
+      "attack": "fantasy-anims/Models/Sword_Slash#Slash",
+      "die": "fantasy-anims/Models/Death#Death"
+    }
+  },
+  "roles": {
+    "flora.parasol": [{ "model": "fantasy-town/Models/SM_Env_Mushroom_Large_01", "scale": 1.2 }],
+    "flora.gashTree": [
+      { "model": "nature/Models/Tree_01", "where": { "region": ["westGash", "ascadian"] } },
+      { "model": "nature/Models/Tree_02", "weight": 2 }
+    ],
+    "building": [{ "model": "fantasy-town/Models/SM_Bld_House_01", "where": { "style": ["hlaalu", "imperial"], "type": ["house", "shop"] } }],
+    "npc": [{ "model": "fantasy-chars/Models/SK_Chr_Farmer_Male_01", "anims": "humanoid", "where": { "sex": "male", "role": ["commoner", "trader"] } }]
+  }
+}
+```
+
+**Model ids** are `<pack>/<path inside the pack without extension>`, with spaces turned into `_`. They're listed in `assets/catalog.json` and shown on the review page.
+
+### Entry options
+
+| Option | Meaning |
+| --- | --- |
+| `model` | Model id (required) |
+| `where` | Context filter. A value can be a string or a list. Keys depend on the role: `region` for flora; `style` and `type` for buildings; `theme` or `style` for props; `theme` for dungeon pieces; `race`, `sex` and `role` for people |
+| `weight` | Relative chance when several entries match (default 1) |
+| `scale` | Multiplies the size (or a fitted size) |
+| `fit` | Overrides the role's sizing: `none` (native size), `height`, `footprint` (fit the building plot) or `cell` (stretch to a 4 m dungeon cell) |
+| `height` | Target height in metres for `fit: "height"` |
+| `front` | Which side of the model is its front: `+z` (default, the glTF convention), `-z`, `+x` or `-x` |
+| `yaw`, `rotate`, `offset` | Extra turn (degrees), rotation `[x, y, z]` (degrees) and offset `[x, y, z]` (metres) |
+| `align` | `base` (default: bottom centre on the ground), `top`, `center` or `pivot` (keep the model's own origin) |
+| `collider` | Trunk radius for trees and boulders, in metres |
+| `anims` | Animation set for a rigged person or creature |
+| `strike` | Where in the attack clip the blow lands (0 to 1, default 0.45) |
+| `handBone`, `handRotate` | Bone that holds weapons (found automatically) and its rotation fix |
+| `lod: false` | Flora: hide far away instead of drawing the full model at a distance |
+
+### Roles
+
+`assets/ROLES.md` lists every role with its typical size and filters. In short:
+
+- `flora.*`: parasol, gashTree, pine, swampTree, deadTree, shrub, grass, trama, rock, boulder.
+- `building`: sized to the plot, with the front toward the plaza. The game places the door at the front centre.
+- `prop.*`:
+  - furniture and clutter for interiors, dungeons and town plazas;
+  - `chest` and `chestOpen` (shown once looted);
+  - plaza pieces `well`, `stall` and `lamppost`.
+- `dungeon.wall`, `dungeon.floor`, `dungeon.ceiling` and `dungeon.pillar`: modular pieces stretched to 4 m cells. Ramps and uneven floors keep the generated floor.
+- `npc`: people. Needs a rig and an animation set; only `idle` is required, and `walk`, `run`, `attack`, `hit`, `die` and `talk` are used when present.
+- `creature.<id>`: one role per creature (`creature.guar`, `creature.cliffRacer`, ...).
+  - Humanoid foes (bandits, smugglers) fall back to `npc` models with a matching `role` filter.
+
+### Animations
+
+Clips from another file are fitted to the model that plays them:
+- Rotations are moved between the two rigs' rest poses.
+- The root bone's movement is rescaled by their hip heights.
+
+Rigs from the same family (a Synty character pack and a Synty animation pack, or Mixamo models) share bone names, so their animations mix freely. Rigs with different bone names don't.
+
+If an attack, hit or death clip is missing, the game's own timing still applies: a character without `die` topples over.
+
+## How it loads
+
+`public/packs/index.json` lists the published models. The game reads it at start-up and loads models per area, behind the loading bar:
+- the overworld's flora, buildings, plaza props, people and creatures before the island is built;
+- a dungeon's kit and props the first time you enter that kind of dungeon;
+- furniture the first time you enter a building of that style.
+
+Pack models are cached for offline play as they load. With no packs, nothing extra is downloaded.

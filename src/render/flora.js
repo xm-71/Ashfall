@@ -4,6 +4,7 @@ import { texture, cardTexture } from "./texgen.js"
 import { normalize, worldUV, lathe, rockGeometry, taperTube, mergeGeometries } from "./geom.js"
 import { Q, seg } from "../core/quality.js"
 import { RNG } from "../core/rng.js"
+import { assets } from "../assets/registry.js"
 
 export const floraTime = { value: 0 }
 
@@ -246,9 +247,20 @@ export function buildFlora(world, colliders) {
     list = list.concat(extra)
   }
   const byKey = new Map()
+  const packEntry = new Map() // key -> pack entry, for flora a pack provides
   for (const f of list) {
-    const v = Math.floor(f.scale * 997 + f.rot * 131) % VARIANTS
-    const key = `${f.type}:${v}`
+    const role = `flora.${f.type}`
+    let key
+    if (assets.has(role)) {
+      // a pack model, chosen per plant from those allowed in its region
+      const all = assets.entries(role)
+      const e = assets.pick(role, { region: world.regionAt(f.x, f.z) }, ((f.scale * 997 + f.rot * 131) % 1 + 1) % 1)
+      if (e) {
+        key = `${f.type}:pack${all.indexOf(e)}`
+        packEntry.set(key, e)
+      }
+    }
+    if (!key) key = `${f.type}:${Math.floor(f.scale * 997 + f.rot * 131) % VARIANTS}`
     if (!byKey.has(key)) byKey.set(key, [])
     byKey.get(key).push(f)
   }
@@ -263,10 +275,12 @@ export function buildFlora(world, colliders) {
   for (const [key, items] of byKey) {
     const [type, v] = key.split(":")
     const seed = `${type}:${v}:${world.seed}`
-    const high = BUILDERS[type](new RNG(seed))
+    const entry = packEntry.get(key)
+    const high = entry ? assets.parts(entry, `flora.${type}`) : BUILDERS[type](new RNG(seed))
     // the far model: same shape and seed, built with far fewer segments
     let low = null
-    if (!SMALL[type]) {
+    if (entry) low = entry.lod === false || SMALL[type] ? null : high
+    else if (!SMALL[type]) {
       const saved = Q.seg
       Q.seg = Math.min(saved, 0.4)
       low = BUILDERS[type](new RNG(seed))
@@ -303,7 +317,8 @@ export function buildFlora(world, colliders) {
         return inst
       })
     sets.push({ type, items, matrices, colors, near: makeInst(high, true), far: low ? makeInst(low, false) : [] })
-    if (TRUNK_RADIUS[type]) for (const f of items) if (trunkItems.has(f)) colliders.addCircle(f.x, f.z, TRUNK_RADIUS[type] * f.scale)
+    const trunk = entry ? entry.collider ?? TRUNK_RADIUS[type] : TRUNK_RADIUS[type]
+    if (trunk) for (const f of items) if (trunkItems.has(f)) colliders.addCircle(f.x, f.z, trunk * f.scale)
   }
 
   // Re-sort instances into near (full detail, shadows) and far (light, no shadows)

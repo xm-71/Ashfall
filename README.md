@@ -8,7 +8,8 @@ A first-person, fully procedural roguelike in the spirit of *The Elder Scrolls I
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # static build in dist/ (relative paths, host anywhere)
-npm test         # logic tests (world gen, dungeons, leveling, quests)
+npm test         # logic tests (world gen, dungeons, leveling, quests, asset placement)
+npm run assets   # convert asset packs in assets/packs and publish the ones the manifest uses
 ```
 
 Click the game to capture the mouse. Esc releases it. Every key below can be rebound in **Settings** (title screen or the in-game menu), which also has mouse sensitivity, invert Y, field of view, music, effects and ambience volume, spoken NPC greetings (off by default), and a compass toggle.
@@ -82,6 +83,17 @@ Pick **Low / Medium / High** in Settings. Your choice is remembered, and changin
 
 The world is generated in a background worker, and the island is built step by step behind a progress bar. Distant trees and parasols switch to simpler models, and far-off characters and creatures switch to a single merged model. This cuts the triangle count by about two thirds with no visible change.
 
+## Asset packs
+
+Any part of the world can use models from asset packs (Synty, Kenney and similar) instead of generated art:
+- trees and rocks;
+- buildings;
+- furniture and props;
+- dungeon walls and floors;
+- people and creatures.
+
+Copy a pack into `assets/packs/`, run `npm run assets` to convert it, look at the models with `npm run assets:review`, and list which models fill which roles in `assets/manifest.json`. FBX and glTF are both accepted. Rigged characters keep their animations, and clips can be shared between models. Anything a pack doesn't cover stays generated. See [assets/README.md](assets/README.md).
+
 ## Sound
 
 All sound is synthesized in the browser with WebAudio. There are no audio files.
@@ -127,8 +139,11 @@ src/logic/    pure, testable generation and rules (world, dungeons, character, c
 src/render/   Three.js builders: terrain, flora, buildings, creatures, dungeons, sky, first-person view
 src/game/     runtime: game loop, areas, actors and AI, player controller, dialogue services, audio, input
 src/ui/       HUD, menus, dialogue, character creation, title/death/victory screens, touch controls
-public/       app manifest, icons and the offline service worker
+src/assets/   asset pack roles and the run-time model registry
+tools/assets/ asset pack converter and review page
+assets/       asset packs and the manifest that assigns their models to roles
+public/       app manifest, icons, the offline service worker and converted pack models
 tests/        node:test suites for the logic layer
 ```
 
-All art and audio are procedural. There are no asset files apart from the app icons.
+All art and audio are procedural by default. The only asset files are the app icons, plus any asset packs you add.

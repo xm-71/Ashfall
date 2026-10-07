@@ -65,7 +65,7 @@ export class Enemy {
     this.knock = new THREE.Vector3()
     this.stuck = [] // arrows and thrown weapons you can take back from the corpse
 
-    const built = buildCreatureMesh(base)
+    const built = buildCreatureMesh(base, defId)
     this.mesh = built.group
     this.mesh.rotation.order = "YXZ" // lean and tip in the creature's own frame
     this.rig = built.rig || null

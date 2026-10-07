@@ -40,11 +40,14 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url)
   const own = url.origin === self.location.origin
   if (!own && !FONT_HOSTS.includes(url.hostname)) return
-  if (req.mode === "navigate") {
+  // the pack index changes whenever packs do: always ask the network first
+  if (req.mode === "navigate" || url.pathname.endsWith("/packs/index.json")) {
+    const key = req.mode === "navigate" ? "./" : req
+
     e.respondWith(
       fetch(req)
-        .then(res => put("./", res))
-        .catch(() => caches.match("./", { ignoreSearch: true })),
+        .then(res => put(key, res))
+        .catch(() => caches.match(key, { ignoreSearch: true })),
     )
     return
   }

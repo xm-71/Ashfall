@@ -4,6 +4,7 @@ import { texturedMaterial } from "./texgen.js"
 import { Builder, lathe, rockGeometry, taperTube } from "./geom.js"
 import { seg } from "../core/quality.js"
 import { buildVelothiTower, buildDwemerRuins } from "./landmarks.js"
+import { assets } from "../assets/registry.js"
 
 // Shared glowing material for windows and lanterns; intensity follows the time of day.
 export const GLOW = new THREE.MeshLambertMaterial({ color: 0x3a2a14, emissive: 0xffb050, emissiveIntensity: 0.6 })
@@ -365,8 +366,25 @@ export function buildTown(town, colliders) {
   plaza.rotateX(-Math.PI / 2)
   builder.add(plaza, town.style === "ashlander" ? TM("dirt", 0xffffff) : town.style === "nord" ? TM("road", 0xffffff) : MAT.cobble(), { pos: [town.x, town.y + 0.05, town.z], uv: 3 })
 
+  const pick = (role, ctx, salt) => assets.pick(role, ctx, (((town.id + 1) * 0.6180339 + salt * 0.7548776) % 1 + 1) % 1)
   for (const b of town.buildings) {
     const P = new Placer(builder, b.x, town.y, b.z, b.rot)
+    const big = b.type === "manor" || b.type === "hall"
+    const entry = pick("building", { style: town.style, type: b.type }, b.idx)
+    if (entry) {
+      // a pack building, sized to the plot; its front faces the plaza
+      const dims = { w: b.w, d: town.style === "nord" && big ? b.d * 1.5 : b.d }
+      assets.bake(builder, entry, "building", dims, P.base)
+      const size = assets.placedSize(entry, "building", dims)
+      colliders.addBox(b.x, b.z, size.x * 0.96, size.z * 0.96, b.rot)
+      if (b.label) {
+        const sign = makeLabel(b.label, { size: 26, scale: 0.02 })
+        const off = size.z / 2 + 0.7
+        sign.position.set(b.x - Math.cos(b.angle) * off, town.y + Math.min(size.y - 0.5, 4.1), b.z - Math.sin(b.angle) * off)
+        group.add(sign)
+      }
+      continue
+    }
     if (b.type === "temple" && town.style !== "telvanni" && town.style !== "ashlander") temple(P, b, town.style)
     else if (b.type === "fort") imperialFort(P, b)
     else (STYLE_FN[town.style] || hlaaluHouse)(P, b)
@@ -386,7 +404,33 @@ export function buildTown(town, colliders) {
 
   // plaza dressing: a well or fire pit, market stall, lamp posts
   const C = new Placer(builder, town.x, town.y, town.z, 0)
-  if (town.style === "ashlander" || town.style === "nord") {
+  const ctx = { style: town.style }
+  const at = (x, z, rot = 0) => new THREE.Matrix4().compose(V3(town.x + x, town.y, town.z + z), new THREE.Quaternion().setFromAxisAngle(V3(0, 1, 0), rot), V3(1, 1, 1))
+  const well = pick("prop.well", ctx, 101)
+  const stall = pick("prop.stall", ctx, 102)
+  const lamp = pick("prop.lamppost", ctx, 103)
+  if (well) {
+    assets.bake(builder, well, "prop.well", {}, at(0, 0))
+    const s = assets.placedSize(well, "prop.well")
+    colliders.addCircle(town.x, town.z, Math.max(s.x, s.z) / 2)
+  }
+  if (stall) {
+    const sa = 0.9
+    const sx0 = Math.cos(sa) * plazaR * 0.55
+    const sz0 = Math.sin(sa) * plazaR * 0.55
+    assets.bake(builder, stall, "prop.stall", {}, at(sx0, sz0, -sa))
+    const s = assets.placedSize(stall, "prop.stall")
+    colliders.addBox(town.x + sx0, town.z + sz0, s.x, s.z, -sa)
+  }
+  if (lamp)
+    for (let i = 0; i < 4; i++) {
+      const a = (i / 4) * Math.PI * 2 + 0.4
+      assets.bake(builder, lamp, "prop.lamppost", {}, at(Math.cos(a) * plazaR * 0.85, Math.sin(a) * plazaR * 0.85, -a))
+    }
+  const camp = town.style === "ashlander" || town.style === "nord"
+  if (well) {
+    /* the pack's well (or fire pit) */
+  } else if (camp) {
     C.add(new THREE.TorusGeometry(0.9, 0.3, 5, seg(10)), MAT.rock(), { pos: [0, 0.15, 0], rot: [Math.PI / 2, 0, 0] })
     C.add(new THREE.ConeGeometry(0.5, 0.9, 6), GLOW, { pos: [0, 0.45, 0] })
   } else {
@@ -396,6 +440,8 @@ export function buildTown(town, colliders) {
     C.box(3, 0.2, 1.4, MAT.shingles(), 0, 3.2, 0.3, { rot: [0.3, 0, 0] })
     C.box(3, 0.2, 1.4, MAT.shingles(), 0, 3.2, -0.3, { rot: [-0.3, 0, 0] })
     colliders.addCircle(town.x, town.z, 1.5)
+  }
+  if (!stall && !camp) {
     // market stall
     const sa = 0.9
     const sx0 = Math.cos(sa) * plazaR * 0.55
@@ -409,7 +455,7 @@ export function buildTown(town, colliders) {
     colliders.addCircle(town.x + sx0, town.z + sz0, 1.4)
   }
   // lamp posts around the plaza
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 4 && !lamp; i++) {
     const a = (i / 4) * Math.PI * 2 + 0.4
     const lx = Math.cos(a) * plazaR * 0.85
     const lz = Math.sin(a) * plazaR * 0.85

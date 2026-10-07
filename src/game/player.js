@@ -700,6 +700,7 @@ function activate(game, it) {
         ch.state.items = randomLoot(rng, Math.min(7, ch.def.tier), tag)
         ch.state.gold = rng.int(5, 30) * ch.def.tier
         ch.mesh.userData.lid.rotation.x = -1.2
+        ch.mesh.userData.open?.()
         game.audio.play("door")
       }
       return game.ui.openContainer("Chest", { get loot() { return ch.state.items }, set loot(v) { ch.state.items = v }, get gold() { return ch.state.gold }, set gold(v) { ch.state.gold = v } })

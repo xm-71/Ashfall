@@ -7,6 +7,13 @@ import { GLOW } from "./buildings.js"
 import { createNoise2D } from "../core/noise.js"
 import { srgbColor } from "./textures.js"
 import { Q, seg } from "../core/quality.js"
+import { assets } from "../assets/registry.js"
+
+const hash01 = (x, y, salt) => {
+  const s = Math.sin(x * 127.1 + y * 311.7 + salt * 74.7) * 43758.5453
+  return s - Math.floor(s)
+}
+const placeAt = (x, y, z, yaw = 0) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw), new THREE.Vector3(1, 1, 1))
 
 export const THEME_LOOK = {
   cave: { floor: "caveRock", wall: "caveRock", ceil: "caveRock", floorTint: 0x8a7a68, wallTint: 0xb0a090, ceilTint: 0x6a5e50, height: 5, light: 0xffa050, fog: 0x0c0906, ambient: 0x3a3026, wall3: [0x6a, 0x5e, 0x50], organic: true },
@@ -78,6 +85,14 @@ export function buildDungeonMesh(lvl) {
   const cw = lvl.w + 1
   const ch = (x, y) => (CH ? CH[y * cw + x] : 0)
   const WB = -1.8 // wall bottom
+  // modular pieces from asset packs, where the theme has them
+  const theme = { theme: lvl.type }
+  const kit = { wall: assets.has("dungeon.wall", theme), floor: assets.has("dungeon.floor", theme), ceiling: assets.has("dungeon.ceiling", theme), pillar: assets.has("dungeon.pillar", theme) }
+  const PB = new Builder()
+  const piece = (role, x, y, salt, dims, matrix) => {
+    const e = assets.pick(role, theme, hash01(x, y, salt))
+    if (e) assets.bake(PB, e, role, dims, matrix)
+  }
   for (let y = 0; y < lvl.h; y++) {
     for (let x = 0; x < lvl.w; x++) {
       if (!isFloor(x, y)) continue
@@ -86,14 +101,34 @@ export function buildDungeonMesh(lvl) {
       const z0 = y * CELL
       const z1 = z0 + CELL
       const fuv = (px, py, pz) => [px / 4, pz / 4]
-      quad("floor", [x0, ch(x, y), z0], [x0, ch(x, y + 1), z1], [x1, ch(x + 1, y + 1), z1], [x1, ch(x + 1, y), z0], fuv)
-      quad("ceil", [x0, H, z0], [x1, H, z0], [x1, H, z1], [x0, H, z1], fuv)
+      const c00 = ch(x, y)
+      const flat = Math.abs(ch(x + 1, y) - c00) + Math.abs(ch(x, y + 1) - c00) + Math.abs(ch(x + 1, y + 1) - c00) < 0.02
+      if (kit.floor && flat) piece("dungeon.floor", x, y, 1, { w: CELL, d: CELL }, placeAt(x0 + CELL / 2, c00, z0 + CELL / 2, Math.floor(hash01(x, y, 9) * 4) * (Math.PI / 2)))
+      else quad("floor", [x0, ch(x, y), z0], [x0, ch(x, y + 1), z1], [x1, ch(x + 1, y + 1), z1], [x1, ch(x + 1, y), z0], fuv)
+      if (kit.ceiling) piece("dungeon.ceiling", x, y, 2, { w: CELL, d: CELL }, placeAt(x0 + CELL / 2, H, z0 + CELL / 2))
+      else quad("ceil", [x0, H, z0], [x1, H, z0], [x1, H, z1], [x0, H, z1], fuv)
       const wx = (px, py) => [px / 4, py / 4]
       const wz = (px, py, pz) => [pz / 4, py / 4]
-      if (!isFloor(x, y - 1)) quad("wall", [x0, WB, z0], [x1, WB, z0], [x1, H, z0], [x0, H, z0], wx)
-      if (!isFloor(x, y + 1)) quad("wall", [x1, WB, z1], [x0, WB, z1], [x0, H, z1], [x1, H, z1], wx)
-      if (!isFloor(x - 1, y)) quad("wall", [x0, WB, z1], [x0, WB, z0], [x0, H, z0], [x0, H, z1], wz)
-      if (!isFloor(x + 1, y)) quad("wall", [x1, WB, z0], [x1, WB, z1], [x1, H, z1], [x1, H, z0], wz)
+      if (kit.wall) {
+        // a wall piece on each solid side, facing into the room, standing on the lower corner
+        for (const [dx, dy, ex, ez, ca, cb] of [[0, -1, x0 + CELL / 2, z0, [x, y], [x + 1, y]], [0, 1, x0 + CELL / 2, z1, [x, y + 1], [x + 1, y + 1]], [-1, 0, x0, z0 + CELL / 2, [x, y], [x, y + 1]], [1, 0, x1, z0 + CELL / 2, [x + 1, y], [x + 1, y + 1]]]) {
+          if (isFloor(x + dx, y + dy)) continue
+          const base = Math.min(ch(...ca), ch(...cb)) - 0.05
+          piece("dungeon.wall", x * 2 + dx, y * 2 + dy, 3, { w: CELL, h: H - base }, placeAt(ex, base, ez, Math.atan2(dx, dy)))
+        }
+      } else {
+        if (!isFloor(x, y - 1)) quad("wall", [x0, WB, z0], [x1, WB, z0], [x1, H, z0], [x0, H, z0], wx)
+        if (!isFloor(x, y + 1)) quad("wall", [x1, WB, z1], [x0, WB, z1], [x0, H, z1], [x1, H, z1], wx)
+        if (!isFloor(x - 1, y)) quad("wall", [x0, WB, z1], [x0, WB, z0], [x0, H, z0], [x0, H, z1], wz)
+        if (!isFloor(x + 1, y)) quad("wall", [x1, WB, z0], [x1, WB, z1], [x1, H, z1], [x1, H, z0], wz)
+      }
+      if (kit.pillar)
+        for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+          if (isFloor(x + dx, y) || isFloor(x, y + dy)) continue
+          const vx = x + (dx > 0 ? 1 : 0)
+          const vy = y + (dy > 0 ? 1 : 0)
+          piece("dungeon.pillar", vx, vy, 4, { h: H - ch(vx, vy) }, placeAt(vx * CELL, ch(vx, vy), vy * CELL))
+        }
     }
   }
 
@@ -101,6 +136,7 @@ export function buildDungeonMesh(lvl) {
   const materials = { floor: surfaceMat(look.floor, look.floorTint), wall: surfaceMat(look.wall, look.wallTint), ceil: surfaceMat(look.ceil, look.ceilTint) }
   for (const kind of ["floor", "wall", "ceil"]) {
     const verts = buckets[kind]
+    if (!verts.length) continue
     const pos = new Float32Array(verts.length * 3)
     const uv = new Float32Array(verts.length * 2)
     const col = new Float32Array(verts.length * 3)
@@ -135,7 +171,7 @@ export function buildDungeonMesh(lvl) {
         const [cx, cz] = center(x, y)
         // baseboards and cornices on each wall face
         for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
-          if (isFloor(x + dx, y + dy)) continue
+          if (isFloor(x + dx, y + dy) || kit.wall) continue
           const along = dx === 0
           const px = cx + dx * (CELL / 2 - 0.12)
           const pz = cz + dy * (CELL / 2 - 0.12)
@@ -144,7 +180,7 @@ export function buildDungeonMesh(lvl) {
         }
         // pillars where two walls meet at an inside corner
         for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
-          if (!isFloor(x + dx, y) && !isFloor(x, y + dy)) {
+          if (!kit.pillar && !isFloor(x + dx, y) && !isFloor(x, y + dy)) {
             B.add(new THREE.CylinderGeometry(0.32, 0.38, H + 1.8, seg(10)), trim, { pos: [cx + dx * (CELL / 2 - 0.3), (H - 1.8) / 2, cz + dy * (CELL / 2 - 0.3)], uv: 1.5 })
           }
         }
@@ -202,9 +238,16 @@ export function buildDungeonMesh(lvl) {
 
   const reserved = new Set()
   const cellH = (x, y) => (lvl.heights ? lvl.heights[y * lvl.w + x] : 0)
-  for (const p of lvl.props) addProp(B, { ...p, hy: cellH(p.x, p.y) }, look, center)
+  for (const p of lvl.props) {
+    const e = assets.pick(`prop.${p.type}`, theme, hash01(p.x, p.y, 5))
+    if (e) {
+      const [cx, cz] = center(p.x, p.y)
+      assets.bake(PB, e, `prop.${p.type}`, {}, placeAt(cx + p.ox, cellH(p.x, p.y), cz + p.oz, p.rot))
+    } else addProp(B, { ...p, hy: cellH(p.x, p.y) }, look, center)
+  }
   void reserved
   group.add(B.build())
+  if (PB.parts.size) group.add(PB.build())
   return { group, height: H, look, lights: lightObjs }
 }
 
@@ -303,7 +346,26 @@ function addProp(B, p, look, center) {
   }
 }
 
-export function buildChestMesh(open = false) {
+export function buildChestMesh(open = false, salt = 0) {
+  const closedE = assets.pick("prop.chest", {}, hash01(salt, 0, 6))
+  if (closedE) {
+    // pack chest: an open model if the pack has one, else the closed one stays
+    const g = new THREE.Group()
+    const closed = assets.object(closedE, "prop.chest")
+    const openE = assets.pick("prop.chestOpen", {}, hash01(salt, 0, 7))
+    const opened = openE ? assets.object(openE, "prop.chestOpen") : null
+    g.add(closed)
+    if (opened) g.add(opened)
+    g.userData.lid = new THREE.Object3D()
+    g.userData.open = () => {
+      if (!opened) return
+      closed.visible = false
+      opened.visible = true
+    }
+    if (opened) opened.visible = false
+    if (open) g.userData.open()
+    return g
+  }
   const g = new THREE.Group()
   const wood = texturedMaterial("planks", { color: 0x9a7050 })
   const iron = texturedMaterial("plate", { color: 0x4a4038, metal: true })

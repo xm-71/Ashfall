@@ -4,6 +4,7 @@ import { seg } from "../core/quality.js"
 import { GLOW, GLOW_COOL } from "./buildings.js"
 import { Placer, TM } from "./landmarks.js"
 import { buildWeapon } from "./items.js"
+import { assets } from "../assets/registry.js"
 
 // Room shells per town style: walls, floor, ceiling and trim.
 const SHELL = {
@@ -36,7 +37,16 @@ export function buildInterior(layout) {
   P.add(new THREE.SphereGeometry(0.06, 6, 4), TM("dwemerMetal", 0x6a6a6a, { metal: true }), { pos: [0.45, 1.25, -D / 2 + 0.2] })
 
   const extras = new THREE.Group()
-  for (const f of layout.furniture) furniture(P, f, extras, layout)
+  layout.furniture.forEach((f, i) => {
+    // a pack model for this piece, if one fits the building's style
+    const role = `prop.${f.type}`
+    const e = assets.pick(role, { style: layout.style }, (((i + 1) * 0.6180339 + f.x * 0.13 + f.z * 0.07) % 1 + 1) % 1)
+    if (!e) return furniture(P, f, extras, layout)
+    const y = f.type === "banner" ? layout.H - 3.1 : 0
+    // furniture rot 0 faces +z; pack models face -z
+    const m = new THREE.Matrix4().compose(new THREE.Vector3(f.x, y, f.z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), f.rot + Math.PI), new THREE.Vector3(1, 1, 1))
+    assets.bake(b, e, role, {}, m)
+  })
   // lamps under each light
   const lights = []
   for (const [x, y, z, color] of layout.lights.slice(0, 3)) {

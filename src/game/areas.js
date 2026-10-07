@@ -358,7 +358,7 @@ export class DungeonArea {
     })
     lvl.chests.forEach((c, i) => {
       const st = state.chests[i] || (state.chests[i] = { opened: false, locked: c.locked, lockLevel: c.lockLevel, items: null, gold: 0 })
-      const mesh = buildChestMesh(st.opened)
+      const mesh = buildChestMesh(st.opened, c.seed % 997)
       const p = this.cellCenter(c.x, c.y)
       mesh.position.copy(p)
       mesh.rotation.y = (c.seed % 4) * (Math.PI / 2)

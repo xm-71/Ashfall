@@ -1,0 +1,6 @@
+{
+  "_readme": "Assign asset pack models to roles. See assets/README.md and assets/ROLES.md. Run `npm run assets` after editing.",
+  "packs": {},
+  "animations": {},
+  "roles": {}
+}

@@ -27,6 +27,7 @@ import { showLoading, hideLoading } from "../ui/loading.js"
 import { Q } from "../core/quality.js"
 import { onSettingsChange } from "../core/settings.js"
 import { PostFX } from "../render/post.js"
+import { assets, overworldModels, dungeonModels, interiorModels } from "../assets/registry.js"
 import { GamepadInput } from "./gamepad.js"
 import { TouchControls } from "../ui/touch.js"
 import { settings } from "../core/settings.js"
@@ -103,6 +104,8 @@ export class Game {
     onProgress(0, "Raising Vvardenfell from the sea…")
     const { world, chunks } = await loadWorld(seed, () => onProgress(0.15, "Shaping the land…"))
     if (token !== this.worldToken) return // a newer seed was requested meanwhile
+    // pack models the overworld uses (none without asset packs)
+    await assets.load(overworldModels(), p => onProgress(0.15 + p * 0.1, "Unpacking models…"))
     const overworld = await OverworldArea.create(this, world, chunks, (p, text) => onProgress(0.25 + p * 0.65, text ? `${text}…` : "Lighting the lanterns…"))
     if (token !== this.worldToken) return
     if (this.overworld) this.overworld.scene.clear()
@@ -175,10 +178,10 @@ export class Game {
     if (save.area.kind === "dungeon") {
       const d = this.world.dungeons[save.area.id]
       this.returnPos = save.area.returnPos
-      this.loadDungeonLevel(d, save.area.level, false, true)
+      await this.loadDungeonLevel(d, save.area.level, false, true)
       this.pc.pos.set(save.pc.x, save.pc.y, save.pc.z)
     } else if (save.area.kind === "interior") {
-      this.enterInterior(save.area.town, save.area.building, true)
+      await this.enterInterior(save.area.town, save.area.building, true)
       this.returnPos = save.area.returnPos
       this.pc.pos.set(save.pc.x, save.pc.y, save.pc.z)
     }
@@ -293,7 +296,7 @@ export class Game {
     if (this.mode === "title" || this.mode === "chargen") this.updateTitle(dt)
     else if (this.mode === "play") {
       if (this.ui.modal === "dialogue" && this.ui.dialogueNpc) this.updateTalkCamera(dt)
-      if (!this.ui.modal && this.input.active) this.update(dt)
+      if (!this.ui.modal && this.input.active && !this.loadingArea) this.update(dt)
       else if (!this.ui.modal && !this.input.active) this.ui.showPauseHint(true)
       this.ui.updateHud()
     } else if (this.mode === "dead" || this.mode === "victory") {
@@ -855,6 +858,18 @@ export class Game {
     })))
   }
 
+  // Fetch pack models for the area about to be entered (play pauses meanwhile).
+  async loadPackModels(ids) {
+    this.loadingArea = true
+    showLoading("Unpacking models…", 0)
+    try {
+      await assets.load(ids, p => showLoading("Unpacking models…", p))
+    } finally {
+      hideLoading()
+      this.loadingArea = false
+    }
+  }
+
   // ---------- dungeons ----------
 
   enterDungeon(d) {
@@ -866,10 +881,12 @@ export class Game {
     this.returnPos = { x: this.pc.pos.x, y: this.pc.pos.y, z: this.pc.pos.z, yaw: this.pc.yaw + Math.PI }
     this.msg(`Entering ${d.name}...`, "#c9b88f")
     d.discovered = true
-    this.loadDungeonLevel(d, 0, false)
+    return this.loadDungeonLevel(d, 0, false)
   }
 
   loadDungeonLevel(d, level, fromBelow, quiet = false) {
+    const need = assets.missing(dungeonModels(d.type).concat(d.citadel ? dungeonModels("cave") : []))
+    if (need.length) return this.loadPackModels(need).then(() => this.loadDungeonLevel(d, level, fromBelow, quiet))
     const st = (this.dungeonState[d.id] ||= { levels: {} })
     const lst = (st.levels[level] ||= { dead: new Set(), chests: {} })
     const lvl = generateDungeonLevel({ seed: d.seed, type: d.type, tier: d.tier, level, levels: d.levels, relic: d.relic, citadel: !!d.citadel })
@@ -892,6 +909,8 @@ export class Game {
   enterInterior(townId, idx, quiet = false) {
     const town = this.world.towns[townId]
     const b = town.buildings[idx]
+    const need = assets.missing(interiorModels(town.style))
+    if (need.length) return this.loadPackModels(need).then(() => this.enterInterior(townId, idx, quiet))
     if (this.area.kind === "overworld") {
       // come back out on the doorstep, facing away from the building
       const dx = b.door.x - b.x

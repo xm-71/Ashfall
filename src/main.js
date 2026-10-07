@@ -5,13 +5,14 @@ import { preloadTextures } from "./render/texgen.js"
 import { Q } from "./core/quality.js"
 import { randomSeed } from "./core/rng.js"
 import { showLoading, hideLoading } from "./ui/loading.js"
+import { assets } from "./assets/registry.js"
 
 async function start() {
   // Stage 1 (0–45%): paint textures in parallel workers.
   showLoading(`Painting textures (${Q.name} quality)…`, 0)
-  await preloadTextures(p => showLoading(`Painting textures (${Q.name} quality)…`, p * 0.45))
+  await Promise.all([preloadTextures(p => showLoading(`Painting textures (${Q.name} quality)…`, p * 0.45)), assets.init()])
   const game = new Game(document.getElementById("app"))
-  game.debug = { Enemy } // handy from the devtools console
+  game.debug = { Enemy, assets } // handy from the devtools console
   window.game = game
   let seed = randomSeed()
   try {

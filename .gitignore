@@ -2,3 +2,7 @@ node_modules
 dist
 .DS_Store
 *.log
+assets/.cache/
+assets/catalog.json
+assets/manifest.suggested.json
+assets/review/
