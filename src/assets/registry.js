@@ -110,6 +110,11 @@ function heldMaterial(src) {
   for (const k of ["name", "map", "normalMap", "roughness", "metalness", "roughnessMap", "metalnessMap", "emissiveMap", "emissiveIntensity", "side", "transparent", "opacity", "alphaTest", "vertexColors"]) if (src[k] !== undefined) m[k] = src[k]
   m.color.copy(src.color)
   m.emissive.copy(src.emissive)
+  // a mirror-bright blade right in front of the camera catches the sun and
+  // floods the bloom: keep the metal response and glow subtle
+  m.metalnessMap = null
+  m.metalness = Math.min(m.metalness, 0.3)
+  m.emissiveIntensity *= 0.25
   if (src.normalScale) m.normalScale.copy(src.normalScale)
   m.userData.packReady = true
   converted.set(src, m)
@@ -126,6 +131,46 @@ function greyTexture(m) {
     )
   }
   m.customProgramCacheKey = () => "grey"
+}
+
+// ---------------------------------------------------------------- hands
+
+// The bones of one hand (side "r" or "l"), named as in the Unreal mannequin
+// rig the Quaternius characters use. null without at least a hand and elbow.
+function handBones(model, side) {
+  const all = []
+  model.traverse(o => o.isBone && all.push(o))
+  const f = n => all.find(b => new RegExp(`^${n}_?${side}$`, "i").test(b.name))
+  const B = { hand: f("hand"), elbow: f("(lowerarm|forearm)"), index: f("index_01"), ring: f("ring_01") || f("pinky_01"), middle: f("middle_01"), tip: f("middle_03") || f("middle_02") }
+  return B.hand && B.elbow && B.index && B.ring && B.middle && B.tip ? B : null
+}
+
+// Curl every finger joint into a fist (the thumb a little, across the grip).
+const FIST = 1.35
+function closeFist(hand) {
+  hand.traverse(b => {
+    if (b.isBone && b !== hand) b.rotateX(/thumb/i.test(b.name) ? -FIST * 0.35 : FIST)
+  })
+}
+
+// Where a closed fist holds things, in the space `inv` maps world into: the
+// grip line runs across the knuckles (index to ring), just inside the palm.
+function gripFrame(B, inv) {
+  const at = b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv)
+  const ki = at(B.index)
+  const kr = at(B.ring)
+  const km = at(B.middle)
+  const h = at(B.hand)
+  const tip = at(B.tip)
+  const blade = ki.clone().sub(kr).normalize()
+  const fingers = km.clone().sub(h)
+  fingers.addScaledVector(blade, -fingers.dot(blade)).normalize()
+  // the palm faces the way the curled fingers fold
+  const palm = new THREE.Vector3().crossVectors(fingers, blade)
+  if (palm.dot(tip.clone().sub(km)) < 0) palm.negate()
+  const span = ki.distanceTo(kr)
+  const center = ki.clone().add(kr).multiplyScalar(0.5).addScaledVector(palm, span * 0.75).addScaledVector(fingers, span * 0.25)
+  return { center, blade, fingers, palm, span }
 }
 
 // "MI_Skin_*" -> /^MI_Skin_.*$/i
@@ -392,6 +437,34 @@ export class AssetRegistry {
       } else out.push({ geo, mat: mats[0] })
     })
     this.partsCache.set(key, out)
+    return out
+  }
+
+  // The trunk of a placed tree or rock, measured from the model: where its
+  // geometry meets the ground (0.2 to 1.2 m up) -> { x, z, r } in placed
+  // space, or null when nothing stands there. Cached per entry.
+  trunk(entry, role) {
+    this.trunkCache ||= new Map()
+    const key = `${entry.model}|${role}|${JSON.stringify([entry.scale, entry.yaw, entry.front, entry.rotate, entry.offset])}`
+    if (this.trunkCache.has(key)) return this.trunkCache.get(key)
+    const pts = []
+    const v = new THREE.Vector3()
+    for (const { geo } of this.parts(entry, role)) {
+      const pos = geo.attributes.position
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i)
+        if (v.y > 0.2 && v.y < 1.2) pts.push([v.x, v.z])
+      }
+    }
+    let out = null
+    if (pts.length >= 3) {
+      const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length
+      const cz = pts.reduce((a, p) => a + p[1], 0) / pts.length
+      const d = pts.map(p => Math.hypot(p[0] - cx, p[1] - cz)).sort((a, b) => a - b)
+      // most of the trunk, not a stray root or low branch
+      out = { x: cx, z: cz, r: Math.max(0.15, d[Math.floor(d.length * 0.85)]) }
+    }
+    this.trunkCache.set(key, out)
     return out
   }
 
@@ -663,41 +736,34 @@ export class AssetRegistry {
   }
 
   // A forearm and hand cut from a character (its own outfit, skin and tints),
-  // as static meshes for the first-person view. The hand sits at the origin
-  // with the forearm running back along +Z and the back of the hand up (+Y),
-  // fingers curled as if round a grip. side: "r" or "l"; length: forearm
-  // length in the result's units.
-  limb(char, side = "r", length = 0.47, curl = -1.35, axis = "X", roll = -Math.PI / 2) {
+  // as static meshes for the first-person view. The fist is closed and its
+  // grip is at the origin: a held item at the origin pointing up (+Y) passes
+  // through the hand. The forearm runs back along +Z. side: "r" or "l";
+  // length: forearm length in the result's units. userData.palm is the way
+  // the palm faces.
+  limb(char, side = "r", length = 0.47) {
     const model = char.model
-    const bones = {}
-    model.traverse(o => o.isBone && (bones[o.name.toLowerCase()] = o))
-    const find = re => Object.values(bones).find(b => re.test(b.name))
-    const elbow = find(new RegExp(`(lowerarm|forearm)_?${side}$`, "i"))
-    const hand = find(new RegExp(`hand_?${side}$`, "i"))
-    if (!elbow || !hand) return null
-    // bind pose, fingers curled about their bend axis
+    const B = handBones(model, side)
+    if (!B) return null
+    // bind pose with the fist closed
     model.traverse(o => o.isSkinnedMesh && o.skeleton.pose())
-    hand.traverse(b => {
-      if (!b.isBone || b === hand) return
-      if (/thumb/i.test(b.name)) b[`rotate${axis}`](curl * 0.35 * (side === "r" ? 1 : -1))
-      else b[`rotate${axis}`](curl * (side === "r" ? -1 : 1))
-    })
+    closeFist(B.hand)
     char.group.updateMatrixWorld(true)
     const inv = new THREE.Matrix4().copy(char.group.matrixWorld).invert()
-    const at = b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv)
-    const e = at(elbow)
-    const h = at(hand)
-    // basis: z from hand to elbow, y as close to up as possible
-    const z = e.clone().sub(h).normalize()
-    const x = new THREE.Vector3(0, 1, 0).cross(z).normalize()
-    const y = z.clone().cross(x)
-    const k = length / e.distanceTo(h)
-    const toArm = new THREE.Matrix4().makeBasis(x, y, z).transpose().premultiply(new THREE.Matrix4().makeScale(k, k, k)).multiply(new THREE.Matrix4().makeTranslation(-h.x, -h.y, -h.z))
-    toArm.premultiply(new THREE.Matrix4().makeTranslation(0, 0, -0.06)) // palm, not wrist, at the origin
-    toArm.premultiply(new THREE.Matrix4().makeRotationZ(roll * (side === "r" ? 1 : -1))) // thumb up, round a vertical grip
+    const grip = gripFrame(B, inv)
+    const e = B.elbow.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv)
+    // basis: y along the grip, z back toward the elbow
+    const y = grip.blade
+    const z = e.clone().sub(grip.center)
+    z.addScaledVector(y, -z.dot(y)).normalize()
+    const x = y.clone().cross(z)
+    const k = length / e.distanceTo(B.hand.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv))
+    const rot = new THREE.Matrix4().makeBasis(x, y, z).transpose()
+    const toArm = rot.clone().premultiply(new THREE.Matrix4().makeScale(k, k, k)).multiply(new THREE.Matrix4().makeTranslation(-grip.center.x, -grip.center.y, -grip.center.z))
     const region = new Set()
-    elbow.traverse(b => b.isBone && region.add(b))
+    B.elbow.traverse(b => b.isBone && region.add(b))
     const out = new THREE.Group()
+    out.userData.palm = grip.palm.clone().applyMatrix4(rot)
     const v = new THREE.Vector3()
     model.traverse(o => {
       if (!o.isSkinnedMesh || !o.visible) return
@@ -749,20 +815,43 @@ export class AssetRegistry {
     return out.children.length ? out : null
   }
 
-  // Bone to hang a held item on, with a scale-free anchor.
-  attachToHand(char, obj, entry = {}) {
-    let hand = null
-    char.model.traverse(o => {
-      if (!hand && o.isBone && (entry.handBone ? o.name === entry.handBone : /(right.?hand$|hand.?r$|r.?hand$|hand_r$)/i.test(o.name))) hand = o
-    })
-    if (!hand) return false
+  // Put a held item in a character's hand. Weapons pass through the fist
+  // (grip at the item's origin, blade up +Y, edge toward the knuckles); a
+  // shield's handle sits in the fist with its face (+Z) on the back-of-hand
+  // side. Rigs without finger bones fall back to the hand bone itself,
+  // turned by entry.handRotate.
+  attachToHand(char, obj, entry = {}, kind = "weapon", side = "r") {
     char.group.updateMatrixWorld(true)
+    const B = !entry.handBone && handBones(char.model, side)
+    let hand = B?.hand
+    if (!hand)
+      char.model.traverse(o => {
+        if (!hand && o.isBone && (entry.handBone ? o.name === entry.handBone : side === "r" ? /(right.?hand$|hand.?r$|r.?hand$|hand_r$)/i.test(o.name) : /(left.?hand$|hand.?l$|l.?hand$|hand_l$)/i.test(o.name))) hand = o
+      })
+    if (!hand) return false
     const s = new THREE.Vector3()
     hand.getWorldScale(s)
     const anchor = new THREE.Group()
     anchor.scale.set(1 / s.x, 1 / s.y, 1 / s.z)
-    const r = entry.handRotate || [0, 0, 0]
-    obj.rotation.set(r[0] * DEG, r[1] * DEG, r[2] * DEG)
+    if (B?.index && B.ring && B.middle && B.tip) {
+      // the grip, measured with the fist closed, in the hand bone's own frame
+      const saved = []
+      hand.traverse(b => b.isBone && saved.push([b, b.quaternion.clone()]))
+      closeFist(hand)
+      hand.updateMatrixWorld(true)
+      const inv = new THREE.Matrix4().copy(hand.matrixWorld).invert()
+      const g = gripFrame(B, inv)
+      for (const [b, q] of saved) b.quaternion.copy(q)
+      hand.updateMatrixWorld(true)
+      const front = kind === "shield" ? g.palm.clone().negate() : g.fingers.clone().cross(g.blade)
+      const x = g.blade.clone().cross(front).normalize()
+      anchor.position.copy(g.center)
+      if (kind === "shield") anchor.position.addScaledVector(g.palm, -g.span * 0.9)
+      anchor.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, g.blade, front))
+    } else {
+      const r = entry.handRotate || [0, 0, 0]
+      obj.rotation.set(r[0] * DEG, r[1] * DEG, r[2] * DEG)
+    }
     anchor.add(obj)
     hand.add(anchor)
     return true
@@ -796,7 +885,7 @@ const TOWN_PROPS = new Set(["prop.well", "prop.stall", "prop.lamppost", "prop.ba
 export function overworldModels() {
   const ids = assets.modelsFor(role => {
     const g = ROLES[role]?.group
-    return g === "flora" || g === "building" || g === "character" || g === "creature" || g === "weapon" || TOWN_PROPS.has(role)
+    return g === "flora" || g === "building" || g === "character" || g === "creature" || g === "weapon" || g === "decor" || TOWN_PROPS.has(role)
   })
   for (const k of assets.index.kits.building || []) ids.push(...kitModels(k))
   return [...new Set(ids)]

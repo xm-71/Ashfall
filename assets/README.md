@@ -105,6 +105,7 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 - `player`: the player's body, one entry per sex. Character creation offers every model listed in each `parts` slot (outfit, hair, beard; `null` = none), and the first-person arms are cut from the same body.
 - `weapon.<base>` (`weapon.longsword`, `weapon.war axe`, ...), filtered by `material`, and `shield`. Held items keep the file's orientation: the origin is where the hand grips, with the blade pointing up (+Y). They keep their shiny (PBR) materials.
 - `artifact.<id>`: the look of one legendary artifact or rare unique sword (ids in `src/data/artifacts.js`).
+- `decor.town`, `decor.entrance` and `decor.wild`: dressing so the world isn't bare. Town clutter goes beside each building's front wall and around the plaza (filter by `style`), entrance props around dungeon doors (by `theme`), and ground cover among the plants (by `region`). Props wider than half a metre are solid.
 - `creature.<id>`: one role per creature (`creature.guar`, `creature.cliffRacer`, ...). A creature's `tint` colour (in `src/data/creatures.js`) colours materials mapped to `"body"`, e.g. `"tint": { "MI_Imp": "body" }`.
   - Humanoid foes (bandits, smugglers) fall back to `npc` models with a matching `role` filter.
 

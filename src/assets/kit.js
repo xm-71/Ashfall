@@ -39,7 +39,7 @@ export function kitFootprint(kit, w, d) {
   return pool[0]
 }
 
-// -> { pieces: [{ model, matrix }], W, D, H } in the building's own frame
+// -> { pieces: [{ model, matrix }], W, D, H, core } in the building's own frame
 export function assembleBuilding(kit, { w, d, type = "house", seed = 1 }) {
   let s = seed >>> 0 || 1
   const r = () => ((s = (Math.imul(s ^ (s >>> 13), 1103515245) + 12345) >>> 0) % 100000) / 100000
@@ -109,5 +109,7 @@ export function assembleBuilding(kit, { w, d, type = "house", seed = 1 }) {
     put(gable, 0, top, D / 2, 0)
   }
   if (kit.chimney?.length && r() < 0.6) put(choose(kit.chimney, r), W / 2 - 1, top - 0.6, D / 4, 0)
-  return { pieces, W, D, H: top + 2 }
+  // core: the hollow inside, for a dark fill that stops windows showing the
+  // empty shell (the walls are about 0.3 m thick)
+  return { pieces, W, D, H: top + 2, core: { w: W - 0.66, d: D - 0.66, h: top } }
 }

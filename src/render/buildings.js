@@ -358,6 +358,8 @@ const STYLE_FN = { hlaalu: hlaaluHouse, redoran: redoranHouse, telvanni: telvann
 
 // ---------------- towns ----------------
 
+const DARK_CORE = new THREE.MeshLambertMaterial({ color: 0x0c0907 })
+
 export function buildTown(town, colliders) {
   const group = new THREE.Group()
   const builder = new Builder()
@@ -376,6 +378,9 @@ export function buildTown(town, colliders) {
     if (assembled) {
       // a building assembled from a modular kit, front (door) toward the plaza
       for (const p of assembled.pieces) assets.bakeModel(builder, p.model, P.base.clone().multiply(p.matrix))
+      // a dark core behind the walls: windows look into a dim room, not an empty shell
+      const k = assembled.core
+      builder.add(new THREE.BoxGeometry(k.w, k.h, k.d), DARK_CORE, { matrix: P.base.clone().multiply(new THREE.Matrix4().makeTranslation(0, k.h / 2 + 0.02, 0)), uv: "keep" })
       colliders.addBox(b.x, b.z, assembled.W + 0.3, assembled.D + 0.3, b.rot)
       if (b.label) {
         const sign = makeLabel(b.label, { size: 26, scale: 0.02 })
@@ -441,7 +446,26 @@ export function buildTown(town, colliders) {
     for (let i = 0; i < 4; i++) {
       const a = (i / 4) * Math.PI * 2 + 0.4
       assets.bake(builder, lamp, "prop.lamppost", {}, at(Math.cos(a) * plazaR * 0.85, Math.sin(a) * plazaR * 0.85, -a))
+      colliders.addCircle(town.x + Math.cos(a) * plazaR * 0.85, town.z + Math.sin(a) * plazaR * 0.85, 0.3)
     }
+  // everyday clutter: a few props beside each building's front wall (never
+  // in the doorway), and a cart and benches around the plaza
+  if (assets.has("decor.town", { style: town.style }))
+    for (const b of town.buildings) {
+      const P = new Placer(builder, b.x, town.y, b.z, b.rot)
+      const n = 1 + ((b.idx * 7 + town.id) % 3)
+      const hw = b.w / 2
+      const spots = [[-hw + 0.7, -b.d / 2 - 1.1, 0.3], [hw - 0.6, -b.d / 2 - 1.0, -0.4], [hw + 1.1, -b.d / 4, 1.6], [-hw - 1.1, b.d / 5, -1.4]]
+      dress(builder, P, b.rot, "decor.town", { style: town.style }, spots.slice(0, n), colliders, null, town.id * 31 + b.idx)
+    }
+  if (assets.has("decor.town", { style: town.style })) {
+    const P = new Placer(builder, town.x, town.y, town.z, 0)
+    const spots = [0, 1, 2].map(k => {
+      const a = 0.4 + Math.PI / 4 + (k * Math.PI) / 2
+      return [Math.cos(a) * plazaR * 0.72, Math.sin(a) * plazaR * 0.72, -a + Math.PI / 2]
+    })
+    dress(builder, P, 0, "decor.town", { style: town.style }, spots, colliders, null, town.id * 17 + 5)
+  }
   const camp = town.style === "ashlander" || town.style === "nord"
   if (well) {
     /* the pack's well (or fire pit) */
@@ -552,12 +576,34 @@ export function placeLimb(mesh, a, b) {
 
 // ---------------- dungeon entrances ----------------
 
-export function buildEntrance(d, colliders) {
+// Pack props on the ground: spots are [x, z, yaw] in the placer's frame (rot
+// is its turn); each takes a model from `role` that suits ctx, standing on
+// the terrain. Props wider than half a metre are solid.
+function dress(builder, P, rot, role, ctx, spots, colliders, heightAt, salt) {
+  const v = new THREE.Vector3()
+  spots.forEach(([x, z, yaw = 0], i) => {
+    const e = assets.pick(role, ctx, (((salt + 1) * 0.6180339 + i * 0.7548776) % 1 + 1) % 1)
+    if (!e) return
+    v.set(x, 0, z).applyMatrix4(P.base)
+    const y = heightAt ? heightAt(v.x, v.z) : v.y
+    const m = new THREE.Matrix4().compose(new THREE.Vector3(v.x, y - 0.03, v.z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rot + yaw), new THREE.Vector3(1, 1, 1))
+    assets.bake(builder, e, role, {}, m)
+    const s = assets.placedSize(e, role)
+    if (colliders && Math.max(s.x, s.z) > 0.5) colliders.addCircle(v.x, v.z, Math.max(s.x, s.z) * 0.42)
+  })
+}
+
+// ground spots around an entrance whose door faces -z
+const ENTRANCE_SPOTS = [[-3.3, -3.4, 0.4], [3.5, -3.1, -0.6], [-4.6, -1.3, 1.2], [4.8, -0.9, -1.1], [-2.4, -5.6, 2.2], [5.6, -4.6, 0.3]]
+
+export function buildEntrance(d, colliders, heightAt = null) {
   const rot = (d.seed % 628) / 100 || 0
   const builder = new Builder()
   const P = new Placer(builder, d.x, d.y, d.z, rot)
   const group = new THREE.Group()
   if (d.type === "cave") {
+    // the hill the cave runs into, sunk into the ground so no edge floats
+    P.add(rockGeometry(d.seed % 31, 2, 1, 0.35), MAT.rock(), { pos: [0, -0.6, 6], scale: [6.5, 5.5, 5], uv: 3 })
     for (const [x, y, z, s] of [[-2.8, 1.4, 0, 1.6], [2.8, 1.4, 0, 1.6], [0, 4.4, 0.3, 1.9], [-3.6, 0.8, 1.8, 1.4], [3.4, 0.9, 1.9, 1.3], [0, 2, 2.6, 2.4]])
       P.add(rockGeometry(x * 7 + z, 2, 1, 0.4), MAT.rock(), { pos: [x, y, z], scale: [s * 1.2, s * 1.4, s], uv: 2 })
     P.box(2.8, 3.6, 0.2, TM("mud", 0x111111), 0, 1.8, -0.6)
@@ -568,7 +614,9 @@ export function buildEntrance(d, colliders) {
   } else if (d.tower) {
     buildVelothiTower(P)
   } else if (d.type === "tomb") {
-    P.add(rockGeometry(d.seed % 97, 2, 4, 0.2), TM("grass", 0xa0a080), { pos: [0, -0.4, 2], scale: [1.1, 0.55, 1.1], uv: 3 })
+    // a burial mound the tomb door is set into
+    P.add(rockGeometry(d.seed % 97, 2, 4, 0.2), TM("grass", 0xa0a080), { pos: [0, -1.4, 4.3], scale: [1.5, 1.0, 1.3], uv: 3 })
+    P.box(4.6, 2.4, 2.2, MAT.sandstone(), 0, -1.1, -1.6) // foundation, below ground
     P.box(4.2, 3.8, 1.4, MAT.tomb(), 0, 1.7, -1.6)
     P.box(4.8, 0.5, 1.8, MAT.sandstone(), 0, 3.8, -1.6)
     P.add(new THREE.CylinderGeometry(1, 1, 0.5, 3), MAT.sandstone(), { pos: [0, 4.35, -1.6], rot: [-Math.PI / 2, 0, 0], scale: [2.6, 1, 0.8] })
@@ -578,7 +626,10 @@ export function buildEntrance(d, colliders) {
     P.add(new THREE.SphereGeometry(0.4, 8, 6), TM("bone", 0xe0d8c0), { pos: [0, 3.2, -2.35], scale: [1, 1.1, 0.5] })
   } else if (d.type === "barrow") {
     // a snowy burial mound ringed by standing stones, with a carved stone door
-    P.add(rockGeometry(d.seed % 89, 2, 4, 0.2), TM("snow", 0xffffff), { pos: [0, -0.6, 2.5], scale: [1.4, 0.7, 1.4], uv: 3 })
+    P.add(rockGeometry(d.seed % 89, 2, 4, 0.2), TM("snow", 0xffffff), { pos: [0, -1.2, 4.6], scale: [1.6, 1.05, 1.5], uv: 3 })
+    // dark stones breaking through the snow on the mound
+    for (let i = 0; i < 5; i++) P.add(rockGeometry(d.seed + i, 1, 1, 0.4), MAT.darkStone(), { pos: [(i - 2) * 1.7, 2.2 - Math.abs(i - 2) * 0.6, 4.6 + (i % 2) * 1.4], scale: [0.9, 0.6, 0.9], uv: 2 })
+    P.box(4.6, 2.4, 2, MAT.darkStone(), 0, -1.1, -1.6) // foundation, below ground
     P.box(4, 3.4, 1.2, MAT.darkStone(), 0, 1.5, -1.6)
     P.box(4.8, 0.6, 1.6, MAT.darkStone(), 0, 3.4, -1.6)
     for (const sx of [-1, 1]) P.box(0.7, 3.8, 0.7, MAT.darkStone(), sx * 2.1, 1.9, -2.2)
@@ -605,16 +656,18 @@ export function buildEntrance(d, colliders) {
     const big = d.type === "citadel" ? 1.8 : 1
     const stone = d.type === "citadel" ? MAT.flesh() : MAT.daedric()
     for (const sx of [-1, 1]) {
-      P.box(1.4 * big, 7.5 * big, 1.4 * big, MAT.daedric(), sx * 2.8 * big, 3.75 * big, 0)
+      P.box(1.4 * big, 9 * big, 1.4 * big, MAT.daedric(), sx * 2.8 * big, 3 * big, 0) // runs 1.5 m into the ground
       P.add(new THREE.ConeGeometry(0.9 * big, 2.6 * big, 4), MAT.daedric(), { pos: [sx * 2.8 * big, 8.6 * big, 0] })
       for (let k = 0; k < 3; k++) P.add(new THREE.ConeGeometry(0.2 * big, 1.2 * big, 4), MAT.daedric(), { pos: [sx * (2.8 + 0.8) * big, (2 + k * 2) * big, 0], rot: [0, 0, -sx * 1.2] })
     }
     P.box(7.2 * big, 1.2 * big, 1.6 * big, stone, 0, 7.4 * big, 0)
     P.add(lathe([[1.4 * big, 0], [1 * big, 1 * big], [0.1, 1.8 * big]], 4), MAT.daedric(), { pos: [0, 8 * big, 0] })
-    for (let i = 0; i < 4; i++) P.box(6 * big - i * 0.5, 0.35, 1, MAT.daedric(), 0, 0.17 + i * 0.35 - 0.5, -1.2 - i * 0.5)
-    P.box(1.8, 1, 1, MAT.daedric(), 3.5 * big + 2, 0.5, -2)
-    const portal = new THREE.Mesh(new THREE.PlaneGeometry(4 * big, 6 * big), new THREE.MeshBasicMaterial({ color: d.type === "citadel" ? 0x8a1a08 : 0x1a0808, side: THREE.DoubleSide }))
-    portal.position.set(0, 3 * big, -0.1)
+    // a stepped dais up to the portal: each step deep in the ground, the
+    // lowest and widest outermost
+    for (let i = 0; i < 4; i++) P.box(4.4 * big + i * 0.6, 1.2, 1.2 + i * 0.9, MAT.daedric(), 0, -0.6 + (3 - i) * 0.16, -0.9 - i * 0.45)
+    P.box(1.8, 1, 1, MAT.daedric(), 3.5 * big + 2, 0.2, -2, { rot: [0.2, 0.5, 0.15] }) // fallen block, half buried
+    const portal = new THREE.Mesh(new THREE.PlaneGeometry(4.2 * big, 6.8 * big + 0.6), new THREE.MeshBasicMaterial({ color: d.type === "citadel" ? 0x8a1a08 : 0x1a0808, side: THREE.DoubleSide }))
+    portal.position.set(0, 3.4 * big + 0.2, -0.1)
     const holder = new THREE.Group()
     holder.position.set(d.x, d.y, d.z)
     holder.rotation.y = rot
@@ -626,6 +679,8 @@ export function buildEntrance(d, colliders) {
     }
     group.add(holder)
   }
+  // props around the door, from the packs
+  if (!d.tower) dress(builder, P, rot, "decor.entrance", { theme: d.type }, d.type === "citadel" ? [] : ENTRANCE_SPOTS.slice(0, 3 + (d.seed % 4)), colliders, heightAt, d.seed % 1000)
   group.add(builder.build())
   colliders.addCircle(d.x + Math.sin(rot) * (d.tower ? 0.6 : 1.2), d.z + Math.cos(rot) * (d.tower ? 0.6 : 1.2), d.type === "citadel" ? 3.5 : d.tower ? 3.3 : 2.2)
   const doorPos = new THREE.Vector3(d.x - Math.sin(rot) * 3, d.y + 1.5, d.z - Math.cos(rot) * 3)

@@ -115,7 +115,9 @@ export class ViewModel {
       } else {
         w.rotation.x = -0.35
         w.rotation.z = 0.12
-        w.position.set(0, 0.02, -0.01)
+        // pack arms hold the grip exactly at their origin
+        if (this.packArms) w.position.set(0, 0, 0)
+        else w.position.set(0, 0.02, -0.01)
         w.scale.setScalar(2.2)
         this.right.add(w)
       }
@@ -123,8 +125,14 @@ export class ViewModel {
     if (shield && !weapon?.ranged && !weapon?.twoHanded) {
       const s = buildShield(shield)
       s.scale.setScalar(1.15)
-      s.rotation.set(0.15, 1.0, 0.25)
-      s.position.set(-0.32, -0.05, 0.12)
+      if (this.packArms) {
+        // the handle in the fist, the face turned forward and a little out
+        s.rotation.set(0.1, Math.PI - 0.35, 0)
+        s.position.set(-0.04, 0, -0.1)
+      } else {
+        s.rotation.set(0.15, 1.0, 0.25)
+        s.position.set(-0.32, -0.05, 0.12)
+      }
       this.left.add(s)
     }
   }

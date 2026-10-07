@@ -132,7 +132,7 @@ export class OverworldArea {
       label: "Sealing ancient tombs",
       run: () => {
         this.entrances = world.dungeons.map(d => {
-          const e = buildEntrance(d, this.colliders)
+          const e = buildEntrance(d, this.colliders, world.heightAt)
           this.scene.add(e.group)
           return { dungeon: d, ...e }
         })

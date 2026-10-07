@@ -186,12 +186,19 @@ export class Game {
       this.playerBody = buildPlayerMesh(look, RACES[c.race], weapon)
       this.playerBodyKey = key
       this.playerBodyWeapon = weapon
+      this.playerBodyShield = undefined
       this.playerBody.group.traverse(o => o.isMesh && (o.castShadow = true))
     }
     const b = this.playerBody
     if (this.playerBodyWeapon !== weapon) {
       b.setWeapon(weapon)
       this.playerBodyWeapon = weapon
+    }
+    // a shield only with a one-handed weapon, as in first person
+    const shield = c.equipment.shield && !weapon?.ranged && !weapon?.twoHanded ? c.equipment.shield : null
+    if (this.playerBodyShield !== shield) {
+      b.setShield(shield)
+      this.playerBodyShield = shield
     }
     if (b.group.parent !== this.area.scene) this.area.scene.add(b.group)
     const pc = this.pc
@@ -466,6 +473,7 @@ export class Game {
     const c = this.char
     this.advanceTime(dt * HOURS_PER_SECOND)
     this.viewmodel.root.visible = !this.thirdPerson
+    if (this.playerBody) this.playerBody.group.visible = this.thirdPerson
     if (this.area.kind === "overworld") {
       this.updateWeather(dt)
       this.area.sky.weather = this.weather

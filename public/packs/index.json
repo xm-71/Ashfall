@@ -1678,6 +1678,864 @@
       "clips": [],
       "bytes": 824793
     },
+    "Fantasy-Props-MegaKit/Exports/glTF/Barrel": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Barrel.gltf",
+      "tris": 824,
+      "min": [
+        -0.349,
+        0.003,
+        -0.349
+      ],
+      "max": [
+        0.349,
+        0.901,
+        0.349
+      ],
+      "size": [
+        0.698,
+        0.898,
+        0.698
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 389633
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples.gltf",
+      "tris": 2480,
+      "min": [
+        -0.349,
+        0.003,
+        -0.349
+      ],
+      "max": [
+        0.349,
+        0.901,
+        0.349
+      ],
+      "size": [
+        0.698,
+        0.898,
+        0.698
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 735928
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden.gltf",
+      "tris": 1576,
+      "min": [
+        -0.426,
+        -0.052,
+        -0.454
+      ],
+      "max": [
+        0.416,
+        0.878,
+        0.454
+      ],
+      "size": [
+        0.842,
+        0.931,
+        0.908
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 391575
+    },
+    "Medieval-Village-MegaKit/glTF/Prop_Crate": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Prop_Crate.gltf",
+      "tris": 230,
+      "min": [
+        -0.542,
+        0.003,
+        -0.542
+      ],
+      "max": [
+        0.542,
+        1.063,
+        0.542
+      ],
+      "size": [
+        1.084,
+        1.06,
+        1.084
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 241393
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Bag": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bag.gltf",
+      "tris": 858,
+      "min": [
+        -0.33,
+        0.002,
+        -0.244
+      ],
+      "max": [
+        0.325,
+        0.802,
+        0.3
+      ],
+      "size": [
+        0.655,
+        0.799,
+        0.544
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 329872
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Apple": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Apple.gltf",
+      "tris": 4028,
+      "min": [
+        -0.357,
+        -0.016,
+        -0.207
+      ],
+      "max": [
+        0.357,
+        0.228,
+        0.207
+      ],
+      "size": [
+        0.714,
+        0.244,
+        0.414
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 747257
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Carrot": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Carrot.gltf",
+      "tris": 5262,
+      "min": [
+        -0.357,
+        -0.016,
+        -0.36
+      ],
+      "max": [
+        0.357,
+        0.395,
+        0.207
+      ],
+      "size": [
+        0.714,
+        0.411,
+        0.567
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 777155
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Wooden_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bucket_Wooden_1.gltf",
+      "tris": 976,
+      "min": [
+        -0.216,
+        0.001,
+        -0.199
+      ],
+      "max": [
+        0.218,
+        0.293,
+        0.184
+      ],
+      "size": [
+        0.434,
+        0.293,
+        0.383
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 383388
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Bench": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bench.gltf",
+      "tris": 404,
+      "min": [
+        -1.388,
+        -0.007,
+        -0.262
+      ],
+      "max": [
+        1.388,
+        0.526,
+        0.272
+      ],
+      "size": [
+        2.777,
+        0.533,
+        0.534
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 376762
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Holder": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Barrel_Holder.gltf",
+      "tris": 2676,
+      "min": [
+        -0.68,
+        -0.006,
+        -0.352
+      ],
+      "max": [
+        0.68,
+        1.251,
+        0.389
+      ],
+      "size": [
+        1.359,
+        1.257,
+        0.741
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 419359
+    },
+    "Medieval-Village-MegaKit/glTF/Prop_WoodenFence_Single": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Prop_WoodenFence_Single.gltf",
+      "tris": 40,
+      "min": [
+        -1.031,
+        -0.028,
+        -0.06
+      ],
+      "max": [
+        1.033,
+        0.81,
+        0.06
+      ],
+      "size": [
+        2.064,
+        0.838,
+        0.12
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 237497
+    },
+    "Medieval-Village-MegaKit/glTF/Prop_Wagon": {
+      "url": "packs/Medieval-Village-MegaKit/glTF/Prop_Wagon.gltf",
+      "tris": 1672,
+      "min": [
+        -0.979,
+        0.003,
+        -3.15
+      ],
+      "max": [
+        0.972,
+        1.532,
+        0.874
+      ],
+      "size": [
+        1.951,
+        1.529,
+        4.024
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 269072
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Pot_1": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Pot_1.gltf",
+      "tris": 1068,
+      "min": [
+        -0.27,
+        -0.023,
+        -0.243
+      ],
+      "max": [
+        0.27,
+        0.201,
+        0.243
+      ],
+      "size": [
+        0.539,
+        0.224,
+        0.486
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 181718
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Vase_2": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Vase_2.gltf",
+      "tris": 598,
+      "min": [
+        -0.347,
+        -0.001,
+        -0.347
+      ],
+      "max": [
+        0.347,
+        0.515,
+        0.347
+      ],
+      "size": [
+        0.695,
+        0.516,
+        0.695
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 336541
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Vase_4": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Vase_4.gltf",
+      "tris": 598,
+      "min": [
+        -0.18,
+        0.001,
+        -0.18
+      ],
+      "max": [
+        0.18,
+        0.486,
+        0.18
+      ],
+      "size": [
+        0.36,
+        0.485,
+        0.36
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 336898
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Vase_Rubble_Medium": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Vase_Rubble_Medium.gltf",
+      "tris": 1113,
+      "min": [
+        -0.38,
+        0.003,
+        -0.278
+      ],
+      "max": [
+        0.417,
+        0.178,
+        0.32
+      ],
+      "size": [
+        0.797,
+        0.175,
+        0.598
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 355984
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid.gltf",
+      "tris": 1292,
+      "min": [
+        -0.27,
+        -0.023,
+        -0.243
+      ],
+      "max": [
+        0.27,
+        0.258,
+        0.243
+      ],
+      "size": [
+        0.539,
+        0.28,
+        0.486
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 184832
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Cage_Small": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Cage_Small.gltf",
+      "tris": 4588,
+      "min": [
+        -0.434,
+        -0.042,
+        -0.425
+      ],
+      "max": [
+        0.421,
+        0.763,
+        0.459
+      ],
+      "size": [
+        0.855,
+        0.805,
+        0.884
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 237945
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Chain_Coil": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Chain_Coil.gltf",
+      "tris": 3744,
+      "min": [
+        -0.582,
+        0.005,
+        -0.406
+      ],
+      "max": [
+        0.489,
+        0.092,
+        0.501
+      ],
+      "size": [
+        1.07,
+        0.087,
+        0.908
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 228915
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal.gltf",
+      "tris": 2738,
+      "min": [
+        -0.432,
+        0.003,
+        -0.433
+      ],
+      "max": [
+        0.432,
+        0.871,
+        0.433
+      ],
+      "size": [
+        0.864,
+        0.868,
+        0.866
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 414720
+    },
+    "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Metal": {
+      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bucket_Metal.gltf",
+      "tris": 540,
+      "min": [
+        -0.243,
+        -0.005,
+        -0.207
+      ],
+      "max": [
+        0.243,
+        0.36,
+        0.242
+      ],
+      "size": [
+        0.485,
+        0.365,
+        0.449
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 174375
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Round_1": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Round_1.gltf",
+      "tris": 136,
+      "min": [
+        -0.22,
+        -0.008,
+        -0.16
+      ],
+      "max": [
+        0.28,
+        0.088,
+        0.207
+      ],
+      "size": [
+        0.5,
+        0.095,
+        0.367
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 68525
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Round_2": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Round_2.gltf",
+      "tris": 114,
+      "min": [
+        -0.215,
+        -0.003,
+        -0.222
+      ],
+      "max": [
+        0.234,
+        0.091,
+        0.189
+      ],
+      "size": [
+        0.449,
+        0.094,
+        0.411
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 67434
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Round_3": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Round_3.gltf",
+      "tris": 128,
+      "min": [
+        -0.227,
+        -0.002,
+        -0.221
+      ],
+      "max": [
+        0.223,
+        0.097,
+        0.263
+      ],
+      "size": [
+        0.45,
+        0.099,
+        0.485
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 67827
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Round_4": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Round_4.gltf",
+      "tris": 126,
+      "min": [
+        -0.211,
+        -0.006,
+        -0.231
+      ],
+      "max": [
+        0.196,
+        0.094,
+        0.222
+      ],
+      "size": [
+        0.406,
+        0.099,
+        0.452
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 68118
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Round_5": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Round_5.gltf",
+      "tris": 124,
+      "min": [
+        -0.217,
+        -0.004,
+        -0.201
+      ],
+      "max": [
+        0.202,
+        0.097,
+        0.145
+      ],
+      "size": [
+        0.419,
+        0.101,
+        0.346
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 67893
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Square_1": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Square_1.gltf",
+      "tris": 104,
+      "min": [
+        -0.233,
+        -0.002,
+        -0.202
+      ],
+      "max": [
+        0.201,
+        0.128,
+        0.238
+      ],
+      "size": [
+        0.435,
+        0.13,
+        0.44
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 67537
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Square_2": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Square_2.gltf",
+      "tris": 78,
+      "min": [
+        -0.201,
+        -0.005,
+        -0.119
+      ],
+      "max": [
+        0.19,
+        0.135,
+        0.161
+      ],
+      "size": [
+        0.391,
+        0.14,
+        0.28
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 66844
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Square_3": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Square_3.gltf",
+      "tris": 52,
+      "min": [
+        -0.187,
+        -0.008,
+        -0.166
+      ],
+      "max": [
+        0.187,
+        0.151,
+        0.152
+      ],
+      "size": [
+        0.373,
+        0.159,
+        0.319
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 66122
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Square_4": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Square_4.gltf",
+      "tris": 48,
+      "min": [
+        -0.171,
+        -0.003,
+        -0.158
+      ],
+      "max": [
+        0.169,
+        0.166,
+        0.133
+      ],
+      "size": [
+        0.34,
+        0.168,
+        0.291
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 65910
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Square_5": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Square_5.gltf",
+      "tris": 72,
+      "min": [
+        -0.169,
+        -0.008,
+        -0.228
+      ],
+      "max": [
+        0.183,
+        0.144,
+        0.223
+      ],
+      "size": [
+        0.352,
+        0.152,
+        0.45
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 66755
+    },
+    "Stylized-Nature-MegaKit/glTF/Pebble_Square_6": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Pebble_Square_6.gltf",
+      "tris": 65,
+      "min": [
+        -0.215,
+        -0.01,
+        -0.121
+      ],
+      "max": [
+        0.247,
+        0.128,
+        0.142
+      ],
+      "size": [
+        0.462,
+        0.138,
+        0.263
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 66570
+    },
+    "Stylized-Nature-MegaKit/glTF/Clover_1": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Clover_1.gltf",
+      "tris": 379,
+      "min": [
+        -0.502,
+        -0.013,
+        -0.4
+      ],
+      "max": [
+        0.294,
+        1.132,
+        0.364
+      ],
+      "size": [
+        0.796,
+        1.145,
+        0.764
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 133995
+    },
+    "Stylized-Nature-MegaKit/glTF/Clover_2": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Clover_2.gltf",
+      "tris": 615,
+      "min": [
+        -0.502,
+        -0.002,
+        -0.472
+      ],
+      "max": [
+        0.349,
+        1.261,
+        0.364
+      ],
+      "size": [
+        0.851,
+        1.264,
+        0.837
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 136813
+    },
+    "Stylized-Nature-MegaKit/glTF/Flower_3_Single": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Flower_3_Single.gltf",
+      "tris": 285,
+      "min": [
+        -0.481,
+        -0.018,
+        -0.521
+      ],
+      "max": [
+        0.426,
+        2.05,
+        0.357
+      ],
+      "size": [
+        0.907,
+        2.068,
+        0.878
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 200351
+    },
+    "Stylized-Nature-MegaKit/glTF/Flower_4_Single": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Flower_4_Single.gltf",
+      "tris": 642,
+      "min": [
+        -0.505,
+        -0.03,
+        -0.402
+      ],
+      "max": [
+        0.567,
+        2.389,
+        0.371
+      ],
+      "size": [
+        1.072,
+        2.419,
+        0.773
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 205817
+    },
+    "Stylized-Nature-MegaKit/glTF/Plant_7": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Plant_7.gltf",
+      "tris": 48,
+      "min": [
+        -0.448,
+        0.079,
+        -0.464
+      ],
+      "max": [
+        0.6,
+        0.329,
+        0.498
+      ],
+      "size": [
+        1.048,
+        0.25,
+        0.962
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 130194
+    },
+    "Stylized-Nature-MegaKit/glTF/Plant_7_Big": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Plant_7_Big.gltf",
+      "tris": 112,
+      "min": [
+        -0.701,
+        0.05,
+        -0.851
+      ],
+      "max": [
+        0.61,
+        0.304,
+        0.512
+      ],
+      "size": [
+        1.311,
+        0.253,
+        1.362
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 131395
+    },
+    "Stylized-Nature-MegaKit/glTF/Mushroom_Laetiporus": {
+      "url": "packs/Stylized-Nature-MegaKit/glTF/Mushroom_Laetiporus.gltf",
+      "tris": 3216,
+      "min": [
+        -0.65,
+        -0.16,
+        -0.328
+      ],
+      "max": [
+        0.716,
+        0.607,
+        0.775
+      ],
+      "size": [
+        1.366,
+        0.767,
+        1.103
+      ],
+      "skinned": false,
+      "clips": [],
+      "bytes": 153963
+    },
     "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular": {
       "url": "packs/Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular.gltf",
       "tris": 984,
@@ -2441,50 +3299,6 @@
       "clips": [],
       "bytes": 284982
     },
-    "Fantasy-Props-MegaKit/Exports/glTF/Barrel": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Barrel.gltf",
-      "tris": 824,
-      "min": [
-        -0.349,
-        0.003,
-        -0.349
-      ],
-      "max": [
-        0.349,
-        0.901,
-        0.349
-      ],
-      "size": [
-        0.698,
-        0.898,
-        0.698
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 389633
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples.gltf",
-      "tris": 2480,
-      "min": [
-        -0.349,
-        0.003,
-        -0.349
-      ],
-      "max": [
-        0.349,
-        0.901,
-        0.349
-      ],
-      "size": [
-        0.698,
-        0.898,
-        0.698
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 735928
-    },
     "Fantasy-Props-MegaKit/Exports/glTF/Bed_Twin1": {
       "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bed_Twin1.gltf",
       "tris": 1600,
@@ -2700,50 +3514,6 @@
       "clips": [],
       "bytes": 400711
     },
-    "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden.gltf",
-      "tris": 1576,
-      "min": [
-        -0.426,
-        -0.052,
-        -0.454
-      ],
-      "max": [
-        0.416,
-        0.878,
-        0.454
-      ],
-      "size": [
-        0.842,
-        0.931,
-        0.908
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 391575
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal.gltf",
-      "tris": 2738,
-      "min": [
-        -0.432,
-        0.003,
-        -0.433
-      ],
-      "max": [
-        0.432,
-        0.871,
-        0.433
-      ],
-      "size": [
-        0.864,
-        0.868,
-        0.866
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 414720
-    },
     "Fantasy-Props-MegaKit/Exports/glTF/Dummy": {
       "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Dummy.gltf",
       "tris": 2858,
@@ -2788,28 +3558,6 @@
       "clips": [],
       "bytes": 388259
     },
-    "Fantasy-Props-MegaKit/Exports/glTF/Bench": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bench.gltf",
-      "tris": 404,
-      "min": [
-        -1.388,
-        -0.007,
-        -0.262
-      ],
-      "max": [
-        1.388,
-        0.526,
-        0.272
-      ],
-      "size": [
-        2.777,
-        0.533,
-        0.534
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 376762
-    },
     "Fantasy-Props-MegaKit/Exports/glTF/WeaponStand": {
       "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/WeaponStand.gltf",
       "tris": 2084,
@@ -2831,28 +3579,6 @@
       "skinned": false,
       "clips": [],
       "bytes": 397999
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Bag": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Bag.gltf",
-      "tris": 858,
-      "min": [
-        -0.33,
-        0.002,
-        -0.244
-      ],
-      "max": [
-        0.325,
-        0.802,
-        0.3
-      ],
-      "size": [
-        0.655,
-        0.799,
-        0.544
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 329872
     },
     "Fantasy-Props-MegaKit/Exports/glTF/Shelf_Arch": {
       "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Shelf_Arch.gltf",
@@ -2919,72 +3645,6 @@
       "skinned": false,
       "clips": [],
       "bytes": 210854
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Vase_2": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Vase_2.gltf",
-      "tris": 598,
-      "min": [
-        -0.347,
-        -0.001,
-        -0.347
-      ],
-      "max": [
-        0.347,
-        0.515,
-        0.347
-      ],
-      "size": [
-        0.695,
-        0.516,
-        0.695
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 336541
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Vase_4": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Vase_4.gltf",
-      "tris": 598,
-      "min": [
-        -0.18,
-        0.001,
-        -0.18
-      ],
-      "max": [
-        0.18,
-        0.486,
-        0.18
-      ],
-      "size": [
-        0.36,
-        0.485,
-        0.36
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 336898
-    },
-    "Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid": {
-      "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid.gltf",
-      "tris": 1292,
-      "min": [
-        -0.27,
-        -0.023,
-        -0.243
-      ],
-      "max": [
-        0.27,
-        0.258,
-        0.243
-      ],
-      "size": [
-        0.539,
-        0.28,
-        0.486
-      ],
-      "skinned": false,
-      "clips": [],
-      "bytes": 184832
     },
     "Fantasy-Props-MegaKit/Exports/glTF/Stall_Empty": {
       "url": "packs/Fantasy-Props-MegaKit/Exports/glTF/Stall_Empty.gltf",
@@ -4656,6 +5316,393 @@
         }
       }
     ],
+    "decor.town": [
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel",
+        "weight": 3,
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples",
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden",
+        "weight": 2,
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Medieval-Village-MegaKit/glTF/Prop_Crate",
+        "weight": 2,
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bag",
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Apple",
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/FarmCrate_Carrot",
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Wooden_1",
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bench",
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Holder",
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Medieval-Village-MegaKit/glTF/Prop_WoodenFence_Single",
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Medieval-Village-MegaKit/glTF/Prop_Wagon",
+        "weight": 0.6,
+        "where": {
+          "style": [
+            "hlaalu",
+            "imperial",
+            "redoran",
+            "nord",
+            "telvanni"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1",
+        "where": {
+          "style": "ashlander"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2",
+        "weight": 2,
+        "where": {
+          "style": "ashlander"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4",
+        "where": {
+          "style": "ashlander"
+        }
+      }
+    ],
+    "decor.entrance": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_1",
+        "scale": 0.6,
+        "weight": 2
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_2",
+        "scale": 0.6,
+        "weight": 2
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Rock_Medium_3",
+        "scale": 0.6,
+        "weight": 2
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden",
+        "where": {
+          "theme": "cave"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel",
+        "where": {
+          "theme": "cave"
+        }
+      },
+      {
+        "model": "Medieval-Village-MegaKit/glTF/Prop_Crate",
+        "where": {
+          "theme": "cave"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bag",
+        "where": {
+          "theme": "cave"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2",
+        "where": {
+          "theme": [
+            "tomb",
+            "daedric"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4",
+        "where": {
+          "theme": "tomb"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_Rubble_Medium",
+        "weight": 2,
+        "where": {
+          "theme": [
+            "tomb",
+            "barrow",
+            "daedric"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid",
+        "where": {
+          "theme": "tomb"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Cage_Small",
+        "where": {
+          "theme": "daedric"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Chain_Coil",
+        "where": {
+          "theme": [
+            "daedric",
+            "dwemer"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal",
+        "where": {
+          "theme": "dwemer"
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Bucket_Metal",
+        "where": {
+          "theme": "dwemer"
+        }
+      }
+    ],
+    "decor.wild": [
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_1",
+        "weight": 1
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_2",
+        "weight": 1
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_3",
+        "weight": 1
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_4",
+        "weight": 1
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Round_5",
+        "weight": 1
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_1"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_2"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_3"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_4"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_5"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Pebble_Square_6"
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Clover_1",
+        "weight": 2,
+        "where": {
+          "region": [
+            "westGash",
+            "bitterCoast",
+            "ascadian",
+            "grazelands",
+            "azurasCoast"
+          ]
+        }
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Clover_2",
+        "weight": 2,
+        "where": {
+          "region": [
+            "westGash",
+            "bitterCoast",
+            "ascadian",
+            "grazelands",
+            "azurasCoast"
+          ]
+        }
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Flower_3_Single",
+        "where": {
+          "region": [
+            "westGash",
+            "bitterCoast",
+            "ascadian",
+            "grazelands",
+            "azurasCoast"
+          ]
+        }
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Flower_4_Single",
+        "where": {
+          "region": [
+            "westGash",
+            "bitterCoast",
+            "ascadian",
+            "grazelands",
+            "azurasCoast"
+          ]
+        }
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Plant_7",
+        "weight": 2,
+        "where": {
+          "region": [
+            "westGash",
+            "bitterCoast",
+            "ascadian",
+            "grazelands",
+            "azurasCoast"
+          ]
+        }
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Plant_7_Big",
+        "where": {
+          "region": [
+            "westGash",
+            "bitterCoast",
+            "ascadian",
+            "grazelands",
+            "azurasCoast"
+          ]
+        }
+      },
+      {
+        "model": "Stylized-Nature-MegaKit/glTF/Mushroom_Laetiporus",
+        "weight": 2,
+        "where": {
+          "region": [
+            "bitterCoast",
+            "ascadian",
+            "westGash"
+          ]
+        }
+      }
+    ],
     "player": [
       {
         "model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody",
@@ -5680,5 +6727,5 @@
       }
     ]
   },
-  "version": "05cbef1b2ac2"
+  "version": "12a9905db7f8"
 }

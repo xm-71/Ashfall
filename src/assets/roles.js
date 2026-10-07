@@ -77,6 +77,14 @@ ROLES.npc = {
   about: "A person. Filter with race, sex (male, female) and role (commoner, guard, trader, smith, priest, guildmaster, ...). Needs a rig and an animation set",
 }
 
+// Dressing: props scattered where the world would otherwise look bare.
+const DECOR = {
+  town: { where: ["style"], about: "Clutter beside town buildings and around the plaza: crates, barrels, sacks, carts, benches, fences. Filter with style" },
+  entrance: { where: ["theme"], about: "Props on the ground around dungeon entrances: crates, urns, torches, rocks. Filter with theme (cave, tomb, barrow, dwemer, daedric, citadel)" },
+  wild: { where: ["region"], about: "Small ground cover scattered through the wilds: pebbles, flowers, clover, mushrooms. Filter with region" },
+}
+for (const [k, d] of Object.entries(DECOR)) ROLES[`decor.${k}`] = { group: "decor", fit: "none", height: 1, where: d.where, words: [], about: d.about }
+
 ROLES.player = {
   group: "character",
   fit: "height",

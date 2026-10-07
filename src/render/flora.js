@@ -246,10 +246,24 @@ export function buildFlora(world, colliders) {
     }
     list = list.concat(extra)
   }
+  // ground cover from the packs (pebbles, flowers, mushrooms) among the plants
+  if (assets.has("decor.wild")) {
+    const wild = []
+    const chance = 0.35 * Math.min(1.5, Q.floraMult)
+    for (const f of world.flora) {
+      if (!rng.chance(chance)) continue
+      const x = f.x + rng.range(-4, 4)
+      const z = f.z + rng.range(-4, 4)
+      const y = world.heightAt(x, z)
+      if (y < 0.8) continue
+      wild.push({ type: "wild", x, z, y, scale: rng.range(0.7, 1.2), rot: rng.range(0, 6.28) })
+    }
+    list = list.concat(wild)
+  }
   const byKey = new Map()
   const packEntry = new Map() // key -> pack entry, for flora a pack provides
   for (const f of list) {
-    const role = `flora.${f.type}`
+    const role = f.type === "wild" ? "decor.wild" : `flora.${f.type}`
     let key
     if (assets.has(role)) {
       // a pack model, chosen per plant from those allowed in its region
@@ -260,6 +274,7 @@ export function buildFlora(world, colliders) {
         packEntry.set(key, e)
       }
     }
+    if (!key && f.type === "wild") continue // nothing suits this region
     if (!key) key = `${f.type}:${Math.floor(f.scale * 997 + f.rot * 131) % VARIANTS}`
     if (!byKey.has(key)) byKey.set(key, [])
     byKey.get(key).push(f)
@@ -276,10 +291,11 @@ export function buildFlora(world, colliders) {
     const [type, v] = key.split(":")
     const seed = `${type}:${v}:${world.seed}`
     const entry = packEntry.get(key)
-    const high = entry ? assets.parts(entry, `flora.${type}`) : BUILDERS[type](new RNG(seed))
+    const role = type === "wild" ? "decor.wild" : `flora.${type}`
+    const high = entry ? assets.parts(entry, role) : BUILDERS[type](new RNG(seed))
     // the far model: same shape and seed, built with far fewer segments
     let low = null
-    if (entry) low = entry.lod === false || SMALL[type] ? null : assets.lodParts(entry, `flora.${type}`) || high
+    if (entry) low = entry.lod === false || SMALL[type] ? null : assets.lodParts(entry, role) || high
     else if (!SMALL[type]) {
       const saved = Q.seg
       Q.seg = Math.min(saved, 0.4)
@@ -318,8 +334,17 @@ export function buildFlora(world, colliders) {
       })
     // pack models are detailed: switch to their simplified version sooner
     sets.push({ type, items, matrices, colors, near: makeInst(high, true), far: low ? makeInst(low, false) : [], nearDist: entry && low ? 45 : NEAR_DIST })
-    const trunk = entry ? entry.collider ?? TRUNK_RADIUS[type] : TRUNK_RADIUS[type]
-    if (trunk) for (const f of items) if (trunkItems.has(f)) colliders.addCircle(f.x, f.z, trunk * f.scale)
+    // solid trunks and boulders: a pack model's measured trunk (an entry's
+    // `collider` sets the radius), else the generated tree's own
+    const measured = entry && !SMALL[type] && TRUNK_RADIUS[type] ? assets.trunk(entry, role) : null
+    const trunk = entry ? entry.collider ?? measured?.r ?? TRUNK_RADIUS[type] : TRUNK_RADIUS[type]
+    if (trunk)
+      for (const f of items) {
+        if (!trunkItems.has(f)) continue
+        const ox = measured ? (measured.x * Math.cos(f.rot) + measured.z * Math.sin(f.rot)) * f.scale : 0
+        const oz = measured ? (-measured.x * Math.sin(f.rot) + measured.z * Math.cos(f.rot)) * f.scale : 0
+        colliders.addCircle(f.x + ox, f.z + oz, trunk * f.scale)
+      }
   }
 
   // Re-sort instances into near (full detail, shadows) and far (light, no shadows)
@@ -382,7 +407,7 @@ export function buildFlora(world, colliders) {
 const NEAR_DIST = 80
 const SMALL_DIST = 60
 const FAR_DIST = 520
-const SMALL = { shrub: true, grass: true, trama: true }
+const SMALL = { shrub: true, grass: true, trama: true, wild: true }
 
 // ---------------------------------------------------------------------------
 // Dense grass carpet that follows the player (render-only).

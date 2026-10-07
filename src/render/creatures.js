@@ -1084,7 +1084,7 @@ export function lookColors(look, race) {
 
 // look: { sex, outfit, hair, beard, hairColor, skin } (see data/looks.js).
 // weapon: the equipped weapon item or null. Returns the usual
-// { group, anim, head, rig } plus setWeapon(item).
+// { group, anim, head, rig } plus setWeapon(item) and setShield(item).
 export function buildPlayerMesh(look, race, weapon = null) {
   const raceKey = race.name.toLowerCase()
   const female = look.sex === "female"
@@ -1109,12 +1109,23 @@ export function buildPlayerMesh(look, race, weapon = null) {
       assets.attachToHand(c, held, e)
     }
     setWeapon(weapon)
-    return { group: c.group, anim: c.anim, head: c.rig.head, rig: c.rig, setWeapon, char: c }
+    let shieldObj = null
+    const setShield = item => {
+      if (shieldObj) shieldObj.parent?.parent?.remove(shieldObj.parent)
+      shieldObj = null
+      if (!item) return
+      shieldObj = buildShield(item)
+      assets.attachToHand(c, shieldObj, e, "shield", "l")
+    }
+    return { group: c.group, anim: c.anim, head: c.rig.head, rig: c.rig, setWeapon, setShield, char: c }
   }
   // no packs: the game's own body, rebuilt when the weapon changes
   const holder = new THREE.Group()
   let built = null
-  const build = item => {
+  let weaponItem = weapon
+  let shieldItem = null
+  const build = () => {
+    const item = weaponItem
     if (built) holder.remove(built.root)
     built = humanoid({
       race: raceKey,
@@ -1132,12 +1143,14 @@ export function buildPlayerMesh(look, race, weapon = null) {
       weapon: item && !item.ranged ? item.base : null,
       weaponMaterial: item?.material,
       weaponColor: item?.color,
+      shield: shieldItem?.material || null,
+      shieldColor: shieldItem?.color,
       bulk: raceKey === "orc" || raceKey === "nord" ? 1.12 : raceKey === "bosmer" ? 0.9 : 1,
     })
     holder.add(built.root)
     holder.scale.setScalar(h / 1.8)
   }
-  build(weapon)
+  build()
   return {
     group: holder,
     anim: (...a) => built.anim(...a),
@@ -1147,7 +1160,8 @@ export function buildPlayerMesh(look, race, weapon = null) {
     get rig() {
       return built.rig
     },
-    setWeapon: build,
+    setWeapon: item => ((weaponItem = item), build()),
+    setShield: item => ((shieldItem = item), build()),
   }
 }
 
