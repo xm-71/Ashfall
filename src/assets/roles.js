@@ -9,6 +9,8 @@
 //              height     scaled so its height matches `height`
 //              footprint  scaled to sit inside the generator's w × d footprint
 //              cell       stretched to one dungeon cell (and the wall height)
+//              length     weapons: scaled so the part above the grip (the
+//                         origin) is as long as the game's weapon of that kind
 //   height   typical height in metres, for `fit: "height"` and sanity checks
 //   where    context keys an entry may filter on
 //   words    file-name keywords the build tool uses to suggest the role
@@ -75,6 +77,15 @@ ROLES.npc = {
   about: "A person. Filter with race, sex (male, female) and role (commoner, guard, trader, smith, priest, guildmaster, ...). Needs a rig and an animation set",
 }
 
+ROLES.player = {
+  group: "character",
+  fit: "height",
+  height: 1.8,
+  where: ["sex"],
+  words: [],
+  about: "The player's body, one entry per sex. Every model listed in each parts slot (outfit, hair, beard) is offered in character creation; null means \"none\". Needs a rig and an animation set",
+}
+
 // creature.<id> roles are added from the creature list (see creatureRoles)
 export function creatureRoles(creatures) {
   for (const [id, def] of Object.entries(creatures))
@@ -86,6 +97,30 @@ export function creatureRoles(creatures) {
       words: [id.toLowerCase(), (def.name || "").toLowerCase()].filter(Boolean),
       about: `Creature: ${def.name || id}`,
     }
+}
+
+// Held items. Weapon models are placed with the grip at the origin and the
+// blade (or head) pointing up +Y, the game's own convention; a pack model's
+// origin should sit where the hand holds it (use `offset` when it doesn't).
+//   weapon.<base>    any weapon of that base, filtered by material
+//   shield           shields, filtered by material
+//   artifact.<id>    one legendary artifact or rare unique sword
+export function weaponRoles(bases, uniques) {
+  for (const [base, b] of Object.entries(bases)) {
+    if (b.thrown) continue
+    ROLES[`weapon.${base}`] = {
+      group: "weapon",
+      fit: "length",
+      height: 1,
+      where: ["material"],
+      words: [base.replace(/ /g, "_"), base.replace(/ /g, "")],
+      about: `Weapon: ${base}. Filter with material (iron, chitin, steel, silver, orcish, dwemer, adamantium, glass, ebony, daedric). Grip at the origin, blade up +Y`,
+    }
+  }
+  ROLES.shield = { group: "weapon", fit: "none", height: 0.7, where: ["material"], words: ["shield"], about: "Shield, worn on the left arm. Filter with material. Front facing +Z" }
+  for (const [id, u] of Object.entries(uniques))
+    if (u.kind === "weapon")
+      ROLES[`artifact.${id}`] = { group: "weapon", fit: "length", height: 1, where: [], words: [], about: `${u.rare ? "Rare unique sword" : "Artifact"}: ${u.name} (${u.base})` }
 }
 
 // Animation clip names an animation set maps for characters and creatures.

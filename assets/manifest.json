@@ -50,6 +50,16 @@
       "ignore": [
         "Exports/FBX (Unity)/**"
       ]
+    },
+    "Fantasy Props MegaKit[Standard]": {
+      "license": "Quaternius Asset License (see License_Standard.txt)",
+      "ignore": [
+        "Exports/FBX/**",
+        "Exports/OBJ/**"
+      ]
+    },
+    "Swordtember2022_GLB": {
+      "license": "unknown: no licence file in the pack"
     }
   },
   "animations": {
@@ -448,6 +458,7 @@
         }
       }
     ],
+    "player": [{"model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Male_FullBody", "anims": "humanoid", "fit": "none", "where": {"sex": "male"}, "parts": {"outfit": ["Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Peasant", "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Male_Ranger"], "hair": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale", null], "brows": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Regular"], "beard": [null, "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Beard"]}, "tint": {"MI_Superhero_*": "skin", "MI_Regular_*": "skin", "MI_Hair*": "hair"}, "keep": {"MI_Superhero_*": ["neck_01"]}}, {"model": "Universal-Base-Characters/Base_Characters/Godot_-_UE/Superhero_Female_FullBody", "anims": "humanoid", "fit": "none", "where": {"sex": "female"}, "parts": {"outfit": ["Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Peasant", "Modular-Character-Outfits-Fantasy/Exports/glTF_Godot-Unreal_/Outfits/Female_Ranger"], "hair": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Long", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buns", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_BuzzedFemale", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_SimpleParted", "Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Hair_Buzzed", null], "brows": ["Universal-Base-Characters/Hairstyles/Rigged_to_Head_Bone/glTF_Godot_-Unreal_/Eyebrows_Female"]}, "tint": {"MI_Superhero_*": "skin", "MI_Regular_*": "skin", "MI_Hair*": "hair"}, "keep": {"MI_Superhero_*": ["neck_01"]}}],
     "creature.scamp": [
       {
         "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Imp",
@@ -463,7 +474,62 @@
         "fit": "height",
         "height": 1
       }
-    ]
+    ],
+    "creature.caveImp": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Imp", "anims": "monster", "recolor": true, "fit": "height", "height": 1.3, "tint": { "MI_Imp": "body" } }],
+    "creature.graveImp": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Imp", "anims": "monster", "recolor": true, "fit": "height", "height": 1.4, "tint": { "MI_Imp": "body" } }],
+    "creature.emberImp": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Imp", "anims": "monster", "fit": "height", "height": 1.55, "tint": { "MI_Imp": "body" } }],
+    "creature.puglin": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin", "anims": "humanoid", "fit": "height", "height": 0.95, "tint": { "MI_Puglin": "body" } }],
+    "creature.puglinBrute": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin", "anims": "humanoid", "fit": "height", "height": 1.15, "tint": { "MI_Puglin": "body" } }],
+    "creature.puglinShaman": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin", "anims": "monster", "fit": "height", "height": 0.95, "tint": { "MI_Puglin": "body" } }],
+    "weapon.shortsword": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } }],
+    "weapon.longsword": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } }],
+    "weapon.broadsword": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } }],
+    "weapon.war axe": [
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Axe_Bronze", "fit": "none", "offset": [0, 0.3, 0], "weight": 2, "where": { "material": ["iron", "chitin"] } },
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Pickaxe_Bronze", "fit": "none", "offset": [0, 0.4, 0], "where": { "material": ["iron", "chitin"] } }
+    ],
+    "shield": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Shield_Wooden", "where": { "material": ["iron", "chitin", "netch leather", "bonemold"] } }],
+    "artifact.razor": [{ "model": "Swordtember2022-GLB/15-Paranormal" }],
+    "artifact.goldbrand": [{ "model": "Swordtember2022-GLB/4-Elemental" }],
+    "artifact.umbra": [{ "model": "Swordtember2022-GLB/17-Smoke" }],
+    "artifact.iceBlade": [{ "model": "Swordtember2022-GLB/1-Crystal" }],
+    "artifact.fang": [{ "model": "Swordtember2022-GLB/10-Snake" }],
+    "artifact.stalhrim": [{ "model": "Swordtember2022-GLB/18-Geometric" }],
+    "artifact.cogblade": [{ "model": "Swordtember2022-GLB/3-Gears" }],
+    "artifact.sporeblade": [{ "model": "Swordtember2022-GLB/5-Edible" }],
+    "artifact.inkfang": [{ "model": "Swordtember2022-GLB/7-Cephalopod" }],
+    "artifact.bloodvein": [{ "model": "Swordtember2022-GLB/8-Veined" }],
+    "artifact.bloomsword": [{ "model": "Swordtember2022-GLB/9-Floral" }],
+    "artifact.stormglass": [{ "model": "Swordtember2022-GLB/11-Neon" }],
+    "artifact.wickerblade": [{ "model": "Swordtember2022-GLB/12-Woven" }],
+    "artifact.conchblade": [{ "model": "Swordtember2022-GLB/16-Shell" }],
+    "artifact.oldHouse": [{ "model": "Swordtember2022-GLB/19-Heirloom" }],
+    "artifact.leafblade": [{ "model": "Swordtember2022-GLB/20-Leaf" }],
+    "artifact.hircineAntler": [{ "model": "Swordtember2022-GLB/22-Antler" }],
+    "artifact.coralThorn": [{ "model": "Swordtember2022-GLB/24-Coral" }],
+    "artifact.driftwood": [{ "model": "Swordtember2022-GLB/26-Wooden" }],
+    "artifact.runeblade": [{ "model": "Swordtember2022-GLB/27-Pattern" }],
+    "artifact.sawtooth": [{ "model": "Swordtember2022-GLB/28-Asymmetrical" }],
+    "artifact.crownblade": [{ "model": "Swordtember2022-GLB/29-Crown" }],
+    "prop.anvil": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Anvil" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Anvil_Log" }],
+    "prop.banner": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Banner_1_Cloth" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Banner_2_Cloth" }],
+    "prop.barrel": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel", "weight": 3 }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Barrel_Apples" }],
+    "prop.bed": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Bed_Twin1" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Bed_Twin2" }],
+    "prop.bookshelf": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Bookcase_2" }],
+    "prop.candles": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick_Triple" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/CandleStick" }],
+    "prop.chair": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Chair_1" }],
+    "prop.stool": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Stool" }],
+    "prop.chest": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Chest_Wood" }],
+    "prop.counter": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Cabinet" }],
+    "prop.crate": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Wooden", "weight": 3 }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Crate_Metal" }],
+    "prop.dummy": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Dummy" }],
+    "prop.longtable": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Table_Large" }],
+    "prop.pew": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Bench" }],
+    "prop.rack": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/WeaponStand" }],
+    "prop.sack": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Bag" }],
+    "prop.shelf": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Shelf_Arch" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Shelf_Small_Bottles" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Nightstand_Shelf" }],
+    "prop.urn": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_2" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Vase_4" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Pot_1_Lid" }],
+    "prop.stall": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Stall_Empty" }, { "model": "Fantasy-Props-MegaKit/Exports/glTF/Stall_Cart_Empty" }]
   },
   "kits": {
     "building": [

@@ -22,10 +22,13 @@ import os from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { createRequire } from "node:module"
-import { ROLES, CLIPS, creatureRoles } from "../../src/assets/roles.js"
+import { ROLES, CLIPS, creatureRoles, weaponRoles } from "../../src/assets/roles.js"
 import { CREATURES } from "../../src/data/creatures.js"
+import { WEAPON_BASES } from "../../src/data/items.js"
+import { UNIQUES } from "../../src/data/artifacts.js"
 
 creatureRoles(CREATURES)
+weaponRoles(WEAPON_BASES, UNIQUES)
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const PACKS = path.join(ROOT, "assets/packs")
@@ -254,7 +257,12 @@ function repairTextures(doc, pack, packCfg, images, id) {
 
 // ---------------------------------------------------------------- conversion
 
-const io = new NodeIO().setLogger(new Logger(Logger.Verbosity.WARN)).registerExtensions(ALL_EXTENSIONS).registerDependencies({ "meshopt.encoder": MeshoptEncoder, "meshopt.decoder": MeshoptDecoder })
+// Draco-compressed packs need the Draco decoder
+const draco3d = (await import("draco3dgltf")).default
+const io = new NodeIO()
+  .setLogger(new Logger(Logger.Verbosity.WARN))
+  .registerExtensions(ALL_EXTENSIONS)
+  .registerDependencies({ "meshopt.encoder": MeshoptEncoder, "meshopt.decoder": MeshoptDecoder, "draco3d.decoder": await draco3d.createDecoderModule() })
 
 let sharp = null
 try {
@@ -326,6 +334,8 @@ async function toRaw(src, rawFile, packFiles = [], id = src) {
     if (!fs.existsSync(rawFile)) throw new Error("FBX2glTF produced no output")
   } else {
     const doc = path.extname(src).toLowerCase() === ".gltf" ? await readGltf(src, packFiles, id) : await io.read(src)
+    // Draco is decoded on reading; the pipeline compresses with meshopt instead
+    for (const ext of doc.getRoot().listExtensionsUsed()) if (ext.extensionName === "KHR_draco_mesh_compression") ext.dispose()
     await io.write(rawFile, doc)
   }
 }

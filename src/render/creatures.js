@@ -1,7 +1,8 @@
 import * as THREE from "three"
 import { characterAtlas, atlasUV } from "./texgen.js"
 import { Builder, lathe, taperTube } from "./geom.js"
-import { npcWeapon, buildShield } from "./items.js"
+import { npcWeapon, buildShield, buildWeapon } from "./items.js"
+import { HAIR_COLORS, SKIN_SHADES } from "../data/looks.js"
 import { Q, seg } from "../core/quality.js"
 import { assets } from "../assets/registry.js"
 
@@ -817,7 +818,7 @@ export function buildCreatureMesh(def, id) {
   if (id) {
     // a pack model for this creature; humanoid foes can borrow a person model
     const e = assets.pick(`creature.${id}`, {}, Math.random())
-    if (e) return packBody(e, `creature.${id}`, { h: 1.6 * (def.scale || 1) })
+    if (e) return packBody(e, `creature.${id}`, { h: 1.6 * (def.scale || 1) }, def.weapon, { tints: { body: def.tint } })
     if (def.body === "humanoid" && assets.has("npc", { role: id })) {
       const p = assets.pick("npc", { role: id }, Math.random())
       const weapon = def.caster ? { base: "club", material: "iron" } : { base: def.name === "Bandit" ? "war axe" : "shortsword", material: "iron" }
@@ -867,7 +868,7 @@ export function buildCreatureMesh(def, id) {
       built = sphereBot(def)
       break
     case "riekling":
-      built = humanoid({ bigHead: true, skin: c, cloth: 0x5a4a3a, pants: 0x3a2e24, hair: 0xe0e0e8, hairStyle: "crest", elf: true, weapon: "spear", weaponMaterial: "chitin", weaponColor: 0x8a8070, sleeves: false, eye: 0x101820 })
+      built = humanoid({ bigHead: true, skin: c, cloth: 0x5a4a3a, pants: 0x3a2e24, hair: 0xe0e0e8, hairStyle: "crest", elf: true, weapon: def.caster ? null : def.weapon?.base || "spear", weaponMaterial: def.weapon?.material || "chitin", weaponColor: 0x8a8070, sleeves: false, eye: 0x101820 })
       break
     case "draugr":
       built = humanoid({ skull: true, thin: true, skin: c, cloth: 0x3a3e44, armor: "chain", armorColor: 0x5a5e66, helm: 0x4a4e56, helmTile: "plate", helmCrest: def.level > 8, weapon: def.level > 8 ? "battle axe" : "war axe", weaponMaterial: "iron", weaponColor: 0x6a6e73, shield: def.level > 8 ? null : "iron", glowEyes: 0x70c0ff })
@@ -1053,4 +1054,109 @@ export class LodSwitch {
     }
     return !far
   }
+}
+
+// ---------------------------------------------------------------------------
+// The player's own body (third-person view and the character-creation preview)
+// ---------------------------------------------------------------------------
+
+// The pack entry for a player of this sex: the `player` role, else a person.
+function playerEntry(sex) {
+  return assets.pick("player", { sex }, 0) || assets.pick("npc", { sex, role: "commoner" }, 0) || assets.pick("npc", { sex }, 0)
+}
+
+// What character creation can offer: per parts slot, the models listed (in
+// order, without repeats), e.g. { outfit: [...], hair: [..., null], beard: [...] }.
+export function lookOptions(sex) {
+  const e = playerEntry(sex)
+  if (!e?.parts) return {}
+  const out = {}
+  for (const [slot, list] of Object.entries(e.parts)) out[slot] = [...new Set(list)]
+  return out
+}
+
+// Colours for a look: the race's own unless the player picked others.
+export function lookColors(look, race) {
+  const shade = SKIN_SHADES[look.skin || 0]?.k ?? 1
+  const skin = new THREE.Color(race.skin).multiplyScalar(shade).getHex()
+  return { skin, hair: HAIR_COLORS[look.hairColor || 0]?.color ?? race.hair }
+}
+
+// look: { sex, outfit, hair, beard, hairColor, skin } (see data/looks.js).
+// weapon: the equipped weapon item or null. Returns the usual
+// { group, anim, head, rig } plus setWeapon(item).
+export function buildPlayerMesh(look, race, weapon = null) {
+  const raceKey = race.name.toLowerCase()
+  const female = look.sex === "female"
+  const { skin, hair } = lookColors(look, race)
+  const h = 1.8 * (raceKey === "altmer" ? 1.06 : raceKey === "bosmer" ? 0.92 : raceKey === "orc" || raceKey === "nord" ? 1.03 : 1)
+  const e = playerEntry(look.sex)
+  if (e) {
+    const parts = {}
+    const opts = lookOptions(look.sex)
+    for (const slot of Object.keys(opts)) {
+      // undefined = the first choice; an id the packs no longer have = the first
+      const v = look[slot]
+      parts[slot] = v === null ? null : opts[slot].includes(v) ? v : opts[slot][0] ?? null
+    }
+    const c = assets.character(e, "player", { h }, { parts, tints: { skin: skinTint(skin), hair } })
+    let held = null
+    const setWeapon = item => {
+      if (held) held.parent?.parent?.remove(held.parent)
+      held = null
+      if (!item || item.ranged) return
+      held = buildWeapon(item)
+      assets.attachToHand(c, held, e)
+    }
+    setWeapon(weapon)
+    return { group: c.group, anim: c.anim, head: c.rig.head, rig: c.rig, setWeapon, char: c }
+  }
+  // no packs: the game's own body, rebuilt when the weapon changes
+  const holder = new THREE.Group()
+  let built = null
+  const build = item => {
+    if (built) holder.remove(built.root)
+    built = humanoid({
+      race: raceKey,
+      female,
+      elf: ["dunmer", "altmer", "bosmer"].includes(raceKey),
+      skin,
+      hair,
+      hairStyle: look.hair === null ? "bald" : female ? "long" : "short",
+      beard: !female && !!look.beard,
+      eye: EYE[raceKey],
+      cloth: look.outfit && /ranger/i.test(look.outfit) ? 0x3a4a2a : 0x7a6040,
+      pants: 0x4a3a2a,
+      tail: raceKey === "khajiit" || raceKey === "argonian",
+      digitigrade: raceKey === "khajiit",
+      weapon: item && !item.ranged ? item.base : null,
+      weaponMaterial: item?.material,
+      weaponColor: item?.color,
+      bulk: raceKey === "orc" || raceKey === "nord" ? 1.12 : raceKey === "bosmer" ? 0.9 : 1,
+    })
+    holder.add(built.root)
+    holder.scale.setScalar(h / 1.8)
+  }
+  build(weapon)
+  return {
+    group: holder,
+    anim: (...a) => built.anim(...a),
+    get head() {
+      return built.head
+    },
+    get rig() {
+      return built.rig
+    },
+    setWeapon: build,
+  }
+}
+
+// First-person forearms and hands cut from the player's own pack body, so
+// the arms you see match the character you made. null without packs.
+export function buildPlayerArms(look, race) {
+  const body = buildPlayerMesh(look, race, null)
+  if (!body.char) return null
+  const right = assets.limb(body.char, "r")
+  const left = assets.limb(body.char, "l")
+  return right && left ? { right, left } : null
 }

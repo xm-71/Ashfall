@@ -15,6 +15,9 @@ import { questTargets, nearbyPlaces } from "../game/markers.js"
 import { CELL as DCELL } from "../logic/dungeongen.js"
 import { PRESETS, qualityName, setQuality } from "../core/quality.js"
 import * as D from "../game/dialogue.js"
+import { LookPreview } from "./lookPreview.js"
+import { lookOptions, lookColors } from "../render/creatures.js"
+import { HAIR_COLORS, SKIN_SHADES, defaultLook, partLabel } from "../data/looks.js"
 import { usePotion, eatItem, doRest, coatWeapon, useRepairTool, maxBreath } from "../game/player.js"
 
 // A thin condition bar under worn weapons and armour.
@@ -191,6 +194,36 @@ export class UI {
   showChargen(seed) {
     this.game.mode = "chargen"
     const state = { name: "", race: "dunmer", cls: "warrior", sign: "warrior" }
+    const look = defaultLook()
+    let preview = null
+    try {
+      preview = new LookPreview()
+    } catch {
+      /* no second WebGL context: choices still work, without the preview */
+    }
+    const closePreview = () => preview?.dispose()
+    const hex = n => `#${n.toString(16).padStart(6, "0")}`
+    const appearance = () => {
+      const opts = lookOptions(look.sex)
+      const race = RACES[state.race]
+      const choice = (slot, list) => {
+        const cur = look[slot] === undefined ? list[0] : look[slot]
+        return `<div class="cg-look-row"><label>${slot === "outfit" ? "Outfit" : slot === "hair" ? "Hair" : slot === "beard" ? "Beard" : esc(slot)}</label><div class="opts">${list.map((id, k) => `<button class="opt ${cur === id ? "sel" : ""}" data-act="part" data-arg="${slot}:${k}">${esc(partLabel(id))}</button>`).join("")}</div></div>`
+      }
+      const swatches = (key, list, colorOf) =>
+        `<div class="opts">${list.map((v, k) => `<button class="swatch ${(look[key] || 0) === k ? "sel" : ""}" title="${esc(v.name)}" data-act="${key}" data-arg="${k}" style="background:${hex(colorOf(k))}"></button>`).join("")}</div>`
+      return `<div class="cg-look">
+        <div class="cg-look-preview" id="cg-look-view">${preview ? "" : `<p class="desc">No 3D preview on this device.</p>`}</div>
+        <div class="cg-look-opts">
+          <h3>Appearance</h3>
+          <div class="cg-look-row"><label>Body</label><div class="opts">${["male", "female"].map(s => `<button class="opt ${look.sex === s ? "sel" : ""}" data-act="sex" data-arg="${s}">${s === "male" ? "Male" : "Female"}</button>`).join("")}</div></div>
+          ${Object.entries(opts).filter(([, list]) => list.length > 1).map(([slot, list]) => choice(slot, list)).join("")}
+          <div class="cg-look-row"><label>Hair colour</label>${swatches("hairColor", HAIR_COLORS, k => lookColors({ ...look, hairColor: k }, race).hair)}</div>
+          <div class="cg-look-row"><label>Skin</label>${swatches("skin", SKIN_SHADES, k => lookColors({ ...look, skin: k }, race).skin)}</div>
+          <p class="desc">The first swatch of each is your race's own. Drag the figure to turn it. In the game, V switches between first- and third-person view.</p>
+        </div>
+      </div>`
+    }
     const render = () => {
       const c = createCharacter({ name: state.name || "Outlander", ...state })
       const C = CLASSES[state.cls]
@@ -214,18 +247,36 @@ export class UI {
               <h3>Starting spells</h3><p class="desc">${[...c.spells, ...c.powers].map(s => getSpell(s).name).join(", ") || "none"}</p>
             </div>
           </div>
+          ${appearance()}
           <div class="row end"><span class="dim">Seed: ${esc(seed)}</span><button data-act="back">Back</button><button class="big" data-act="go">Begin</button></div>
         </div>`
+      if (preview) {
+        this.screen.querySelector("#cg-look-view").appendChild(preview.canvas)
+        preview.show(look, RACES[state.race], c.equipment.weapon)
+      }
       const nameInput = this.screen.querySelector("#cname")
       nameInput.addEventListener("input", () => (state.name = nameInput.value))
       bind(this.screen, {
         race: v => ((state.race = v), render()),
         cls: v => ((state.cls = v), render()),
         sign: v => ((state.sign = v), render()),
-        back: () => this.showTitle(),
+        sex: v => {
+          // parts are per body: start the new one from its first choices
+          Object.assign(look, defaultLook(v === "female"), { hairColor: look.hairColor, skin: look.skin })
+          render()
+        },
+        part: v => {
+          const [slot, k] = v.split(":")
+          look[slot] = lookOptions(look.sex)[slot][Number(k)]
+          render()
+        },
+        hairColor: v => ((look.hairColor = Number(v)), render()),
+        skin: v => ((look.skin = Number(v)), render()),
+        back: () => (closePreview(), this.showTitle()),
         go: async () => {
+          closePreview()
           this.game.input.lock()
-          await this.game.startRun({ name: state.name.trim() || "Outlander", race: state.race, cls: state.cls, sign: state.sign, seed })
+          await this.game.startRun({ name: state.name.trim() || "Outlander", race: state.race, cls: state.cls, sign: state.sign, seed, look: { ...look } })
         },
       })
     }
@@ -738,7 +789,7 @@ export class UI {
     body.innerHTML = `<div class="inv">
       <div class="inv-list">
         <div class="filters">${Object.keys(kinds).map(k => `<button class="${k === filter ? "sel" : ""}" data-act="filter" data-arg="${k}">${k}</button>`).join("")}</div>
-        <div class="list">${items.map((i, idx) => `<div class="item ${isEquipped(c, i) ? "eq" : ""} ${i === sel ? "sel" : ""} ${isBroken(i) ? "broken" : ""}" data-act="select" data-arg="${c.inventory.indexOf(i)}"><span>${esc(i.name)}${i.qty > 1 ? ` (${i.qty})` : ""}${condBar(i)}</span><span class="dim">${i.relic ? "relic" : i.artifact ? "artifact" : i.value}</span></div>`).join("") || `<div class="dim">Nothing here.</div>`}</div>
+        <div class="list">${items.map((i, idx) => `<div class="item ${isEquipped(c, i) ? "eq" : ""} ${i === sel ? "sel" : ""} ${isBroken(i) ? "broken" : ""}" data-act="select" data-arg="${c.inventory.indexOf(i)}"><span>${esc(i.name)}${i.qty > 1 ? ` (${i.qty})` : ""}${condBar(i)}</span><span class="dim">${i.relic ? "relic" : i.artifact ? (i.rare ? "rare" : "artifact") : i.value}</span></div>`).join("") || `<div class="dim">Nothing here.</div>`}</div>
       </div>
       <div class="inv-side">
         <div class="kv"><span>Gold</span><b>${c.gold}</b></div>

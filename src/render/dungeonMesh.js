@@ -357,8 +357,10 @@ export function buildChestMesh(open = false, salt = 0) {
     g.add(closed)
     if (opened) g.add(opened)
     g.userData.lid = new THREE.Object3D()
+    // a rigged chest shows itself closed, then plays its opening clip's end
+    closed.userData.pose?.("close", 0.999)
     g.userData.open = () => {
-      if (!opened) return
+      if (!opened) return closed.userData.pose?.("open", 0.999)
       closed.visible = false
       opened.visible = true
     }

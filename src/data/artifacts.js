@@ -92,4 +92,86 @@ export const ARTIFACTS = {
   },
 }
 
+// Rare unique swords: lesser one-of-a-kind blades, found now and then in
+// dungeon chests and on bosses rather than placed with the world. `minTier`
+// is the loot tier from which they can turn up. Their looks come from the
+// pack models assigned to the artifact.<id> roles (assets/manifest.json).
+export const RARE_SWORDS = {
+  cogblade: {
+    name: "Cogwright's Edge", base: "broadsword", material: "dwemer", damage: [12, 24], minTier: 3, unique: "stagger",
+    lore: "A Dwemer blade with a geared guard that still turns. Its weighted strikes knock foes off balance.",
+  },
+  sporeblade: {
+    name: "Sporecap Cleaver", base: "scimitar", material: "chitin", damage: [9, 18], minTier: 1,
+    enchant: { key: "poison", element: "poison", amount: 7 },
+    lore: "A Telvanni mushroom-grower's blade, its hilt overgrown with living caps that weep poison.",
+  },
+  inkfang: {
+    name: "Inkfang", base: "shortsword", material: "steel", damage: [8, 16], minTier: 2, unique: "paralyze", chance: 0.08,
+    lore: "Dreugh-hunters of the Bitter Coast carry these. The tentacled hilt grips back.",
+  },
+  bloodvein: {
+    name: "Bloodvein", base: "saber", material: "daedric", damage: [16, 30], minTier: 5,
+    enchant: { key: "absorb", absorb: true, amount: 5 },
+    lore: "A pale curved blade threaded with red veins. It thirsts, and it shares what it drinks.",
+  },
+  bloomsword: {
+    name: "Bloom of Azura", base: "longsword", material: "silver", damage: [11, 22], minTier: 2, unique: "regen", amount: 0.5,
+    lore: "Flowers grow from this blade's hilt in every season. Azura's faithful say it mends its bearer.",
+  },
+  stormglass: {
+    name: "Stormglass", base: "broadsword", material: "glass", damage: [15, 28], minTier: 4,
+    enchant: { key: "shock", element: "shock", amount: 12 },
+    lore: "Glass that caught a lightning strike on the Ascadian Isles and kept it. It glows in the dark.",
+  },
+  wickerblade: {
+    name: "Ashlander Wickerblade", base: "longsword", material: "chitin", damage: [10, 19], minTier: 1, unique: "absorbFatigue", amount: 4,
+    lore: "Woven from treated reed and chitin by an Ashlander wise woman. It never tires the arm that swings it.",
+  },
+  conchblade: {
+    name: "Conch of the Tides", base: "shortsword", material: "chitin", damage: [8, 15], minTier: 1,
+    enchant: { key: "frost", element: "frost", amount: 6 },
+    lore: "A spiralled shell honed to an edge, cold as the sea it came from.",
+  },
+  oldHouse: {
+    name: "Heirloom of the Old House", base: "longsword", material: "steel", damage: [12, 22], minTier: 2, indestructible: true,
+    lore: "Passed down nine generations of a fallen Great House. It has never needed a smith.",
+  },
+  leafblade: {
+    name: "Greenleaf", base: "longsword", material: "orcish", damage: [13, 25], minTier: 3, speedMult: 1.2,
+    lore: "A Bosmer-forged blade shaped like a leaf. It moves as lightly as one.",
+  },
+  hircineAntler: {
+    name: "Antler of the Hunt", base: "claymore", material: "ebony", damage: [24, 42], minTier: 5, unique: "stagger",
+    lore: "A greatsword grown from the antlers of a beast Hircine himself ran down.",
+  },
+  coralThorn: {
+    name: "Coral Thorn", base: "scimitar", material: "adamantium", damage: [14, 26], minTier: 4,
+    enchant: { key: "poison", element: "poison", amount: 10 },
+    lore: "Cut from a red reef off Azura's Coast. Its barbs break off in the wound.",
+  },
+  driftwood: {
+    name: "Driftwood Saint", base: "katana", material: "chitin", damage: [10, 20], minTier: 1, unique: "absorbMagicka", amount: 4,
+    lore: "A pilgrim carved it from wood washed up at the Ghostfence. Spells seem to drain into its grain.",
+  },
+  runeblade: {
+    name: "Runed Longsword", base: "longsword", material: "adamantium", damage: [15, 27], minTier: 4,
+    enchant: { key: "fire", element: "fire", amount: 10 },
+    lore: "Every inch of the blade is cut with Daedric script. The words burn when it strikes.",
+  },
+  sawtooth: {
+    name: "Sawtooth", base: "broadsword", material: "iron", damage: [11, 21], minTier: 1, unique: "stagger",
+    lore: "A crooked, toothed blade made for tearing, not cutting. Crude, but nobody stands up to it.",
+  },
+  crownblade: {
+    name: "Crown of Talos", base: "saber", material: "ebony", damage: [17, 31], minTier: 5, unique: "banish", chance: 0.03,
+    lore: "Its golden guard is a crown, said to be cast from one the Underking wore.",
+  },
+}
+
+export const RARE_IDS = Object.keys(RARE_SWORDS)
+
+// Every unique item, for looking one up by id (item.artifact).
+export const UNIQUES = { ...ARTIFACTS, ...Object.fromEntries(Object.entries(RARE_SWORDS).map(([id, s]) => [id, { ...s, kind: "weapon", rare: true }])) }
+
 export const ARTIFACT_IDS = Object.keys(ARTIFACTS).filter(id => !ARTIFACTS[id].reward)

@@ -14,13 +14,15 @@ import { Projectile, ELEMENT_COLOR } from "./actors.js"
 import { Input } from "./input.js"
 import { Audio } from "./audio.js"
 import { ViewModel } from "../render/viewmodel.js"
-import { updatePlayer, spellEffectsOnEnemy } from "./player.js"
+import { updatePlayer, spellEffectsOnEnemy, currentWeapon } from "./player.js"
+import { buildPlayerMesh, buildPlayerArms, lookColors } from "../render/creatures.js"
+import { defaultLook } from "../data/looks.js"
 import { UI } from "../ui/ui.js"
 import { loadWorld } from "./worldLoader.js"
 import { writeSave, deleteSave, restoreRun } from "./save.js"
 import { strikeEnemy, wearArmor } from "./combat.js"
 import { Particles } from "../render/particles.js"
-import { makeArtifact } from "../logic/items.js"
+import { makeArtifact, maybeRareSword } from "../logic/items.js"
 import { equippedUnique } from "../logic/character.js"
 import { ARTIFACTS } from "../data/artifacts.js"
 import { showLoading, hideLoading } from "../ui/loading.js"
@@ -164,13 +166,76 @@ export class Game {
     this.ui.showHud()
   }
 
+  // ---------- the player's body (third-person view) ----------
+
+  toggleView() {
+    this.thirdPerson = !this.thirdPerson
+    this.camDist = 0.6
+    this.msg(this.thirdPerson ? "Third-person view (V to switch back)" : "First-person view", "#c9b88f")
+  }
+
+  // Build (or rebuild) the body when the look, race or weapon changes.
+  updatePlayerBody(dt, speed) {
+    if (!this.thirdPerson && !this.playerBody) return
+    const c = this.char
+    const look = (c.look ||= defaultLook())
+    const weapon = currentWeapon(c)
+    const key = JSON.stringify([look, c.race])
+    if (!this.playerBody || this.playerBodyKey !== key) {
+      if (this.playerBody) this.playerBody.group.removeFromParent()
+      this.playerBody = buildPlayerMesh(look, RACES[c.race], weapon)
+      this.playerBodyKey = key
+      this.playerBodyWeapon = weapon
+      this.playerBody.group.traverse(o => o.isMesh && (o.castShadow = true))
+    }
+    const b = this.playerBody
+    if (this.playerBodyWeapon !== weapon) {
+      b.setWeapon(weapon)
+      this.playerBodyWeapon = weapon
+    }
+    if (b.group.parent !== this.area.scene) this.area.scene.add(b.group)
+    const pc = this.pc
+    b.group.position.copy(pc.pos)
+    if (pc.sneaking) b.group.position.y -= 0.12
+    b.group.rotation.y = pc.yaw + Math.PI
+    // the swing follows the first-person one: up to the blow, then back
+    const vm = this.viewmodel
+    const t = 1 - (vm.swing || 0)
+    const attack = vm.swing > 0 ? (t < 0.4 ? t / 0.4 : 1 - (t - 0.4) / 0.6) : pc.charging ? Math.min(0.3, pc.chargeT) : 0
+    this.bodyT = (this.bodyT || 0) + dt
+    b.anim(this.bodyT, speed, attack, { variant: vm.swingType === "slash" ? 1 : vm.swingType === "thrust" ? 2 : 0 })
+  }
+
+  // Pull the camera back behind the player, stopping short of walls.
+  thirdPersonCamera(dt, eye) {
+    const pc = this.pc
+    const head = new THREE.Vector3(pc.pos.x, pc.pos.y + eye + 0.15, pc.pos.z)
+    const fwd = new THREE.Vector3(-Math.sin(pc.yaw) * Math.cos(pc.pitch), Math.sin(pc.pitch), -Math.cos(pc.yaw) * Math.cos(pc.pitch))
+    const right = new THREE.Vector3(Math.cos(pc.yaw), 0, -Math.sin(pc.yaw))
+    const want = 3.2
+    let dist = want
+    const p = new THREE.Vector3()
+    for (let d = 0.3; d <= want; d += 0.15) {
+      p.copy(head).addScaledVector(fwd, -d).addScaledVector(right, 0.35 * (d / want))
+      if (this.area.projectileBlocked(p) || p.y < this.area.groundHeight(p.x, p.z) + 0.25) {
+        dist = Math.max(0.3, d - 0.3)
+        break
+      }
+    }
+    // pull in at once, ease back out
+    this.camDist = dist < (this.camDist ?? dist) ? dist : (this.camDist ?? dist) + (dist - this.camDist) * Math.min(1, dt * 4)
+    const k = this.camDist
+    this.camera.position.copy(head).addScaledVector(fwd, -k).addScaledVector(right, 0.35 * (k / want))
+  }
+
   // Continue a suspended run from its save.
   async resumeRun(save) {
     this.audio.ensure()
     await this.ensureWorld(save.seed)
     restoreRun(this, save)
     for (const [k, st] of Object.entries(this.landmarks.state)) if (k[0] === "c" && st.opened) this.overworld.seabed?.userData.open(Number(k.slice(1)))
-    this.viewmodel.setSkin(RACES[this.char.race].skin)
+    this.viewmodel.setSkin(lookColors(this.char.look || defaultLook(), RACES[this.char.race]).skin)
+    this.viewmodel.setArms(buildPlayerArms(this.char.look || defaultLook(), RACES[this.char.race]))
     this.pc = this.newPlayerController(save.pc.x, save.pc.y, save.pc.z, save.pc.yaw)
     this.pc.pitch = save.pc.pitch || 0
     this.pc.sneaking = !!save.pc.sneaking
@@ -196,13 +261,15 @@ export class Game {
     writeSave(this)
   }
 
-  async startRun({ name, race, cls, sign, seed }) {
+  async startRun({ name, race, cls, sign, seed, look }) {
     this.audio.ensure()
     await this.ensureWorld(seed)
     deleteSave()
     this.char = createCharacter({ name, race, cls, sign })
+    this.char.look = look || defaultLook()
     this.char.dead = false
-    this.viewmodel.setSkin(RACES[race].skin)
+    this.viewmodel.setSkin(lookColors(this.char.look, RACES[race]).skin)
+    this.viewmodel.setArms(buildPlayerArms(this.char.look, RACES[race]))
     this.time = 9 // day 0, 9am
     this.day = 0
     this.weather = "clear"
@@ -306,7 +373,8 @@ export class Game {
       if (this.area.kind === "overworld") this.area.sky.update(dt, this.hourOfDay(), this.camera, this.area.fogColor(this.pc.pos.x, this.pc.pos.z), this.area.scene.fog)
       for (const e of this.area.enemies) e.update(dt)
     }
-    this.viewmodel.root.visible = this.mode === "play" && this.ui.modal !== "dialogue"
+    this.viewmodel.root.visible = this.mode === "play" && this.ui.modal !== "dialogue" && !this.thirdPerson
+    if (this.playerBody) this.playerBody.group.visible = this.thirdPerson && this.ui.modal !== "dialogue"
     this.audio.update(dt, this)
     if (this.input.active) this.ui.showPauseHint(false)
     this.input.endFrame()
@@ -397,7 +465,7 @@ export class Game {
   update(dt) {
     const c = this.char
     this.advanceTime(dt * HOURS_PER_SECOND)
-    this.viewmodel.root.visible = true
+    this.viewmodel.root.visible = !this.thirdPerson
     if (this.area.kind === "overworld") {
       this.updateWeather(dt)
       this.area.sky.weather = this.weather
@@ -717,6 +785,8 @@ export class Game {
       gold += 50 * tier + Math.round(Math.random() * 100 * tier)
       if (e.relic) loot.push(makeRelic(e.relic))
       if (e.artifact) loot.push(makeArtifact(e.artifact))
+      const rare = maybeRareSword(new RNG(Math.random() * 1e9), tier + 1, c.artifactsFound, 0.25)
+      if (rare) loot.push(rare)
       if (e.questItem) loot.push(makeQuestItem(e.questItem.name, e.questItem.questId))
     }
     // take back what stuck in the body, merging stacks
@@ -779,7 +849,7 @@ export class Game {
   onItemTaken(item) {
     if (item.artifact && !this.char.artifactsFound?.includes(item.artifact)) {
       ;(this.char.artifactsFound ||= []).push(item.artifact)
-      this.msg(`Legendary artifact: ${item.name}!`, "#ffe080")
+      this.msg(`${item.rare ? "Rare find" : "Legendary artifact"}: ${item.name}!`, "#ffe080")
       this.addJournal(`I found ${item.name}. ${item.lore}`)
       this.audio.sting("discover")
     }

@@ -29,6 +29,7 @@ The compass at the top of the screen points to your current quest targets and ne
 | Q | Drink a healing potion |
 | T | Rest (level-ups happen when you rest) |
 | Tab or I · K · M · J | Inventory · character · map · journal |
+| V | Switch between first- and third-person view |
 
 ### Controller
 

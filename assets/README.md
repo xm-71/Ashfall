@@ -78,7 +78,7 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 | `where` | Context filter. A value can be a string or a list. Keys depend on the role: `region` for flora; `style` and `type` for buildings; `theme` or `style` for props; `theme` for dungeon pieces; `race`, `sex` and `role` for people |
 | `weight` | Relative chance when several entries match (default 1) |
 | `scale` | Multiplies the size (or a fitted size) |
-| `fit` | Overrides the role's sizing: `none` (native size), `height`, `footprint` (fit the building plot) or `cell` (stretch to a 4 m dungeon cell) |
+| `fit` | Overrides the role's sizing: `none` (native size), `height`, `footprint` (fit the building plot), `cell` (stretch to a 4 m dungeon cell) or `length` (weapons: as long as the game's weapon of that kind, no wider than 0.34 m) |
 | `height` | Target height in metres for `fit: "height"` |
 | `front` | Which side of the model is its front: `+z` (default, the glTF convention), `-z`, `+x` or `-x` |
 | `yaw`, `rotate`, `offset` | Extra turn (degrees), rotation `[x, y, z]` (degrees) and offset `[x, y, z]` (metres) |
@@ -88,6 +88,7 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 | `strike` | Where in the attack clip the blow lands (0 to 1, default 0.45) |
 | `handBone`, `handRotate` | Bone that holds weapons (found automatically) and its rotation fix |
 | `lod: false` | Flora: hide far away instead of drawing the full model at a distance |
+| `recolor: true` | With `tint`: the texture is turned grey before it is tinted, so a red monster can become a grey one (a plain tint only darkens or shifts the colour) |
 
 ### Roles
 
@@ -97,11 +98,14 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 - `building`: sized to the plot, with the front toward the plaza. The game places the door at the front centre.
 - `prop.*`:
   - furniture and clutter for interiors, dungeons and town plazas;
-  - `chest` and `chestOpen` (shown once looted);
+  - `chest` and `chestOpen` (shown once looted). A rigged chest with `close` and `open` clips needs no `chestOpen`: it plays its own lid;
   - plaza pieces `well`, `stall` and `lamppost`.
 - `dungeon.wall`, `dungeon.floor`, `dungeon.ceiling` and `dungeon.pillar`: modular pieces stretched to 4 m cells. Ramps and uneven floors keep the generated floor.
 - `npc`: people. Needs a rig and an animation set; only `idle` is required, and `walk`, `run`, `attack`, `hit`, `die` and `talk` are used when present.
-- `creature.<id>`: one role per creature (`creature.guar`, `creature.cliffRacer`, ...).
+- `player`: the player's body, one entry per sex. Character creation offers every model listed in each `parts` slot (outfit, hair, beard; `null` = none), and the first-person arms are cut from the same body.
+- `weapon.<base>` (`weapon.longsword`, `weapon.war axe`, ...), filtered by `material`, and `shield`. Held items keep the file's orientation: the origin is where the hand grips, with the blade pointing up (+Y). They keep their shiny (PBR) materials.
+- `artifact.<id>`: the look of one legendary artifact or rare unique sword (ids in `src/data/artifacts.js`).
+- `creature.<id>`: one role per creature (`creature.guar`, `creature.cliffRacer`, ...). A creature's `tint` colour (in `src/data/creatures.js`) colours materials mapped to `"body"`, e.g. `"tint": { "MI_Imp": "body" }`.
   - Humanoid foes (bandits, smugglers) fall back to `npc` models with a matching `role` filter.
 
 ### Characters: parts and colours

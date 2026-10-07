@@ -8,7 +8,7 @@ import { getSpell } from "../data/spells.js"
 import { BIRTHSIGNS, RACES } from "../data/stats.js"
 import { Projectile, ELEMENT_COLOR } from "./actors.js"
 import { RNG } from "../core/rng.js"
-import { randomLoot } from "../logic/items.js"
+import { randomLoot, maybeRareSword } from "../logic/items.js"
 import { DUNGEON_THEMES } from "../logic/dungeongen.js"
 import { attackDamage, attackTypeFor, weaponConditionMult, ammoTypeOf, isBroken } from "../logic/items.js"
 import { strikeEnemy, wearWeapon, coatWeapon, useRepairTool } from "./combat.js"
@@ -66,6 +66,7 @@ export function updatePlayer(game, dt) {
   if (inp.actionPressed("character")) return game.ui.openMenu("character")
   if (inp.actionPressed("rest")) return tryRest(game)
   if (inp.actionPressed("quaff")) quickPotion(game)
+  if (inp.actionPressed("view")) game.toggleView()
   if (inp.wheel || inp.wasPressed("BracketRight") || inp.wasPressed("BracketLeft")) cycleSpell(game, inp.wheel || (inp.wasPressed("BracketLeft") ? -1 : 1))
   for (let i = 1; i <= 9; i++) if (inp.wasPressed(`Digit${i}`) || inp.vPressed.has(`slot${i}`)) useQuickslot(game, i - 1)
 
@@ -188,6 +189,8 @@ export function updatePlayer(game, dt) {
   const eye = pc.sneaking ? 1.15 : 1.62
   game.camera.position.set(pc.pos.x, pc.pos.y + eye, pc.pos.z)
   game.camera.rotation.set(pc.pitch, pc.yaw, 0)
+  if (game.thirdPerson) game.thirdPersonCamera(dt, eye)
+  game.updatePlayerBody(dt, moving && pc.onGround ? (sprint ? 1 : 0.5) : 0)
   game.viewmodel.build(currentWeapon(c), c.equipment.shield, c.equipment.cuirass, c.equipment.gauntlets)
   game.viewmodel.update(dt, moving && pc.onGround, sprint)
 
@@ -698,6 +701,8 @@ function activate(game, it) {
         const rng = new RNG(ch.def.seed)
         const tag = DUNGEON_THEMES[game.area.dungeon.type].lootTag
         ch.state.items = randomLoot(rng, Math.min(7, ch.def.tier), tag)
+        const rare = maybeRareSword(rng, ch.def.tier, c.artifactsFound, 0.035)
+        if (rare) ch.state.items.push(rare)
         ch.state.gold = rng.int(5, 30) * ch.def.tier
         ch.mesh.userData.lid.rotation.x = -1.2
         ch.mesh.userData.open?.()

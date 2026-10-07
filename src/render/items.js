@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { texture } from "./texgen.js"
 import { lathe, taperTube } from "./geom.js"
 import { seg } from "../core/quality.js"
+import { assets } from "../assets/registry.js"
 
 const cache = new Map()
 function metalMat(material, color) {
@@ -85,8 +86,32 @@ function mesh(g, m, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) {
   return o
 }
 
+// How far each weapon reaches above the hand (the generated models' size).
+// Pack weapons are scaled to it, so a pack sword is as long as the game's.
+const REACH = {
+  dagger: 0.44, tanto: 0.5, wakizashi: 0.65, shortsword: 0.68, longsword: 0.96, broadsword: 0.9, saber: 0.9, scimitar: 0.82,
+  katana: 0.95, "dai-katana": 1.22, claymore: 1.3, club: 0.66, "spiked club": 0.67, mace: 0.63, staff: 1.5, warhammer: 1.04,
+  "war axe": 0.75, "battle axe": 1.15, spear: 2.0, "long spear": 2.55, halberd: 2.0,
+}
+
+// A pack model for this item, if the manifest has one: artifact.<id> for
+// artifacts and rare swords, else weapon.<base> filtered by material. The
+// same item always gets the same model.
+function packWeapon(item) {
+  if (!assets.enabled) return null
+  const role = item.artifact && assets.has(`artifact.${item.artifact}`) ? `artifact.${item.artifact}` : `weapon.${item.base}`
+  if (role.startsWith("weapon.") && item.artifact) return null // artifacts keep their own look
+  const entry = assets.pick(role, { material: item.material || "iron" }, (((item.uid || 0) * 0.6180339) % 1 + 1) % 1)
+  if (!entry) return null
+  const obj = assets.object(entry, role, { h: REACH[item.base] })
+  obj.traverse(o => o.isMesh && (o.castShadow = true))
+  return obj
+}
+
 // Weapon model with the grip at the origin and the business end along +Y.
 export function buildWeapon(item) {
+  const packed = packWeapon(item)
+  if (packed) return packed
   const g = new THREE.Group()
   const base = item.base
   const material = item.material || "iron"
@@ -264,6 +289,8 @@ export function buildWeapon(item) {
 }
 
 export function buildShield(item) {
+  const entry = assets.enabled && assets.pick("shield", { material: item.material || "iron" }, (((item.uid || 0) * 0.6180339) % 1 + 1) % 1)
+  if (entry) return assets.object(entry, "shield", {})
   const g = new THREE.Group()
   const m = item.material || "iron"
   const mat = metalMat(m, item.color ?? 0x888888)

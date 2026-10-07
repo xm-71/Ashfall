@@ -5,10 +5,13 @@
 // builds its own art as before.
 import * as THREE from "three"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js"
-import { ROLES, matches, creatureRoles } from "./roles.js"
+import { ROLES, matches, creatureRoles, weaponRoles } from "./roles.js"
 import { CREATURES } from "../data/creatures.js"
+import { WEAPON_BASES } from "../data/items.js"
+import { UNIQUES } from "../data/artifacts.js"
 
 creatureRoles(CREATURES)
+weaponRoles(WEAPON_BASES, UNIQUES)
 
 const DEG = Math.PI / 180
 
@@ -99,6 +102,32 @@ function prepareMaterial(src) {
   return m
 }
 
+// Held weapons keep their metal-and-gloss (PBR) look, which flat Lambert
+// shading would wash out to white; clearcoat and the like are dropped.
+function heldMaterial(src) {
+  if (converted.has(src)) return converted.get(src)
+  const m = new THREE.MeshStandardMaterial()
+  for (const k of ["name", "map", "normalMap", "roughness", "metalness", "roughnessMap", "metalnessMap", "emissiveMap", "emissiveIntensity", "side", "transparent", "opacity", "alphaTest", "vertexColors"]) if (src[k] !== undefined) m[k] = src[k]
+  m.color.copy(src.color)
+  m.emissive.copy(src.emissive)
+  if (src.normalScale) m.normalScale.copy(src.normalScale)
+  m.userData.packReady = true
+  converted.set(src, m)
+  return m
+}
+
+// entry.recolor: the texture is turned grey before the tint colours it, so a
+// red imp can become a pale grey one (a plain tint only darkens or shifts).
+function greyTexture(m) {
+  m.onBeforeCompile = sh => {
+    sh.fragmentShader = sh.fragmentShader.replace(
+      "#include <map_fragment>",
+      "#include <map_fragment>\n  diffuseColor.rgb = diffuse * dot(diffuseColor.rgb / max(diffuse, vec3(1e-3)), vec3(0.299, 0.587, 0.114)) * 1.6;",
+    )
+  }
+  m.customProgramCacheKey = () => "grey"
+}
+
 // "MI_Skin_*" -> /^MI_Skin_.*$/i
 function globRe(glob) {
   return new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`, "i")
@@ -152,6 +181,7 @@ export class AssetRegistry {
     this.index.roles ||= {}
     this.index.animations ||= {}
     this.index.kits ||= {}
+    this._held = null
     return this
   }
 
@@ -213,6 +243,16 @@ export class AssetRegistry {
     return [...ids]
   }
 
+  // models used only as held weapons and shields
+  heldModels() {
+    if (!this._held) {
+      const held = new Set(this.modelsFor(role => ROLES[role]?.group === "weapon"))
+      for (const id of this.modelsFor(role => ROLES[role]?.group !== "weapon")) held.delete(id)
+      this._held = held
+    }
+    return this._held
+  }
+
   missing(ids) {
     return ids.filter(id => !this.gltf.has(id) && this.index.models[id])
   }
@@ -235,11 +275,13 @@ export class AssetRegistry {
             loader
               .loadAsync(url)
               .then(g => {
+                const held = this.heldModels().has(id)
+                const convert = m => (held ? heldMaterial(m) : shareMaterial(g, m))
                 g.scene.traverse(o => {
                   if (o.isMesh) {
                     o.castShadow = true
                     o.receiveShadow = true
-                    o.material = Array.isArray(o.material) ? o.material.map(m => shareMaterial(g, m)) : shareMaterial(g, o.material)
+                    o.material = Array.isArray(o.material) ? o.material.map(convert) : convert(o.material)
                   }
                 })
                 g.scene.updateMatrixWorld(true)
@@ -275,13 +317,20 @@ export class AssetRegistry {
     // the model's front: +Z by default (glTF). Placed objects face -Z (the
     // generators' convention); characters and creatures face +Z, like the
     // game's actors (yaw = atan2(dx, dz)).
+    // Held items keep the file's orientation unless `front` says otherwise.
     const actor = r.group === "character" || r.group === "creature"
-    const turn = { "+z": Math.PI, "-z": 0, "+x": Math.PI / 2, "-x": -Math.PI / 2 }[entry.front || "+z"] + (actor ? Math.PI : 0)
+    const held = r.group === "weapon"
+    const turn = held && !entry.front ? 0 : { "+z": Math.PI, "-z": 0, "+x": Math.PI / 2, "-x": -Math.PI / 2 }[entry.front || "+z"] + (actor ? Math.PI : 0)
     const yaw = (entry.yaw ?? 0) * DEG + turn
     const turned = Math.abs(Math.sin(yaw)) > 0.7 // footprint axes swap
     const w0 = turned ? size[2] : size[0]
     const d0 = turned ? size[0] : size[2]
     if (fit === "height") sx = sy = sz = ((entry.height ?? dims.h ?? r.height) / Math.max(1e-3, size[1])) * k
+    else if (fit === "length") {
+      // as long as the game's weapon, but no wider than a hand's span of guard
+      const wide = Math.max(size[0], size[2])
+      sx = sy = sz = Math.min((entry.height ?? dims.h ?? r.height) / Math.max(1e-3, max[1]), (dims.maxWidth ?? 0.34) / Math.max(1e-3, wide)) * k
+    }
     else if (fit === "footprint" && dims.w) sx = sy = sz = Math.min(dims.w / Math.max(1e-3, w0), dims.d / Math.max(1e-3, d0)) * k
     else if (fit === "cell") {
       sx = (dims.w ?? w0) / Math.max(1e-3, w0)
@@ -289,7 +338,7 @@ export class AssetRegistry {
       sy = dims.h != null ? dims.h / Math.max(1e-3, size[1]) : 1
       if (turned) [sx, sz] = [sz, sx]
     } else sx = sy = sz = k
-    const align = entry.align || (fit === "cell" && role === "dungeon.floor" ? "top" : "base")
+    const align = entry.align || (held ? "pivot" : fit === "cell" && role === "dungeon.floor" ? "top" : "base")
     const ox = -(min[0] + max[0]) / 2
     const oz = -(min[2] + max[2]) / 2
     const oy = align === "top" ? -max[1] : align === "center" ? -(min[1] + max[1]) / 2 : align === "pivot" ? 0 : -min[1]
@@ -325,7 +374,8 @@ export class AssetRegistry {
     const base = this.entryMatrix(entry, role, dims)
     const out = []
     g.scene.traverse(o => {
-      if (!o.isMesh || o.isSkinnedMesh) return
+      // skinned props (a chest with an opening lid) bake in their rest pose
+      if (!o.isMesh) return
       const geo = floatGeometry(o.geometry)
       geo.applyMatrix4(base.clone().multiply(o.matrixWorld))
       const mats = Array.isArray(o.material) ? o.material : [o.material]
@@ -350,14 +400,33 @@ export class AssetRegistry {
     for (const part of this.parts(entry, role, dims)) builder.add(part.geo, part.mat, { matrix, uv: "keep" })
   }
 
-  // A static model as an Object3D (shares geometry and materials).
+  // A static model as an Object3D (shares geometry and materials). A rigged
+  // prop gets its own skeleton; holder.userData.pose(name, f) then poses it
+  // at fraction f of the clip whose name contains `name` (e.g. a chest lid).
   object(entry, role, dims = {}) {
     const g = this.gltf.get(entry.model)
     const holder = new THREE.Group()
-    const inner = g.scene.clone(true)
+    let rigged = false
+    g.scene.traverse(o => (rigged ||= !!o.isSkinnedMesh))
+    const inner = rigged ? cloneSkinned(g.scene) : g.scene.clone(true)
     inner.matrixAutoUpdate = false
     inner.matrix.copy(this.entryMatrix(entry, role, dims))
     holder.add(inner)
+    if (rigged && g.animations.length) {
+      inner.traverse(o => o.isSkinnedMesh && (o.frustumCulled = false))
+      const mixer = new THREE.AnimationMixer(inner)
+      holder.userData.pose = (name, f = 1) => {
+        const clip = g.animations.find(c => c.name.toLowerCase().includes(name.toLowerCase()))
+        if (!clip) return false
+        mixer.stopAllAction()
+        const a = mixer.clipAction(clip)
+        a.play()
+        a.paused = true
+        a.time = Math.min(0.999, Math.max(0, f)) * clip.duration
+        mixer.update(0)
+        return true
+      }
+    }
     return holder
   }
 
@@ -433,6 +502,7 @@ export class AssetRegistry {
   // An animated character or creature with the same interface as the game's
   // own builders: { group, anim(t, speed, attack, opts), rig: { head } }.
   //   ctx.seed    picks one model per entry.parts slot (hair, beard, ...)
+  //   ctx.parts   { slot: model id or null } chosen parts instead (the player)
   //   ctx.tints   { key: colour } applied to materials named in entry.tint
   character(entry, role, dims = {}, ctx = {}) {
     const g = this.gltf.get(entry.model)
@@ -454,8 +524,9 @@ export class AssetRegistry {
       let anchor = null
       model.traverse(o => !anchor && o.isSkinnedMesh && (anchor = o.parent))
       anchor ||= model
-      for (const slot of Object.values(entry.parts)) {
-        const id = slot[Math.floor(rnd() * slot.length)]
+      for (const [name, slot] of Object.entries(entry.parts)) {
+        const roll = slot[Math.floor(rnd() * slot.length)]
+        const id = ctx.parts && name in ctx.parts ? ctx.parts[name] : roll
         const pg = id && this.gltf.get(id)
         if (!pg) continue
         const part = cloneSkinned(pg.scene)
@@ -491,6 +562,7 @@ export class AssetRegistry {
         if (c == null || !globRe(glob).test(o.material.name)) continue
         o.material = o.material.clone()
         o.material.color.multiply(new THREE.Color(c))
+        if (entry.recolor) greyTexture(o.material)
       }
     })
 
@@ -590,6 +662,93 @@ export class AssetRegistry {
     return { group: holder, anim, rig: { head, pack: true }, mixer, model }
   }
 
+  // A forearm and hand cut from a character (its own outfit, skin and tints),
+  // as static meshes for the first-person view. The hand sits at the origin
+  // with the forearm running back along +Z and the back of the hand up (+Y),
+  // fingers curled as if round a grip. side: "r" or "l"; length: forearm
+  // length in the result's units.
+  limb(char, side = "r", length = 0.47, curl = -1.35, axis = "X", roll = -Math.PI / 2) {
+    const model = char.model
+    const bones = {}
+    model.traverse(o => o.isBone && (bones[o.name.toLowerCase()] = o))
+    const find = re => Object.values(bones).find(b => re.test(b.name))
+    const elbow = find(new RegExp(`(lowerarm|forearm)_?${side}$`, "i"))
+    const hand = find(new RegExp(`hand_?${side}$`, "i"))
+    if (!elbow || !hand) return null
+    // bind pose, fingers curled about their bend axis
+    model.traverse(o => o.isSkinnedMesh && o.skeleton.pose())
+    hand.traverse(b => {
+      if (!b.isBone || b === hand) return
+      if (/thumb/i.test(b.name)) b[`rotate${axis}`](curl * 0.35 * (side === "r" ? 1 : -1))
+      else b[`rotate${axis}`](curl * (side === "r" ? -1 : 1))
+    })
+    char.group.updateMatrixWorld(true)
+    const inv = new THREE.Matrix4().copy(char.group.matrixWorld).invert()
+    const at = b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv)
+    const e = at(elbow)
+    const h = at(hand)
+    // basis: z from hand to elbow, y as close to up as possible
+    const z = e.clone().sub(h).normalize()
+    const x = new THREE.Vector3(0, 1, 0).cross(z).normalize()
+    const y = z.clone().cross(x)
+    const k = length / e.distanceTo(h)
+    const toArm = new THREE.Matrix4().makeBasis(x, y, z).transpose().premultiply(new THREE.Matrix4().makeScale(k, k, k)).multiply(new THREE.Matrix4().makeTranslation(-h.x, -h.y, -h.z))
+    toArm.premultiply(new THREE.Matrix4().makeTranslation(0, 0, -0.06)) // palm, not wrist, at the origin
+    toArm.premultiply(new THREE.Matrix4().makeRotationZ(roll * (side === "r" ? 1 : -1))) // thumb up, round a vertical grip
+    const region = new Set()
+    elbow.traverse(b => b.isBone && region.add(b))
+    const out = new THREE.Group()
+    const v = new THREE.Vector3()
+    model.traverse(o => {
+      if (!o.isSkinnedMesh || !o.visible) return
+      const geo = o.geometry
+      const si = geo.attributes.skinIndex
+      const sw = geo.attributes.skinWeight
+      const pos = geo.attributes.position
+      const inR = new Uint8Array(pos.count)
+      for (let i = 0; i < pos.count; i++) {
+        let best = 0
+        for (let c = 1; c < 4; c++) if (sw.getComponent(i, c) > sw.getComponent(i, best)) best = c
+        inR[i] = region.has(o.skeleton.bones[si.getComponent(i, best)]) ? 1 : 0
+      }
+      const idx = geo.index ? geo.index.array : Array.from({ length: pos.count }, (_, i) => i)
+      const tris = []
+      for (let t = 0; t < idx.length; t += 3) if (inR[idx[t]] && inR[idx[t + 1]] && inR[idx[t + 2]]) tris.push(idx[t], idx[t + 1], idx[t + 2])
+      if (!tris.length) return
+      const toLocal = new THREE.Matrix4().copy(o.matrixWorld).premultiply(inv).premultiply(toArm)
+      const used = [...new Set(tris)]
+      const remap = new Map(used.map((i, n) => [i, n]))
+      const P = new Float32Array(used.length * 3)
+      used.forEach((i, n) => {
+        v.fromBufferAttribute(pos, i)
+        o.applyBoneTransform(i, v)
+        v.applyMatrix4(toLocal)
+        P.set([v.x, v.y, v.z], n * 3)
+      })
+      const g = new THREE.BufferGeometry()
+      g.setAttribute("position", new THREE.BufferAttribute(P, 3))
+      // texture coordinates and vertex colours come along unchanged
+      for (const name of ["uv", "color"]) {
+        const a = geo.attributes[name]
+        if (!a) continue
+        const out = new Float32Array(used.length * a.itemSize)
+        used.forEach((i, n) => {
+          for (let c = 0; c < a.itemSize; c++) out[n * a.itemSize + c] = a.getComponent(i, c)
+        })
+        g.setAttribute(name, new THREE.BufferAttribute(out, a.itemSize))
+      }
+      g.setIndex(tris.map(i => remap.get(i)))
+      g.computeVertexNormals()
+      const m = new THREE.Mesh(g, o.material)
+      m.castShadow = false
+      m.receiveShadow = false // held in front of the camera, inside the player's own shadow
+      out.add(m)
+    })
+    // back to the animated pose for whoever else uses the character
+    model.traverse(o => o.isSkinnedMesh && o.skeleton.pose())
+    return out.children.length ? out : null
+  }
+
   // Bone to hang a held item on, with a scale-free anchor.
   attachToHand(char, obj, entry = {}) {
     let hand = null
@@ -637,7 +796,7 @@ const TOWN_PROPS = new Set(["prop.well", "prop.stall", "prop.lamppost", "prop.ba
 export function overworldModels() {
   const ids = assets.modelsFor(role => {
     const g = ROLES[role]?.group
-    return g === "flora" || g === "building" || g === "character" || g === "creature" || TOWN_PROPS.has(role)
+    return g === "flora" || g === "building" || g === "character" || g === "creature" || g === "weapon" || TOWN_PROPS.has(role)
   })
   for (const k of assets.index.kits.building || []) ids.push(...kitModels(k))
   return [...new Set(ids)]

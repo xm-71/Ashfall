@@ -37,6 +37,7 @@ const VOICES = {
   skeleton: { kind: "rattle", f: 600 },
   ghost: { kind: "moan", f: 220 },
   scamp: { kind: "cackle", f: 380 },
+  riekling: { kind: "grunt", f: 280 },
   clannfear: { kind: "roar", f: 140 },
   sphere: { kind: "clank", f: 260 },
   centurion: { kind: "clank", f: 160 },

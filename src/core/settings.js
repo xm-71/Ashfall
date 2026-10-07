@@ -15,6 +15,7 @@ export const ACTIONS = [
   ["character", "Character", "KeyK"],
   ["map", "Map", "KeyM"],
   ["journal", "Journal", "KeyJ"],
+  ["view", "First / third-person view", "KeyV"],
 ]
 
 const DEFAULTS = {

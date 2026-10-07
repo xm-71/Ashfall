@@ -32,7 +32,15 @@ export class ViewModel {
     this.key = null
   }
 
+  // Arms cut from the player's pack body ({ right, left }), or null for the
+  // game's own arms.
+  setArms(arms) {
+    this.packArms = arms
+    this.key = null
+  }
+
   arm(side, sleeve, glove) {
+    if (this.packArms) return this.packArms[side > 0 ? "right" : "left"].clone()
     const g = new THREE.Group()
     const skinMat = texturedMaterial("leather", { color: this.skin })
     const sleeveMat = sleeve ? texturedMaterial(sleeve.tex, { color: sleeve.color, metal: sleeve.metal }) : texturedMaterial("fabric", { color: 0x6a5a44 })

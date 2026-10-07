@@ -82,6 +82,10 @@ This starts the game's development server and opens the Workbench in your browse
 
 **A character slides, floats or plays the wrong animation.** In the Manifest tab, `"animations"` maps the game's moves to clips as `"model id#clip name"`. For example `"walk": "Universal-Animation-Library/Unreal-Godot/UAL1_Standard#Walk_Loop"`. The clip names of an animation library are listed in the All models tab. Preview each move with the animation picker.
 
+**A weapon is held wrong (in the hand by the blade, or sticking out sideways).** Weapon roles expect the grip at the model's origin with the blade up. Use **Offset** to slide the model so the grip sits at the origin (for example `[0, 0.3, 0]` lowers the hand on an axe haft), and **Rotate** if the blade doesn't point up. Check it in the game in third-person view (V).
+
+**Your character, or a monster variant, looks wrong.** The player's choices come from the `player` role: add or remove outfits and hairstyles in its `parts` lists. Monster variants share one model and differ by `tint`; add `"recolor": true` when the tint can't overcome the texture's own colour.
+
 **A tree is huge or tiny compared with the others.** Set **Scale** on that entry. To size all trees in a role the same way, use Fit `height` with a Height.
 
 **Hoods show hair poking through.** Remove the `hair` slot from the hooded outfit's parts.

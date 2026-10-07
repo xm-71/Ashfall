@@ -368,7 +368,7 @@ function renderRoleProps(p) {
   h += field("Model", `<input data-k="model" list="modelids" value="${esc(e.model)}">`, "The model id (see the All models tab)")
   h += field("Weight", `<input data-k="weight" type="number" step="0.1" value="${e.weight ?? ""}" placeholder="1">`, "How often this model is picked compared with the others")
   h += field("Scale", `<input data-k="scale" type="number" step="0.05" value="${e.scale ?? ""}" placeholder="1">`, "Multiplies the size")
-  h += field("Fit", `<select data-k="fit"><option value="">role default (${r.fit})</option>${["none", "height", "footprint", "cell"].map(f => `<option ${e.fit === f ? "selected" : ""}>${f}</option>`).join("")}</select>`, "How the model is sized")
+  h += field("Fit", `<select data-k="fit"><option value="">role default (${r.fit})</option>${["none", "height", "footprint", "cell", "length"].map(f => `<option ${e.fit === f ? "selected" : ""}>${f}</option>`).join("")}</select>`, "How the model is sized")
   h += field("Height", `<input data-k="height" type="number" step="0.1" value="${e.height ?? ""}" placeholder="for fit: height">`)
   h += field("Front", `<select data-k="front">${["+z", "-z", "+x", "-x"].map(f => `<option ${(e.front || "+z") === f ? "selected" : ""}>${f}</option>`).join("")}</select>`, "Which side of the model is its front in the file")
   h += field("Turn (°)", `<input data-k="yaw" type="number" step="15" value="${e.yaw ?? ""}" placeholder="0">`)
