@@ -115,8 +115,35 @@ function packWeapon(item) {
   return obj
 }
 
+// Held weapons and shields stay out of the bloom: sunlight glinting off a
+// blade lit it up like a lamp. Their shading is capped below the bloom
+// threshold (post.js), so only lava, lights and spells glow.
+const unbloomed = new WeakSet()
+function noBloom(obj) {
+  obj.traverse(o => {
+    if (!o.isMesh) return
+    for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+      if (unbloomed.has(m)) continue
+      unbloomed.add(m)
+      const prev = m.onBeforeCompile
+      const prevKey = m.customProgramCacheKey
+      m.onBeforeCompile = (sh, r) => {
+        prev.call(m, sh, r)
+        sh.fragmentShader = sh.fragmentShader.replace("#include <tonemapping_fragment>", "gl_FragColor.rgb = min(gl_FragColor.rgb, vec3(1.0));\n#include <tonemapping_fragment>")
+      }
+      m.customProgramCacheKey = () => `${prevKey.call(m)}|nobloom`
+      m.needsUpdate = true
+    }
+  })
+  return obj
+}
+
 // Weapon model with the grip at the origin and the business end along +Y.
 export function buildWeapon(item) {
+  return noBloom(weaponModel(item))
+}
+
+function weaponModel(item) {
   const packed = packWeapon(item)
   if (packed) return packed
   const g = new THREE.Group()
@@ -296,6 +323,10 @@ export function buildWeapon(item) {
 }
 
 export function buildShield(item) {
+  return noBloom(shieldModel(item))
+}
+
+function shieldModel(item) {
   const entry = assets.enabled && assets.pick("shield", { material: item.material || "iron" }, (((item.uid || 0) * 0.6180339) % 1 + 1) % 1)
   if (entry) return assets.object(entry, "shield", {})
   const g = new THREE.Group()

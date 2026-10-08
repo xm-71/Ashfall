@@ -142,7 +142,7 @@ export function metalTint(src, color) {
       .replace("void main() {", "uniform sampler2D metalTex;\nuniform vec3 metalTint;\nvoid main() {")
       .replace(
         "#include <color_fragment>",
-        "#include <color_fragment>\n  float metalK = smoothstep(0.35, 0.65, texture2D(metalTex, vMapUv).b);\n  diffuseColor.rgb = mix(diffuseColor.rgb, metalTint * (0.45 + 0.7 * dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114))), metalK);",
+        "#include <color_fragment>\n  float metalK = smoothstep(0.35, 0.65, texture2D(metalTex, vMapUv).b);\n  diffuseColor.rgb = mix(diffuseColor.rgb, metalTint * (0.22 + 0.5 * dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114))), metalK);",
       )
   }
   m.customProgramCacheKey = () => `metal-${tint.getHexString()}`
