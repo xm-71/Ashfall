@@ -363,7 +363,12 @@ export class Enemy {
     let ang = Math.min(target, 0.5 * 26 * ft * ft)
     const land = Math.sqrt((2 * target) / 26)
     if (ft > land) ang = target - 0.09 * Math.exp(-(ft - land) * 7) * Math.abs(Math.sin((ft - land) * 16))
-    if (this.rig) {
+    if (this.rig?.pack) {
+      // pack models: the death clip lays the body down by itself (played over
+      // its own length); without one, the model topples in anim()
+      this.anim(this.t, 0, 0, { dying: Math.min(1, t / (this.rig.die || 0.6)) })
+      this.mesh.rotation.x = 0
+    } else if (this.rig) {
       this.anim(this.t, 0, 0, { dying: crumple })
       this.mesh.rotation.x = this.fallDir * ang
     } else {

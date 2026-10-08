@@ -2,7 +2,8 @@ import * as THREE from "three"
 import { texture } from "./texgen.js"
 import { lathe, taperTube } from "./geom.js"
 import { seg } from "../core/quality.js"
-import { assets } from "../assets/registry.js"
+import { assets, metalTint } from "../assets/registry.js"
+import { WEAPON_MATERIALS } from "../data/items.js"
 
 const cache = new Map()
 function metalMat(material, color) {
@@ -104,7 +105,13 @@ function packWeapon(item) {
   const entry = assets.pick(role, { material: item.material || "iron" }, (((item.uid || 0) * 0.6180339) % 1 + 1) % 1)
   if (!entry) return null
   const obj = assets.object(entry, role, { h: REACH[item.base] })
-  obj.traverse(o => o.isMesh && (o.castShadow = true))
+  // entry.metal: the model's metal takes the item material's colour
+  const color = entry.metal && (item.color ?? WEAPON_MATERIALS[item.material]?.color)
+  obj.traverse(o => {
+    if (!o.isMesh) return
+    o.castShadow = true
+    if (color != null) o.material = metalTint(o.material, color)
+  })
   return obj
 }
 

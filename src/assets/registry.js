@@ -115,12 +115,37 @@ function heldMaterial(src) {
   m.emissive.copy(src.emissive)
   // a mirror-bright blade right in front of the camera catches the sun and
   // floods the bloom: keep the metal response and glow subtle
+  m.userData.metalMap = src.metalnessMap // which texels are metal (see metalTint)
   m.metalnessMap = null
   m.metalness = Math.min(m.metalness, 0.3)
   m.emissiveIntensity *= 0.25
   if (src.normalScale) m.normalScale.copy(src.normalScale)
   m.userData.packReady = true
   converted.set(src, m)
+  return m
+}
+
+// Recolour only the metal of a held model (the texels its metalness map marks
+// as metal; after the vertex colours, which paint the bronze): a bronze
+// blade becomes steel, its leather grip stays leather.
+// Returns a new material; the shared one is left alone.
+export function metalTint(src, color) {
+  const tex = src.userData.metalMap
+  if (!tex || !src.map) return src
+  const m = src.clone()
+  m.userData = { ...src.userData }
+  const tint = new THREE.Color(color)
+  m.onBeforeCompile = sh => {
+    sh.uniforms.metalTex = { value: tex }
+    sh.uniforms.metalTint = { value: tint }
+    sh.fragmentShader = sh.fragmentShader
+      .replace("void main() {", "uniform sampler2D metalTex;\nuniform vec3 metalTint;\nvoid main() {")
+      .replace(
+        "#include <color_fragment>",
+        "#include <color_fragment>\n  float metalK = smoothstep(0.35, 0.65, texture2D(metalTex, vMapUv).b);\n  diffuseColor.rgb = mix(diffuseColor.rgb, metalTint * (0.45 + 0.7 * dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114))), metalK);",
+      )
+  }
+  m.customProgramCacheKey = () => `metal-${tint.getHexString()}`
   return m
 }
 
@@ -148,12 +173,31 @@ function handBones(model, side) {
   return B.hand && B.elbow && B.index && B.ring && B.middle && B.tip ? B : null
 }
 
-// Curl every finger joint into a fist (the thumb a little, across the grip).
+// Curl every finger joint into a fist, the thumb folded over the fingers.
 const FIST = 1.35
+const THUMB = 0.8
 function closeFist(hand) {
+  const left = /_l$/i.test(hand.name)
   hand.traverse(b => {
-    if (b.isBone && b !== hand) b.rotateX(/thumb/i.test(b.name) ? -FIST * 0.35 : FIST)
+    if (!b.isBone || b === hand) return
+    if (/thumb/i.test(b.name)) b.rotateZ(left ? -THUMB : THUMB)
+    else b.rotateX(FIST)
   })
+}
+
+// The finger joints of a closed fist, from the rest pose: [bone, quaternion].
+// Measured on the bind pose so an animation that already bends the fingers
+// doesn't curl them twice. The rest of the skeleton is left as it was.
+function fistPose(model, hand) {
+  const saved = []
+  model.traverse(o => o.isBone && saved.push([o, o.position.clone(), o.quaternion.clone(), o.scale.clone()]))
+  model.traverse(o => o.isSkinnedMesh && o.skeleton.pose())
+  closeFist(hand)
+  const fingers = []
+  hand.traverse(b => b.isBone && b !== hand && fingers.push([b, b.quaternion.clone()]))
+  for (const [b, p, q, s] of saved) b.position.copy(p), b.quaternion.copy(q), b.scale.copy(s)
+  model.updateWorldMatrix(true, true) // pose() wrote bind-pose world matrices
+  return fingers
 }
 
 // Where a closed fist holds things, in the space `inv` maps world into: the
@@ -794,9 +838,11 @@ export class AssetRegistry {
         if (n === "walk" || n === "run") actions[n].setEffectiveTimeScale(Math.max(0.5, speed * 1.4))
       }
       mixer.update(dt)
+      for (const [b, q] of fists) b.quaternion.copy(q)
     }
+    const fists = [] // finger joints held closed around a held item: [bone, quaternion]
     anim(0)
-    return { group: holder, anim, rig: { head, pack: true }, mixer, model }
+    return { group: holder, anim, rig: { head, pack: true, die: actions.die?.getClip().duration || 0 }, mixer, model, fists }
   }
 
   // A forearm and hand cut from a character (its own outfit, skin and tints),
@@ -898,15 +944,17 @@ export class AssetRegistry {
     const anchor = new THREE.Group()
     anchor.scale.set(1 / s.x, 1 / s.y, 1 / s.z)
     if (B?.index && B.ring && B.middle && B.tip) {
-      // the grip, measured with the fist closed, in the hand bone's own frame
-      const saved = []
-      hand.traverse(b => b.isBone && saved.push([b, b.quaternion.clone()]))
-      closeFist(hand)
-      hand.updateMatrixWorld(true)
+      // the grip, measured with the fist closed, in the hand bone's own frame;
+      // the fingers stay closed whatever the animation does (see character)
+      const fist = fistPose(char.model, hand)
+      const saved = fist.map(([b]) => [b, b.quaternion.clone()])
+      for (const [b, q] of fist) b.quaternion.copy(q)
+      hand.updateWorldMatrix(true, true)
       const inv = new THREE.Matrix4().copy(hand.matrixWorld).invert()
       const g = gripFrame(B, inv)
       for (const [b, q] of saved) b.quaternion.copy(q)
       hand.updateMatrixWorld(true)
+      char.fists?.push(...fist)
       const front = kind === "shield" ? g.palm.clone().negate() : g.fingers.clone().cross(g.blade)
       const x = g.blade.clone().cross(front).normalize()
       anchor.position.copy(g.center)

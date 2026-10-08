@@ -7274,6 +7274,16 @@
             "chitin"
           ]
         }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze",
+        "metal": true,
+        "where": {
+          "material": [
+            "steel",
+            "silver"
+          ]
+        }
       }
     ],
     "weapon.longsword": [
@@ -7285,6 +7295,16 @@
             "chitin"
           ]
         }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze",
+        "metal": true,
+        "where": {
+          "material": [
+            "steel",
+            "silver"
+          ]
+        }
       }
     ],
     "weapon.broadsword": [
@@ -7294,6 +7314,16 @@
           "material": [
             "iron",
             "chitin"
+          ]
+        }
+      },
+      {
+        "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze",
+        "metal": true,
+        "where": {
+          "material": [
+            "steel",
+            "silver"
           ]
         }
       }
@@ -8130,5 +8160,5 @@
     ]
   },
   "lowTextures": true,
-  "version": "58483dee0db2"
+  "version": "2fa57518cdd7"
 }

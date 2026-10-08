@@ -507,9 +507,18 @@
     "creature.puglin": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin", "anims": "humanoid", "fit": "height", "height": 0.95, "tint": { "MI_Puglin": "body" } }],
     "creature.puglinBrute": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin", "anims": "humanoid", "fit": "height", "height": 1.15, "tint": { "MI_Puglin": "body" } }],
     "creature.puglinShaman": [{ "model": "Bestiary-Dungeon-Monsters-Kit/Exports/GLB_Godot-Unreal_/Puglin", "anims": "monster", "fit": "height", "height": 0.95, "tint": { "MI_Puglin": "body" } }],
-    "weapon.shortsword": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } }],
-    "weapon.longsword": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } }],
-    "weapon.broadsword": [{ "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } }],
+    "weapon.shortsword": [
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } },
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "metal": true, "where": { "material": ["steel", "silver"] } }
+    ],
+    "weapon.longsword": [
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } },
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "metal": true, "where": { "material": ["steel", "silver"] } }
+    ],
+    "weapon.broadsword": [
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "where": { "material": ["iron", "chitin"] } },
+      { "model": "Fantasy-Props-MegaKit/Exports/glTF/Sword_Bronze", "metal": true, "where": { "material": ["steel", "silver"] } }
+    ],
     "weapon.war axe": [
       { "model": "Fantasy-Props-MegaKit/Exports/glTF/Axe_Bronze", "fit": "none", "offset": [0, 0.3, 0], "weight": 2, "where": { "material": ["iron", "chitin"] } },
       { "model": "Fantasy-Props-MegaKit/Exports/glTF/Pickaxe_Bronze", "fit": "none", "offset": [0, 0.4, 0], "where": { "material": ["iron", "chitin"] } }

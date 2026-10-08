@@ -89,6 +89,7 @@ To adjust models visually instead of editing JSON, run `npm run workbench`. See 
 | `handBone`, `handRotate` | Bone that holds weapons (found automatically) and its rotation fix |
 | `lod: false` | Flora: hide far away instead of drawing the full model at a distance |
 | `recolor: true` | With `tint`: the texture is turned grey before it is tinted, so a red monster can become a grey one (a plain tint only darkens or shifts the colour) |
+| `metal: true` | Weapons: the model's metal parts (what its metalness map marks as metal) take the item material's colour, so one bronze sword serves as steel or silver too; the grip keeps its own colour |
 
 ### Roles
 
